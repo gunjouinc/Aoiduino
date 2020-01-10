@@ -6,6 +6,21 @@
 ******************************************************************************/
 #ifdef ARDUINO_spresense_ast
 #include "spresense-ast.h"
+#include <eMMC.h>
+#include <Flash.h>
+#include <SDHCI.h>
+File AstFile;
+//eMMCClass eMMC;
+//FlashClass Flash;
+SDClass AstSD;
+
+/** eMMC root path */
+#define _EMMC_ "/eMMC"
+/** Flash root path */
+#define _FLASH_ "/Flash"
+/** SD root path */
+#define _SD_ "/SDHCI"
+
 /**
 * @namespace AoiSpresense
 * @brief Aoi Spresense classes.
@@ -27,6 +42,7 @@ namespace AoiSpresense
         AoiBase::FunctionTable ftl[] =
         {
         // ^ Please set your function to use.
+            /* Arduino Core */
             { "analogRead", &Arduino::analogRead },
             { "analogWrite", &Arduino::analogWrite },
             { "delay", &Arduino::delay },
@@ -39,6 +55,8 @@ namespace AoiSpresense
             { "noTone", &Arduino::noTone },
             { "pinMode", &Arduino::pinMode },
             { "tone", &Arduino::tone },
+            /* File */
+            { "format", &Ast::format },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -131,6 +149,41 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "led 0-3 (ON|OFF)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::format( StringList *args )
+     *
+     * Format file device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::format( StringList *args )
+    {
+        String s;
+        String path;
+
+        switch( count(args) )
+        {
+            case 1:
+                path = _a( 0 );
+                if( path==_EMMC_ )
+                    eMMC.format();
+                else if( path==_FLASH_ )
+                    Flash.format();
+                else if( path==_SD_ )
+                    AstSD.format();
+                else
+                    s = format( 0 );
+                break;
+            default:
+                s = usage( "format ("+String(_EMMC_)
+                                 +"|"+String(_FLASH_)
+                                 +"|"+String(_SD_)+")" );
                 break;
         }
 

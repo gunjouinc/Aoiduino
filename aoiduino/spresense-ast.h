@@ -40,6 +40,8 @@ namespace AoiSpresense
         // ^ Please set your function to use.
         /* Spresense Arduino Core, Other core functions are defined in base class. */
         static String led( StringList *args );
+        /* File ( Flash, SDHC, eMMC ). */
+        static String format( StringList *args );
         // $ Please set your function to use.
     // static variables
     private:
