@@ -9,7 +9,7 @@
 #include <eMMC.h>
 #include <Flash.h>
 #include <SDHCI.h>
-File AstFile;
+StorageClass *AstStorage = &Flash;
 //eMMCClass eMMC;
 //FlashClass Flash;
 SDClass AstSD;
@@ -56,7 +56,10 @@ namespace AoiSpresense
             { "pinMode", &Arduino::pinMode },
             { "tone", &Arduino::tone },
             /* File */
+            { "cd", &Ast::cd },
             { "format", &Ast::format },
+            { "mkdir", &Ast::mkdir },
+            { "pwd", &Ast::pwd },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -155,6 +158,41 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn String Ast::cd( StringList *args )
+     *
+     * Change device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::cd( StringList *args )
+    {
+        String s;
+        String path;
+
+        switch( count(args) )
+        {
+            case 1:
+                path = _a( 0 );
+                if( path==_EMMC_ )
+                    AstStorage = &eMMC;
+                else if( (path==_FLASH_) || (path=="/") )
+                    AstStorage = &Flash;
+                else if( path==_SD_ )
+                    AstStorage = &AstSD;
+                else
+                    s = cd( 0 );
+                break;
+            default:
+                s = usage( "cd ("+String(_EMMC_)
+                             +"|"+String(_FLASH_)
+                             +"|"+String(_SD_)+")" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Ast::format( StringList *args )
      *
      * Format file device.
@@ -184,6 +222,71 @@ namespace AoiSpresense
                 s = usage( "format ("+String(_EMMC_)
                                  +"|"+String(_FLASH_)
                                  +"|"+String(_SD_)+")" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::mkdir( StringList *args )
+     *
+     * Make directory on current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mkdir( StringList *args )
+    {
+        String s;
+        String path;
+
+        switch( count(args) )
+        {
+            case 1:
+                path = _a( 0 );
+                if( AstStorage==&eMMC )
+                    eMMC.mkdir( path );
+                else if( AstStorage==&Flash )
+                    Flash.mkdir( path );
+                else if( AstStorage==&AstSD )
+                    AstSD.mkdir( path );
+                else
+                    s = mkdir( 0 );
+                break;
+            default:
+                s = usage( "mkdir path" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::pwd( StringList *args )
+     *
+     * Show current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::pwd( StringList *args )
+    {
+        String s;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        switch( count(args) )
+        {
+            case 0:
+                if( AstStorage==&eMMC )
+                    r[ "value" ] = _EMMC_;
+                else if( AstStorage==&Flash )
+                    r[ "value" ] = _FLASH_;
+                else if( AstStorage==&AstSD )
+                    r[ "value" ] = _SD_;
+                r.prettyPrintTo( s );
+                break;
+            default:
+                s = usage( "pwd" );
                 break;
         }
 
