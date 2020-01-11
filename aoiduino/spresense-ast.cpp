@@ -46,7 +46,7 @@ namespace AoiSpresense
         {
         // ^ Please set your function to use.
             /* Arduino Core */
-            { "analogRead", &Arduino::analogRead },
+            { "analogRead", &Ast::analogRead },
             { "analogWrite", &Arduino::analogWrite },
             { "delay", &Arduino::delay },
             { "delayMicroseconds", &Arduino::delayMicroseconds },
@@ -114,6 +114,54 @@ namespace AoiSpresense
     String Ast::usages( void )
     {
         return Arduino::usages( m_functionTable );
+    }
+    /**
+     * @fn String Ast::analogRead( StringList *args )
+     *
+     * Reads the value from the specified analog pin.
+     *
+     * @param[in] args Reference to arguments.
+     * @return int (A0 to A5).
+     */
+    String Ast::analogRead( StringList *args )
+    {
+        String s;
+        int pin = 0;
+
+        switch( count(args) )
+        {
+            case 1:
+                switch( _atoi(0) )
+                {
+                    case 0:
+                        pin = A0;
+                        break;
+                    case 1:
+                        pin = A1;
+                        break;
+                    case 2:
+                        pin = A2;
+                        break;
+                    case 3:
+                        pin = A3;
+                        break;
+                    case 4:
+                        pin = A4;
+                        break;
+                    case 5:
+                        pin = A5;
+                        break;
+                    default:
+                        return s = analogRead( 0 );
+                }
+                s = prettyPrintTo( "value", ::analogRead(pin) );
+                break;
+            default:
+                s = usage( "analogRead [0-5]" );
+                break;
+        }
+
+        return s;
     }
     /**
      * @fn String Ast::led( StringList *args )

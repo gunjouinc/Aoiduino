@@ -42,6 +42,7 @@ namespace AoiSpresense
     protected:
         // ^ Please set your function to use.
         /* Spresense Arduino Core, Other core functions are defined in base class. */
+        static String analogRead( StringList *args );
         static String led( StringList *args );
         /* File ( Flash, SDHC, eMMC ). */
         static String cd( StringList *args );
