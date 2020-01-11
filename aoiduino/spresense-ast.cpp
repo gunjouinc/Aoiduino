@@ -60,8 +60,8 @@ namespace AoiSpresense
             { "tone", &Arduino::tone },
             /* File */
             { "cd", &Ast::cd },
-            { "format", &Ast::format },
             { "ll", &Ast::ll },
+            { "format", &Ast::format },
             { "mkdir", &Ast::mkdir },
             { "pwd", &Ast::pwd },
             { "rmdir", &Ast::rmdir },
@@ -258,21 +258,23 @@ namespace AoiSpresense
         String s, p;
         DynamicJsonBuffer json;
         JsonArray &r = json.createArray();
-        File f;
+        File d, f;
         StringList *sl, *sm;
 
         switch( count(args) )
         {
             case 0:
             case 1:
-            // Mount point
-                f = AstStorage->open( "" );
-                p = f.name();
             // Root path
-                if( !count(args) )
-                    f = AstStorage->open( _a(0) );
+                d = AstStorage->open( "" );
+                p = d.name();
+                if( count(args) )
+                {
+                    d = AstStorage->open( _a(0) );
+                    p = d.name() + String("/");
+                }
             // File info to string
-                f = f.openNextFile();
+                f = d.openNextFile();
                 while( f )
                 {
                     if( s.length() )
@@ -280,7 +282,7 @@ namespace AoiSpresense
                     s += (f.isDirectory()?"d":"-")
                        + String(":") + String(f.name()).substring(p.length())
                        + String(":") + f.size();
-                    f = f.openNextFile();
+                    f = d.openNextFile();
                 }
                 f.close();
             // String to JSON
@@ -299,7 +301,7 @@ namespace AoiSpresense
                 r.prettyPrintTo( s );
                 break;
             default:
-                s = usage( "ls" );
+                s = usage( "ll" );
                 break;
         }
 
