@@ -3,6 +3,9 @@
 ** Copyright 2009-2020 Gunjou Inc. All rights reserved.
 ** Contact: Gunjou Inc. (aoiduino@gunjou.co.jp)
 **
+** This software is released under the MIT License.
+** https://github.com/masaomiura/Aoiduino/blob/master/LICENSE
+**
 ******************************************************************************/
 #include "core-abstractserial.h"
 /** Serial interface. */
