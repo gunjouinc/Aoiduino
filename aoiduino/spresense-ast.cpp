@@ -63,6 +63,7 @@ namespace AoiSpresense
             { "format", &Ast::format },
             { "mkdir", &Ast::mkdir },
             { "pwd", &Ast::pwd },
+            { "rmdir", &Ast::rmdir },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -290,6 +291,39 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "pwd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::rmdir( StringList *args )
+     *
+     * Remove directory on current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::rmdir( StringList *args )
+    {
+        String s;
+        String path;
+
+        switch( count(args) )
+        {
+            case 1:
+                path = _a( 0 );
+                if( AstStorage==&eMMC )
+                    eMMC.rmdir( path );
+                else if( AstStorage==&Flash )
+                    Flash.rmdir( path );
+                else if( AstStorage==&AstSD )
+                    AstSD.rmdir( path );
+                else
+                    s = rmdir( 0 );
+                break;
+            default:
+                s = usage( "rmdir path" );
                 break;
         }
 
