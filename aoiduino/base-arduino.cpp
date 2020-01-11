@@ -187,6 +187,46 @@ namespace AoiBase
         return s;
     }
     /**
+     * @fn String Arduino::prettyPrintTo( const String &key, unsigned int value )
+     *
+     * Returns JSON string from key and value.
+     *
+     * @param[in] key Key of JSON.
+     * @param[in] value Value of JSON.
+     * @return JSON string like { "key": value }.
+     */
+    String Arduino::prettyPrintTo( const String &key, unsigned int value )
+    {
+        String s;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        r[ key ] = value;
+        r.prettyPrintTo( s );
+
+        return s;
+    }
+    /**
+     * @fn String Arduino::prettyPrintTo( const String &key, const String &value )
+     *
+     * Returns JSON string from key and value.
+     *
+     * @param[in] key Key of JSON.
+     * @param[in] value Value of JSON.
+     * @return JSON string like { "key": "value" }.
+     */
+    String Arduino::prettyPrintTo( const String &key, const String &value )
+    {
+        String s;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        r[ key ] = value;
+        r.prettyPrintTo( s );
+
+        return s;
+    }
+    /**
      * @fn String Arduino::analogRead( StringList *args )
      *
      * Reads the value from the specified analog pin.
@@ -197,14 +237,11 @@ namespace AoiBase
     String Arduino::analogRead( StringList *args )
     {
         String s;
-        DynamicJsonBuffer json;
-        JsonObject &r = json.createObject();
 
         switch( count(args) )
         {
             case 1:
-                r[ "value" ] = ::analogRead( _atoi(0) );
-                r.prettyPrintTo( s );
+                s = prettyPrintTo( "value", ::analogRead(_atoi(0)) );
                 break;
             default:
                 s = usage( "analogRead pin" );
@@ -307,18 +344,15 @@ namespace AoiBase
     {
         String s;
         uint8_t i = 0;
-        DynamicJsonBuffer json;
-        JsonObject &r = json.createObject();
 
         switch( count(args) )
         {
             case 1:
                 i = ::digitalRead( _atoi(0) );
                 if( i==HIGH )
-                    r[ "value" ] = "HIGH";
+                    s = prettyPrintTo( "value" , "HIGH" );
                 else
-                    r[ "value" ] = "LOW";
-                r.prettyPrintTo( s );
+                    s = prettyPrintTo( "value" , "LOW" );
                 break;
             default:
                 s = usage( "digitalRead pin" );
@@ -368,14 +402,11 @@ namespace AoiBase
     String Arduino::micros( StringList *args )
     {
         String s;
-        DynamicJsonBuffer json;
-        JsonObject &r = json.createObject();
 
         switch( count(args) )
         {
             case 0:
-                r[ "value" ] = ::micros();
-                r.prettyPrintTo( s );
+                s = prettyPrintTo( "value" , ::micros() );
                 break;
             default:
                 s = usage( "micros" );
@@ -402,8 +433,7 @@ namespace AoiBase
         switch( count(args) )
         {
             case 0:
-                r[ "value" ] = ::millis();
-                r.prettyPrintTo( s );
+                s = prettyPrintTo( "value" , ::millis() );
                 break;
             default:
                 s = usage( "millis" );

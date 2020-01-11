@@ -270,24 +270,21 @@ namespace AoiSpresense
      * Show current device.
      *
      * @param[in] args Reference to arguments.
-     * @return Empty string.
+     * @return Current device.
      */
     String Ast::pwd( StringList *args )
     {
         String s;
-        DynamicJsonBuffer json;
-        JsonObject &r = json.createObject();
 
         switch( count(args) )
         {
             case 0:
                 if( AstStorage==&eMMC )
-                    r[ "value" ] = _EMMC_;
+                    s = prettyPrintTo( "value" , _EMMC_ );
                 else if( AstStorage==&Flash )
-                    r[ "value" ] = _FLASH_;
+                    s = prettyPrintTo( "value" , _FLASH_ );
                 else if( AstStorage==&AstSD )
-                    r[ "value" ] = _SD_;
-                r.prettyPrintTo( s );
+                    s = prettyPrintTo( "value" , _SD_ );
                 break;
             default:
                 s = usage( "pwd" );
