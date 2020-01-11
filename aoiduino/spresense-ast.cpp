@@ -274,6 +274,8 @@ namespace AoiSpresense
                 p = d.name();
                 if( count(args) )
                 {
+                    if( !AstStorage->exists(_a(0)) )
+                        return mkdir( 0 );
                     d = AstStorage->open( _a(0) );
                     p = d.name() + String("/");
                 }
@@ -361,7 +363,10 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 1:
-                AstStorage->mkdir( _a(0) );
+                if( AstStorage->exists(_a(0)) )
+                    s = mkdir( 0 );
+                else
+                    AstStorage->mkdir( _a(0) );
                 break;
             default:
                 s = usage( "mkdir path" );
@@ -488,7 +493,10 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 1:
-                AstStorage->remove( _a(0) );
+                if( !AstStorage->exists(_a(0)) )
+                    s = remove( 0 );
+                else
+                    AstStorage->remove( _a(0) );
                 break;
             default:
                 s = usage( "rm file" );
@@ -512,7 +520,10 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 1:
-                AstStorage->rmdir( _a(0) );
+                if( !AstStorage->exists(_a(0)) )
+                    s = rmdir( 0 );
+                else
+                    AstStorage->rmdir( _a(0) );
                 break;
             default:
                 s = usage( "rmdir path" );
