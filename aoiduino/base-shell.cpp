@@ -36,7 +36,6 @@ namespace AoiBase
         FunctionTable ftl[] =
         {
         // ^ Please set your function to use.
-            { "echo", &Shell::echo },
             { "help", &Shell::help },
         // $ Please set your function to use.
             { "", 0 }
@@ -201,32 +200,6 @@ namespace AoiBase
             ft++;
         }
         r.prettyPrintTo( s );
-
-        return s;
-    }
-    /**
-     * @fn String Shell::echo( StringList *args )
-     *
-     * Echos message.
-     *
-     * @return Message string.
-     */
-    String Shell::echo( StringList *args )
-    {
-        String s;
-        DynamicJsonBuffer json;
-        JsonObject &r = json.createObject();
-
-        switch( count(args) )
-        {
-            case 1:
-                r[ "value" ] = _a( 0 );
-                r.prettyPrintTo( s );
-                break;
-            default:
-                s = usage( "echo message" );
-                break;
-        }
 
         return s;
     }

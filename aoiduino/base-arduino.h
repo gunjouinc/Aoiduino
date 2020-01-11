@@ -56,6 +56,7 @@ namespace AoiBase
         static String delayMicroseconds( StringList *args );
         static String digitalRead( StringList *args );
         static String digitalWrite( StringList *args );
+        static String echo( StringList *args );
         static String micros( StringList *args );
         static String millis( StringList *args );
         static String noTone( StringList *args );

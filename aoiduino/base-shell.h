@@ -43,7 +43,6 @@ namespace AoiBase
     // static members
     protected:
         // ^ Please set your function to use.
-        static String echo( StringList *args );
         static String help( StringList *args );
         // $ Please set your function to use.
     // members

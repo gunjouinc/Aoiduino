@@ -52,6 +52,7 @@ namespace AoiSpresense
             { "delayMicroseconds", &Arduino::delayMicroseconds },
             { "digitalRead", &Arduino::digitalRead },
             { "digitalWrite", &Arduino::digitalWrite },
+            { "echo", &Arduino::echo },
             { "led", &Ast::led },
             { "micros", &Arduino::micros },
             { "millis", &Arduino::millis },

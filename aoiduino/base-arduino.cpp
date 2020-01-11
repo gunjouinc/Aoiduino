@@ -35,6 +35,7 @@ namespace AoiBase
             { "delayMicroseconds", &Arduino::delayMicroseconds },
             { "digitalRead", &Arduino::digitalRead },
             { "digitalWrite", &Arduino::digitalWrite },
+            { "echo", &Arduino::echo },
             { "micros", &Arduino::micros },
             { "millis", &Arduino::millis },
             { "noTone", &Arduino::noTone },
@@ -385,6 +386,29 @@ namespace AoiBase
                 break;
             default:
                 s = usage( "digitalWrite pin (HIGH|LOW)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Arduino::echo( StringList *args )
+     *
+     * Echos message.
+     *
+     * @return Message string.
+     */
+    String Arduino::echo( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                s = prettyPrintTo( "value" , _a(0) );
+                break;
+            default:
+                s = usage( "echo message" );
                 break;
         }
 
