@@ -46,6 +46,7 @@ namespace AoiSpresense
         static String led( StringList *args );
         /* File ( Flash, SDHC, eMMC ). */
         static String cd( StringList *args );
+        static String ll( StringList *args );
         static String format( StringList *args );
         static String mkdir( StringList *args );
         static String pwd( StringList *args );

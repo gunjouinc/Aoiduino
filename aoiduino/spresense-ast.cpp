@@ -61,6 +61,7 @@ namespace AoiSpresense
             /* File */
             { "cd", &Ast::cd },
             { "format", &Ast::format },
+            { "ll", &Ast::ll },
             { "mkdir", &Ast::mkdir },
             { "pwd", &Ast::pwd },
             { "rmdir", &Ast::rmdir },
@@ -239,6 +240,66 @@ namespace AoiSpresense
                 s = usage( "cd ("+String(_EMMC_)
                              +"|"+String(_FLASH_)
                              +"|"+String(_SD_)+")" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::ll( StringList *args )
+     *
+     * Return file detail list in current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Current device.
+     */
+    String Ast::ll( StringList *args )
+    {
+        String s, p;
+        DynamicJsonBuffer json;
+        JsonArray &r = json.createArray();
+        File f;
+        StringList *sl, *sm;
+
+        switch( count(args) )
+        {
+            case 0:
+            case 1:
+            // Mount point
+                f = AstStorage->open( "" );
+                p = f.name();
+            // Root path
+                if( !count(args) )
+                    f = AstStorage->open( _a(0) );
+            // File info to string
+                f = f.openNextFile();
+                while( f )
+                {
+                    if( s.length() )
+                        s += ",";
+                    s += (f.isDirectory()?"d":"-")
+                       + String(":") + String(f.name()).substring(p.length())
+                       + String(":") + f.size();
+                    f = f.openNextFile();
+                }
+                f.close();
+            // String to JSON
+                sl = split( s, "," );
+                for( int i=0; i<count(sl); i++ )
+                {
+                    sm = split( (sl+i)->value, ":" );
+                    JsonObject &o = r.createNestedObject();
+                    o[ "type" ] = (sm+0)->value;
+                    o[ "name" ] = (sm+1)->value;
+                    o[ "size" ] = (sm+2)->value;
+                    delete [] sm;
+                }
+                delete [] sl;
+                s = "";
+                r.prettyPrintTo( s );
+                break;
+            default:
+                s = usage( "ls" );
                 break;
         }
 
