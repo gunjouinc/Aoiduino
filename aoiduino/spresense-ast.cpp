@@ -18,11 +18,11 @@ StorageClass *AstStorage = &Flash;
 SDClass AstSD;
 
 /** eMMC root path */
-#define _EMMC_ "/eMMC"
+#define _EMMC_ "/mnt/emmc"
 /** Flash root path */
-#define _FLASH_ "/Flash"
+#define _FLASH_ "/mnt/spif"
 /** SD root path */
-#define _SD_ "/SDHCI"
+#define _SD_ "/mnt/sd0"
 
 /**
 * @namespace AoiSpresense
@@ -290,20 +290,11 @@ namespace AoiSpresense
     String Ast::mkdir( StringList *args )
     {
         String s;
-        String path;
 
         switch( count(args) )
         {
             case 1:
-                path = _a( 0 );
-                if( AstStorage==&eMMC )
-                    eMMC.mkdir( path );
-                else if( AstStorage==&Flash )
-                    Flash.mkdir( path );
-                else if( AstStorage==&AstSD )
-                    AstSD.mkdir( path );
-                else
-                    s = mkdir( 0 );
+                AstStorage->mkdir( _a(0) );
                 break;
             default:
                 s = usage( "mkdir path" );
@@ -315,7 +306,7 @@ namespace AoiSpresense
     /**
      * @fn String Ast::pwd( StringList *args )
      *
-     * Show current device.
+     * Return current device.
      *
      * @param[in] args Reference to arguments.
      * @return Current device.
@@ -323,16 +314,14 @@ namespace AoiSpresense
     String Ast::pwd( StringList *args )
     {
         String s;
+        File f;
 
         switch( count(args) )
         {
             case 0:
-                if( AstStorage==&eMMC )
-                    s = prettyPrintTo( "value" , _EMMC_ );
-                else if( AstStorage==&Flash )
-                    s = prettyPrintTo( "value" , _FLASH_ );
-                else if( AstStorage==&AstSD )
-                    s = prettyPrintTo( "value" , _SD_ );
+                f = AstStorage->open( "" );
+                s = prettyPrintTo( "value" , f.name() );
+                f.close();
                 break;
             default:
                 s = usage( "pwd" );
@@ -352,20 +341,11 @@ namespace AoiSpresense
     String Ast::rmdir( StringList *args )
     {
         String s;
-        String path;
 
         switch( count(args) )
         {
             case 1:
-                path = _a( 0 );
-                if( AstStorage==&eMMC )
-                    eMMC.rmdir( path );
-                else if( AstStorage==&Flash )
-                    Flash.rmdir( path );
-                else if( AstStorage==&AstSD )
-                    AstSD.rmdir( path );
-                else
-                    s = rmdir( 0 );
+                AstStorage->rmdir( _a(0) );
                 break;
             default:
                 s = usage( "rmdir path" );
