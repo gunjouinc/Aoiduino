@@ -50,7 +50,9 @@ namespace AoiSpresense
         static String format( StringList *args );
         static String mkdir( StringList *args );
         static String pwd( StringList *args );
+        static String remove( StringList *args );
         static String rmdir( StringList *args );
+        static String touch( StringList *args );
         // $ Please set your function to use.
     // static variables
     private:

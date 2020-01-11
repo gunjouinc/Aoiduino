@@ -64,7 +64,9 @@ namespace AoiSpresense
             { "format", &Ast::format },
             { "mkdir", &Ast::mkdir },
             { "pwd", &Ast::pwd },
+            { "rm", &Ast::remove },
             { "rmdir", &Ast::rmdir },
+            { "touch", &Ast::touch },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -394,6 +396,30 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn String Ast::remove( StringList *args )
+     *
+     * Remove file on current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::remove( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                AstStorage->remove( _a(0) );
+                break;
+            default:
+                s = usage( "rm file" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Ast::rmdir( StringList *args )
      *
      * Remove directory on current device.
@@ -412,6 +438,33 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "rmdir path" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::touch( StringList *args )
+     *
+     * Create empty file on current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::touch( StringList *args )
+    {
+        String s;
+        File f;
+
+        switch( count(args) )
+        {
+            case 1:
+                f = AstStorage->open( _a(0), FILE_WRITE );
+                if( f )
+                    f.close();
+                break;
+            default:
+                s = usage( "touch file" );
                 break;
         }
 
