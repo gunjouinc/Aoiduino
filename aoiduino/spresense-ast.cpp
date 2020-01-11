@@ -52,7 +52,7 @@ namespace AoiSpresense
             { "delayMicroseconds", &Arduino::delayMicroseconds },
             { "digitalRead", &Arduino::digitalRead },
             { "digitalWrite", &Arduino::digitalWrite },
-            { "echo", &Arduino::echo },
+            { "echo", &Ast::print },
             { "led", &Ast::led },
             { "micros", &Arduino::micros },
             { "millis", &Arduino::millis },
@@ -60,6 +60,7 @@ namespace AoiSpresense
             { "pinMode", &Arduino::pinMode },
             { "tone", &Arduino::tone },
             /* File */
+            { "cat", &Ast::read },
             { "cd", &Ast::cd },
             { "ll", &Ast::ll },
             { "format", &Ast::format },
@@ -370,6 +371,47 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn String Ast::print( StringList *args )
+     *
+     * Print value or write value on current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return value string.
+     */
+    String Ast::print( StringList *args )
+    {
+        String s;
+        File f;
+
+        switch( count(args) )
+        {
+            case 1:
+                s = Arduino::echo( args );
+                break;
+            case 3:
+                if( (_a(1)!=">") && (_a(1)!=">>") )
+                    s = echo( 0 );
+                else
+                {
+                    if( (_a(1)==">") && AstStorage->exists(_a(2)) )
+                        AstStorage->remove( _a(2) );
+                    f = AstStorage->open( _a(2), FILE_WRITE );
+                    if( f )
+                    {
+                        f.print( _a(0) );
+                        f.close();
+                        s = prettyPrintTo( "value", _a(0) );
+                    }
+                }
+                break;
+            default:
+                s = usage( "echo value ((>|>>) file)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Ast::pwd( StringList *args )
      *
      * Return current device.
@@ -391,6 +433,41 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "pwd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::read( StringList *args )
+     *
+     * Return file content on current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return File content.
+     */
+    String Ast::read( StringList *args )
+    {
+        String s;
+        File f;
+
+        switch( count(args) )
+        {
+            case 1:
+                if( !AstStorage->exists(_a(0)) )
+                    s = read( 0 );
+                else
+                {
+                    f = AstStorage->open( _a(0), FILE_READ );
+                    if( f )
+                    {
+                        s = prettyPrintTo( "value" , f.readString() );
+                        f.close();
+                    }
+                }
+                break;
+            default:
+                s = usage( "cat file" );
                 break;
         }
 

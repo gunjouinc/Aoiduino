@@ -49,7 +49,9 @@ namespace AoiSpresense
         static String ll( StringList *args );
         static String format( StringList *args );
         static String mkdir( StringList *args );
+        static String print( StringList *args );
         static String pwd( StringList *args );
+        static String read( StringList *args );
         static String remove( StringList *args );
         static String rmdir( StringList *args );
         static String touch( StringList *args );
