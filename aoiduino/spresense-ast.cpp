@@ -9,6 +9,7 @@
 ******************************************************************************/
 #ifdef ARDUINO_spresense_ast
 #include "spresense-ast.h"
+// Flash
 #include <eMMC.h>
 #include <Flash.h>
 #include <SDHCI.h>
@@ -16,6 +17,9 @@ StorageClass *AstStorage = &Flash;
 //eMMCClass eMMC;
 //FlashClass Flash;
 SDClass AstSD;
+// GNSS
+#include <GNSS.h>
+SpGnss Gnss;
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -69,6 +73,11 @@ namespace AoiSpresense
             { "rm", &Ast::remove },
             { "rmdir", &Ast::rmdir },
             { "touch", &Ast::touch },
+            /* GNSS */
+            { "gnssBegin", &Ast::gnssBegin },
+            { "gnssEnd", &Ast::gnssEnd },
+            { "gnssNavData", &Ast::gnssNavData },
+            { "gnssSattellites", &Ast::gnssSattellites },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -554,6 +563,228 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "touch file" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::gnssBegin( StringList *args )
+     *
+     * Begin GNSS function.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::gnssBegin( StringList *args )
+    {
+        String s;
+        int r;
+
+        switch( count(args) )
+        {
+            case 1:
+                r = Gnss.begin();
+                if( r )
+                    return gnssBegin( 0 );
+                switch( _atoi(0) )
+                {
+                    case 0:
+                    // GPS, World wide coverage
+                        Gnss.select( GPS );
+                        break;
+                    case 1:
+                    // GLONASS, World wide coverage
+                        Gnss.select( GLONASS );
+                        break;
+                    case 2:
+                    // GPS+SBAS, North America
+                        Gnss.select( GPS );
+                        Gnss.select( SBAS );
+                        break;
+                    case 3:
+                    // GPS+Glonass
+                        Gnss.select( GPS );
+                        Gnss.select( GLONASS );
+                        break;
+                    case 4:
+                    // GPS+QZSS_L1CA, East Asia & Oceania
+                        Gnss.select( GPS );
+                        Gnss.select( QZ_L1CA );
+                        break;
+                    case 5:
+                    // GPS+Glonass+QZSS_L1CA, East Asia & Oceania
+                        Gnss.select( GPS );
+                        Gnss.select( GLONASS );
+                        Gnss.select( QZ_L1CA );
+                        break;
+                    case 6:
+                    // GPS+QZSS_L1CA+QZSS_L1S, Japan
+                        Gnss.select( GPS );
+                        Gnss.select( QZ_L1CA );
+                        Gnss.select( QZ_L1S );
+                        break;
+                    default:
+                        return gnssBegin( 0 );
+                }
+                r = Gnss.start( COLD_START );
+                if( r )
+                    s = gnssBegin( 0 );
+                break;
+            default:
+                s = usage( "gnssBegin [0-6]" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::gnssEnd( StringList *args )
+     *
+     * End GNSS function.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::gnssEnd( StringList *args )
+    {
+        String s;
+        int r;
+
+        switch( count(args) )
+        {
+            case 0:
+                r = Gnss.stop();
+                if( r )
+                    s = gnssEnd( 0 );
+                else
+                {
+                    r = Gnss.end();
+                    if( r )
+                        s = gnssEnd( 0 );
+                }
+                break;
+            default:
+                s = usage( "gnssEnd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::gnssNavData( StringList *args )
+     *
+     * Print GNSS navidation data.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::gnssNavData( StringList *args )
+    {
+        String s;
+        char buf[ 128 ];
+        SpNavData nav;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        switch( count(args) )
+        {
+            case 0:
+                if( !Gnss.waitUpdate(-1) )
+                    s = gnssNavData( 0 );
+                else
+                {
+                    Gnss.getNavData( &nav );
+                    if( !nav.posDataExist )
+                        s = gnssNavData( 0 );
+                    else
+                    {
+                        r[ "numSatellites" ] = (int)nav.numSatellites;
+                        r[ "fixMode" ] = (nav.posFixMode==FixInvalid) ? "No-Fix" : "Fix";
+                        snprintf( buf, sizeof(buf),
+                                  "%04d-%02d-%02d %02d:%02d:%02d.%06d",
+                                  nav.time.year, nav.time.month, nav.time.day,
+                                  nav.time.hour, nav.time.minute, nav.time.sec, nav.time.usec );
+                        r[ "dateTime" ] = buf;
+                        r[ "direction" ] = nav.direction;
+                        r[ "latitude" ] = nav.latitude;
+                        r[ "longitude" ] = nav.longitude;
+                        r[ "velocity" ] = nav.velocity;
+                        r.prettyPrintTo( s );
+                    }
+                }
+                break;
+            default:
+                s = usage( "gnssNavData" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::gnssSattellites( StringList *args )
+     *
+     * Print GNSS sattellites.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::gnssSattellites( StringList *args )
+    {
+        String s, type = "---";
+        SpNavData nav;
+        DynamicJsonBuffer json;
+        JsonArray &r = json.createArray();
+
+        switch( count(args) )
+        {
+            case 0:
+                if( !Gnss.waitUpdate(-1) )
+                    s = gnssSattellites( 0 );
+                else
+                {
+                    Gnss.getNavData( &nav );
+                    if( !nav.posDataExist )
+                        s = gnssSattellites( 0 );
+                    else
+                    {
+                        for( int i=0; i<nav.numSatellites; i++ )
+                        {
+                            JsonObject &o = r.createNestedObject();
+
+                            switch( nav.getSatelliteType(i) )
+                            {
+                                case GPS:
+                                    type = "GPS";
+                                    break;
+                                case GLONASS:
+                                    type = "GLN";
+                                    break;
+                                case QZ_L1CA:
+                                    type = "QCA";
+                                    break;
+                                case SBAS:
+                                    type = "SBA";
+                                    break;
+                                case QZ_L1S:
+                                    type = "Q1S";
+                                    break;
+                                default:
+                                    type = "UKN";
+                                    break;
+                            }
+                            o[ "type" ] = type;
+                            o[ "id" ] = (int)nav.getSatelliteId( i );
+                            o[ "azimuth" ] = (int)nav.getSatelliteAzimuth( i );
+                            o[ "elevation" ] = (int)nav.getSatelliteElevation( i );
+                            o[ "signalLevel" ] = nav.getSatelliteSignalLevel( i );
+                        }
+                    }
+                    r.prettyPrintTo( s );
+                }
+                break;
+            default:
+                s = usage( "gnssSattellites" );
                 break;
         }
 

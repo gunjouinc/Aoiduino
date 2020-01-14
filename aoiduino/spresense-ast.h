@@ -55,6 +55,11 @@ namespace AoiSpresense
         static String remove( StringList *args );
         static String rmdir( StringList *args );
         static String touch( StringList *args );
+        /* GNSS. */
+        static String gnssBegin( StringList *args );
+        static String gnssEnd( StringList *args );
+        static String gnssNavData( StringList *args );
+        static String gnssSattellites( StringList *args );
         // $ Please set your function to use.
     // static variables
     private:
