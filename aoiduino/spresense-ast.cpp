@@ -82,7 +82,7 @@ namespace AoiSpresense
             /* GNSS */
             { "gnssBegin", &Ast::gnssBegin },
             { "gnssEnd", &Ast::gnssEnd },
-            { "gnssNavData", &Ast::gnssNavData },
+            { "gnssConfig", &Ast::gnssNavData },
             { "gnssSattellites", &Ast::gnssSattellites },
             /* LowPower */
             { "clockMode", &Ast::clockMode },
@@ -734,7 +734,7 @@ namespace AoiSpresense
                 }
                 break;
             default:
-                s = usage( "gnssNavData" );
+                s = usage( "gnssConfig" );
                 break;
         }
 
