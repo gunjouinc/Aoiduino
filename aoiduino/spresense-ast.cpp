@@ -22,6 +22,10 @@ SDClass AstSD;
 SpGnss Gnss;
 /* LowPower */
 #include <LowPower.h>
+/* LTE */
+#include <LTE.h>
+LTE Lte;
+LTEScanner LteScanner;
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -87,6 +91,9 @@ namespace AoiSpresense
             { "dmesg", &Ast::dmesg },
             { "reboot", &Ast::reboot },
             { "sleep", &Ast::sleep },
+            /* LTE */
+            { "lteBegin", &Ast::lteBegin },
+            { "lteConfig", &Ast::lteConfig },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -954,6 +961,83 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "sleep [0-9]+" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::lteBegin( StringList *args )
+     *
+     * Register the modem on the LTE network.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Network information if ready, Otherwise empty string.
+     */
+    String Ast::lteBegin( StringList *args )
+    {
+        String s;
+        IPAddress ip;
+        char buf[ 128 ];
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        switch( count(args) )
+        {
+            case 3:
+                if( Lte.begin()!=LTE_SEARCHING )
+                    s = lteBegin( 0 );
+                else
+                {
+                    if( Lte.attach(_a(0).c_str(),_a(1).c_str(),_a(2).c_str())!=LTE_READY )
+                        s = lteBegin( 0 );
+                    else
+                    {
+                        StringList sl;
+                        s = lteConfig( &sl );
+                    }
+                }
+                break;
+            default:
+                s = usage( "lteBegin APN USERNAME PASSWORD" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::lteConfig( StringList *args )
+     *
+     * Return LTE network information.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Network information.
+     */
+    String Ast::lteConfig( StringList *args )
+    {
+        String s;
+        IPAddress ip;
+        char buf[ 128 ];
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        switch( count(args) )
+        {
+            case 0:
+                if( Lte.getStatus()!=LTE_READY )
+                    s = lteConfig( 0 );
+                else
+                {
+                    ip = Lte.getIPAddress();
+                    snprintf( buf, sizeof(buf), "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3] );
+                    r[ "ipAddress" ] = buf;
+                    r[ "carrier" ] = LteScanner.getCurrentCarrier();
+                    r[ "signalStrength" ] = LteScanner.getSignalStrength();
+                    r.prettyPrintTo( s );
+                }
+                break;
+            default:
+                s = usage( "lteConfig" );
                 break;
         }
 

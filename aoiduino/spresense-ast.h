@@ -67,6 +67,9 @@ namespace AoiSpresense
         static String dmesg( StringList *args );
         static String reboot( StringList *args );
         static String sleep( StringList *args );
+        /* LTE */
+        static String lteBegin( StringList *args );
+        static String lteConfig( StringList *args );
         // $ Please set your function to use.
     // static variables
     private:
