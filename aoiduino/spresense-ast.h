@@ -44,7 +44,7 @@ namespace AoiSpresense
         /* Spresense Arduino Core, Other core functions are defined in base class. */
         static String analogRead( StringList *args );
         static String led( StringList *args );
-        /* File ( Flash, SDHC, eMMC ). */
+        /* File ( Flash, SDHC, eMMC ) */
         static String cd( StringList *args );
         static String ll( StringList *args );
         static String format( StringList *args );
@@ -55,11 +55,18 @@ namespace AoiSpresense
         static String remove( StringList *args );
         static String rmdir( StringList *args );
         static String touch( StringList *args );
-        /* GNSS. */
+        /* GNSS */
         static String gnssBegin( StringList *args );
         static String gnssEnd( StringList *args );
         static String gnssNavData( StringList *args );
         static String gnssSattellites( StringList *args );
+        /* LowPower */
+        static String clockMode( StringList *args );
+        static String coldSleep( StringList *args );
+        static String deepSleep( StringList *args );
+        static String dmesg( StringList *args );
+        static String reboot( StringList *args );
+        static String sleep( StringList *args );
         // $ Please set your function to use.
     // static variables
     private:

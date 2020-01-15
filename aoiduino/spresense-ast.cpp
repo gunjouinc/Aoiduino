@@ -9,7 +9,7 @@
 ******************************************************************************/
 #ifdef ARDUINO_spresense_ast
 #include "spresense-ast.h"
-// Flash
+/* Flash */
 #include <eMMC.h>
 #include <Flash.h>
 #include <SDHCI.h>
@@ -17,9 +17,11 @@ StorageClass *AstStorage = &Flash;
 //eMMCClass eMMC;
 //FlashClass Flash;
 SDClass AstSD;
-// GNSS
+/* GNSS */
 #include <GNSS.h>
 SpGnss Gnss;
+/* LowPower */
+#include <LowPower.h>
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -78,12 +80,22 @@ namespace AoiSpresense
             { "gnssEnd", &Ast::gnssEnd },
             { "gnssNavData", &Ast::gnssNavData },
             { "gnssSattellites", &Ast::gnssSattellites },
+            /* LowPower */
+            { "clockMode", &Ast::clockMode },
+            { "coldSleep", &Ast::coldSleep },
+            { "deepSleep", &Ast::deepSleep },
+            { "dmesg", &Ast::dmesg },
+            { "reboot", &Ast::reboot },
+            { "sleep", &Ast::sleep },
         // $ Please set your function to use.
             { "", 0 }
         };
     // Creates function table to avoid kernel panic.
         uint8_t c = sizeof(ftl) / sizeof(AoiBase::FunctionTable);
         m_functionTable = Arduino::functionTable( ftl, c );
+    // Initalize library
+        /* LowPower */
+        LowPower.begin();
     }
     /**
      * @fn Ast::~Ast( void )
@@ -785,6 +797,163 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "gnssSattellites" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::clockMode( StringList *args )
+     *
+     * Set clock mode and change system clock dynamically.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::clockMode( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                LowPower.clockMode( static_cast<clockmode_e>(_atoi(0)) );
+                break;
+            default:
+                s = usage( "clockMode [0-2]" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::coldSleep( StringList *args )
+     *
+     * Enter the cold sleep state.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::coldSleep( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                LowPower.coldSleep();
+                break;
+            case 1:
+                LowPower.coldSleep( _atoui(0) );
+                break;
+            default:
+                s = usage( "coldSleep [0-9]*" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::deepSleep( StringList *args )
+     *
+     * Enter the deep sleep state.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::deepSleep( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                LowPower.deepSleep();
+                break;
+            case 1:
+                LowPower.deepSleep( _atoui(0) );
+                break;
+            default:
+                s = usage( "deepSleep [0-9]*" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::dmesg( StringList *args )
+     *
+     * Returns system information.
+     *
+     * @param[in] args Reference to arguments.
+     * @return System information.
+     */
+    String Ast::dmesg( StringList *args )
+    {
+        String s;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        switch( count(args) )
+        {
+            case 0:
+                r[ "bootCause" ] = static_cast<int>( LowPower.bootCause() );
+                r[ "clockMode" ] = static_cast<int>( LowPower.getClockMode() );
+                r[ "current" ] = LowPower.getCurrent();
+                r[ "voltage" ] = LowPower.getVoltage();
+                r.prettyPrintTo( s );
+                break;
+            default:
+                s = usage( "dmesg" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::reboot( StringList *args )
+     *
+     * Reboot the system.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::reboot( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                LowPower.reboot();
+                break;
+            default:
+                s = usage( "reboot" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::sleep( StringList *args )
+     *
+     * Sleep (yield) this thread.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::sleep( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+            // Not work?
+                LowPower.sleep( _atoui(0) );
+                break;
+            default:
+                s = usage( "sleep [0-9]+" );
                 break;
         }
 
