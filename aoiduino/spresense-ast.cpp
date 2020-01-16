@@ -26,6 +26,7 @@ SpGnss Gnss;
 #include <LTE.h>
 LTE Lte;
 LTEScanner LteScanner;
+LTEModemVerification LteModem;
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -1023,9 +1024,11 @@ namespace AoiSpresense
         {
             case 0:
                 r[ "carrier" ] = LteScanner.getCurrentCarrier();
+                r[ "firmware" ] = LteModem.getFirmwareVersion();
                 ip = Lte.getIPAddress();
                 snprintf( buf, sizeof(buf), "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3] );
                 r[ "ipAddress" ] = buf;
+                r[ "imei" ] = LteModem.getIMEI();
                 r[ "signalStrength" ] = LteScanner.getSignalStrength();
                 r[ "status" ] = static_cast<int>( LteScanner.getStatus() );
                 r.prettyPrintTo( s );
