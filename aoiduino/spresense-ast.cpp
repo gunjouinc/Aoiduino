@@ -983,6 +983,10 @@ namespace AoiSpresense
 
         switch( count(args) )
         {
+            case 0:
+                if( Lte.begin()!=LTE_SEARCHING )
+                    s = lteBegin( 0 );
+                break;
             case 3:
                 if( Lte.begin()!=LTE_SEARCHING )
                     s = lteBegin( 0 );
@@ -998,7 +1002,7 @@ namespace AoiSpresense
                 }
                 break;
             default:
-                s = usage( "lteBegin APN USERNAME PASSWORD" );
+                s = usage( "lteBegin (APN USERNAME PASSWORD)?" );
                 break;
         }
 
