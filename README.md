@@ -70,6 +70,96 @@ password : italy
 # 
 ```
 
+### GNSS
+```
+# gnssBegin 6
+
+# gnssConfig
+{
+  "numSatellites": 10,
+  "fixMode": "Fix",
+  "dateTime": "2020-01-16T12:38:27.000565+09:00",
+  "direction": 0,
+  "latitude": 40.53324,
+  "longitude": 141.4849,
+  "velocity": 0
+}
+# gnssSattellites
+[
+  {
+    "type": "GPS",
+    "id": 1,
+    "azimuth": 0,
+    "elevation": 0,
+    "signalLevel": 15.09
+  },
+  {
+    "type": "GPS",
+    "id": 7,
+    "azimuth": 8,
+    "elevation": 40,
+    "signalLevel": 27.17
+  },
+  {
+    "type": "GPS",
+    "id": 10,
+    "azimuth": 61,
+    "elevation": 22,
+    "signalLevel": 29.33
+  },
+  {
+    "type": "GPS",
+    "id": 11,
+    "azimuth": 248,
+    "elevation": 61,
+    "signalLevel": 0
+  },
+  {
+    "type": "GPS",
+    "id": 16,
+    "azimuth": 126,
+    "elevation": 23,
+    "signalLevel": 33.99
+  },
+  {
+    "type": "GPS",
+    "id": 27,
+    "azimuth": 64,
+    "elevation": 40,
+    "signalLevel": 33.93
+  },
+  {
+    "type": "GPS",
+    "id": 30,
+    "azimuth": 45,
+    "elevation": 27,
+    "signalLevel": 35.88
+  },
+  {
+    "type": "Q1S",
+    "id": 184,
+    "azimuth": 189,
+    "elevation": 58,
+    "signalLevel": 39.87
+  },
+  {
+    "type": "QCA",
+    "id": 194,
+    "azimuth": 189,
+    "elevation": 58,
+    "signalLevel": 38.06
+  },
+  {
+    "type": "QCA",
+    "id": 199,
+    "azimuth": 201,
+    "elevation": 40,
+    "signalLevel": 30.38
+  }
+]
+# 
+```
+
 ### LTE
 ```
 # lteBegin
