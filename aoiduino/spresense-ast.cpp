@@ -94,6 +94,7 @@ namespace AoiSpresense
             /* LTE */
             { "lteBegin", &Ast::lteBegin },
             { "lteConfig", &Ast::lteConfig },
+            { "lteEnd", &Ast::lteEnd },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -1038,6 +1039,34 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "lteConfig" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::lteEnd( StringList *args )
+     *
+     * Detach the modem from the LTE network and power off the LTE modem.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::lteEnd( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                if( Lte.getStatus()!=LTE_READY )
+                    s = lteEnd( 0 );
+                else
+                    Lte.detach();
+                    Lte.shutdown();
+                break;
+            default:
+                s = usage( "lteEnd" );
                 break;
         }
 

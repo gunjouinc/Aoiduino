@@ -70,6 +70,7 @@ namespace AoiSpresense
         /* LTE */
         static String lteBegin( StringList *args );
         static String lteConfig( StringList *args );
+        static String lteEnd( StringList *args );
         // $ Please set your function to use.
     // static variables
     private:
