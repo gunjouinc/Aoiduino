@@ -703,8 +703,9 @@ namespace AoiSpresense
     String Ast::gnssNavData( StringList *args )
     {
         String s;
-        char buf[ 128 ];
         SpNavData nav;
+        char buf[ 128 ];
+        int diff;
         DynamicJsonBuffer json;
         JsonObject &r = json.createObject();
 
@@ -720,12 +721,14 @@ namespace AoiSpresense
                         s = gnssNavData( 0 );
                     else
                     {
+                        diff = nav.longitude / (360/24);
                         r[ "numSatellites" ] = (int)nav.numSatellites;
                         r[ "fixMode" ] = (nav.posFixMode==FixInvalid) ? "No-Fix" : "Fix";
                         snprintf( buf, sizeof(buf),
-                                  "%04d-%02d-%02d %02d:%02d:%02d.%06d",
+                                  "%04d-%02d-%02dT%02d:%02d:%02d.%06d+%02d:00",
                                   nav.time.year, nav.time.month, nav.time.day,
-                                  nav.time.hour, nav.time.minute, nav.time.sec, nav.time.usec );
+                                  nav.time.hour, nav.time.minute, nav.time.sec, nav.time.usec,
+                                  diff );
                         r[ "dateTime" ] = buf;
                         r[ "direction" ] = nav.direction;
                         r[ "latitude" ] = nav.latitude;
