@@ -1022,17 +1022,13 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 0:
-                if( Lte.getStatus()!=LTE_READY )
-                    s = lteConfig( 0 );
-                else
-                {
-                    ip = Lte.getIPAddress();
-                    snprintf( buf, sizeof(buf), "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3] );
-                    r[ "ipAddress" ] = buf;
-                    r[ "carrier" ] = LteScanner.getCurrentCarrier();
-                    r[ "signalStrength" ] = LteScanner.getSignalStrength();
-                    r.prettyPrintTo( s );
-                }
+                r[ "carrier" ] = LteScanner.getCurrentCarrier();
+                ip = Lte.getIPAddress();
+                snprintf( buf, sizeof(buf), "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3] );
+                r[ "ipAddress" ] = buf;
+                r[ "signalStrength" ] = LteScanner.getSignalStrength();
+                r[ "status" ] = static_cast<int>( LteScanner.getStatus() );
+                r.prettyPrintTo( s );
                 break;
             default:
                 s = usage( "lteConfig" );
