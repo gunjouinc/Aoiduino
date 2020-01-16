@@ -1065,8 +1065,10 @@ namespace AoiSpresense
                 if( Lte.getStatus()!=LTE_READY )
                     s = lteEnd( 0 );
                 else
+                {
                     Lte.detach();
                     Lte.shutdown();
+                }
                 break;
             default:
                 s = usage( "lteEnd" );
