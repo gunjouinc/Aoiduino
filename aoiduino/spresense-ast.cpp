@@ -970,7 +970,8 @@ namespace AoiSpresense
     /**
      * @fn String Ast::lteBegin( StringList *args )
      *
-     * Register the modem on the LTE network.
+     * Power on the modem and start the network search. And register the modem
+     * on the LTE network.
      *
      * @param[in] args Reference to arguments.
      * @return Network information if ready, Otherwise empty string.
@@ -978,10 +979,6 @@ namespace AoiSpresense
     String Ast::lteBegin( StringList *args )
     {
         String s;
-        IPAddress ip;
-        char buf[ 128 ];
-        DynamicJsonBuffer json;
-        JsonObject &r = json.createObject();
 
         switch( count(args) )
         {
