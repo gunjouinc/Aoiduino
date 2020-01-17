@@ -9,11 +9,18 @@
 ******************************************************************************/
 #pragma once
 
-/** Defines interface type */
-enum InterfaceType
+/**
+ * @namespace AoiCore
+ * @brief Aoi core classes.
+ */
+namespace AoiCore
 {
-    _Serial = 0,
-    _Ethernet,
-    _WiFi,
-    _BluetoothSerial
-};
+    /** Defines interface type */
+    enum InterfaceType
+    {
+        _Serial = 0,
+        _Ethernet,
+        _WiFi,
+        _BluetoothSerial
+    };
+}

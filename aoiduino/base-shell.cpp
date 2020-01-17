@@ -87,7 +87,7 @@ namespace AoiBase
             {
                 t = "";
                 m_historyIndex = m_history;
-                if( interfaceType()==::_Serial )
+                if( interfaceType()==AoiCore::_Serial )
                     app <= "";
                 if( s.length() )
                 {
