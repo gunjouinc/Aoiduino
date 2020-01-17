@@ -54,7 +54,7 @@ namespace AoiBase
             int i = app >> NULL;
             if( i=='\r' )
             {
-                if( interfaceType()==::_Serial )
+                if( interfaceType()==AoiCore::_Serial )
                     app <= "";
             // Authorizes user.
                 if( sl.length() && sp.length() )

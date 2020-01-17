@@ -1,0 +1,183 @@
+@startuml
+'/**
+' * AoiCore
+' */
+namespace AoiCore {
+    enum InterfaceType {
+        +_Serial
+        +_Ethernet
+        +_WiFi
+        +_BluetoothSerial
+    }
+
+    class StringList <<(S,orange)>> {
+        +String value
+    }
+
+    class :: <<(F,orange)>> {
+        +int count( StringList *list )
+        +String debug( const String &data )
+        +bool isDigit( const String &data )
+        +String longToTime( unsigned long data )
+        +String newLine( void )
+        +StringList* split( const String &data, const String &delimiter )
+        +char* toCharArray( const String &data )
+        +String terminator( void )
+        +uint8_t toInt( const char data )
+        +int toInt( const String &data, int base = 10 )
+        +long toLong( const String &data, int base = 10  )
+        +unsigned int toUInt( const String &data, int base = 10  )
+        +unsigned long toULong( const String &data, int base = 10  )
+        +String usage( const String &usage )
+        +String usagesDelimiter( void )
+    }
+
+    abstract AbstractCore {
+        +{abstract} bool begin( StringList *args )
+        +{abstract} int bytesAvailable( void )
+        +{abstract} void end( void )
+        +{abstract} void flush( void )
+        +{abstract} bool isBegan( void )
+        +{abstract} String read( void )
+        +{abstract} int readByte( void )
+        +{abstract} void setTimeout( int msec = 1 )
+        +{abstract} int timeout( void ) const
+        +{abstract} int write( const String &data )
+        #int bytesAvailable( int msec )
+    }
+
+    AbstractCore <|-- AbstractSerial
+    class AbstractSerial {
+        -bool m_boolBegan
+        -int m_intTimeout
+    }
+}
+
+'/**
+' * AoiBase
+' */
+namespace AoiBase {
+    abstract AbstractBase {
+        +{abstract} String className( void )
+        +{abstract} bool isExist( const String &function )
+        +{abstract} String practice( StringList *args )
+        +{abstract} String usages( void )
+    .. core layer ..
+        +bool begin( StringList *args, InterfaceType type = _Serial )
+        +int bytesAvailable( void )
+        +void end( void )
+        +void flush( void )
+        +InterfaceType interfaceType( void ) const
+        +bool isBegan( void )
+        +String read( void )
+        +void setTemplate( AoiProduct::Template *product )
+        +int write( const String &data )
+    ..  interactive layer ..
+        #void afterKeyInput( int input, String *buffer )
+        #bool beforeKeyInput( int input, String *buffer )
+        #void internalLoop( void )
+        #int operator~( void )
+        #int operator!( void )
+        #int operator>>( String *data )
+        #int operator<<( const String &data )
+        #int operator<=( const String &data )
+    .. product layer ..
+        #{static} void handleTemplate( void *obj )
+    }
+    AoiCore.AbstractSerial "1" -- AbstractBase
+    AoiProduct.Template "1" -- AbstractBase
+
+    AbstractBase <|-- Arduino
+    class Arduino {
+        #FunctionTable* functionTable( FunctionTable *table, uint8_t size )
+        #bool isExist( const String &function, FunctionTable *table )
+        #String practice( StringList *args, FunctionTable *table )
+        #String usages( FunctionTable *table )
+    .. JSON layer ..
+        #{static} String prettyPrintTo( const String &key, unsigned int value )
+        #{static} String prettyPrintTo( const String &key, const String &value )
+    .. Function layer ..
+        #{static} String analogRead( StringList *args )
+        #{static} String analogWrite( StringList *args )
+        #{static} String delay( StringList *args )
+        #{static} String delayMicroseconds( StringList *args )
+        #{static} String digitalRead( StringList *args )
+        #{static} String digitalWrite( StringList *args )
+        #{static} String echo( StringList *args )
+        #{static} String micros( StringList *args )
+        #{static} String millis( StringList *args )
+        #{static} String noTone( StringList *args )
+        #{static} String pinMode( StringList *args )
+        #{static} String tone( StringList *args )
+        -{static} FunctionTable *m_functionTable
+    }
+    note top of Arduino : To add other board, Inherit this class and Add instance in BootLoader::load( void )
+
+    AbstractBase <|-- Authentication
+    class Authentication {
+        +bool basic( const String &prompt, const String &user, const String &password )
+    }
+
+    AbstractBase <|-- BootLoader
+    class BootLoader {
+        +bool begin( StringList *args, InterfaceType type = _Serial )
+        +ClassTable* classTable( void )
+        +void end( void )
+        +void load( void )
+    }
+    AoiAvr.Uno "1" -- BootLoader
+    AoiSpresense.Ast "1" -- BootLoader
+
+    AbstractBase <|-- Shell
+    class Shell {
+        +int bash( const String &prompt )
+        -StringList *m_history
+        -StringList *m_historyIndex
+        -StringList *m_returnedValue
+    .. Function layer ..
+        +{static} String help( StringList *args )
+        -{static} AoiBase::FunctionTable *m_functionTable
+    }
+}
+
+'/**
+' * AoiAvr
+' */
+namespace AoiAvr {
+    AoiBase.Arduino <|-- Uno
+    class Uno {
+    }
+}
+
+'/**
+' * AoiSpresense
+' */
+namespace AoiSpresense {
+    AoiBase.Arduino <|-- Ast
+    class Ast {
+    }
+}
+
+'/**
+' * AoiProduct
+' */
+namespace AoiProduct {
+    class Template {
+        +String setup( void )
+        +String loop( void )
+    }
+    note top of Template : To add your product, Inherit this class and Replace template instance in aoiduino.
+}
+
+'/**
+' * Main
+' */
+namespace Main {
+    class aoiduino {
+    }
+    AoiBase.Authentication "1" -- aoiduino
+    AoiBase.BootLoader "1" -- aoiduino
+    AoiBase.Shell "1" -- aoiduino
+}
+
+@enduml

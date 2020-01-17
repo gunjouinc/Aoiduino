@@ -21,7 +21,7 @@ namespace AoiBase
 // Static variables.
     AbstractSerial *AbstractBase::m_abstractSerial = 0;
     AoiProduct::Template *AbstractBase::m_template = 0;
-    InterfaceType AbstractBase::m_interfaceType = ::_Serial;
+    InterfaceType AbstractBase::m_interfaceType = AoiCore::_Serial;
     /**
      * @fn AbstractBase::AbstractBase( void )
      *
@@ -56,7 +56,7 @@ namespace AoiBase
     // Selects interface.
         switch( interfaceType() )
         {
-            case ::_Serial:
+            case AoiCore::_Serial:
                 b = m_abstractSerial->begin( args );
                 break;
             default:
@@ -76,7 +76,7 @@ namespace AoiBase
     // Selects interface.
         switch( interfaceType() )
         {
-            case ::_Serial:
+            case AoiCore::_Serial:
                 i = m_abstractSerial->bytesAvailable();
                 break;
             default:
@@ -95,7 +95,7 @@ namespace AoiBase
     // Selects interface.
         switch( interfaceType() )
         {
-            case ::_Serial:
+            case AoiCore::_Serial:
                 m_abstractSerial->end();
                 break;
             default:
@@ -112,7 +112,7 @@ namespace AoiBase
     // Selects interface.
         switch( interfaceType() )
         {
-            case ::_Serial:
+            case AoiCore::_Serial:
                 m_abstractSerial->flush();
                 break;
             default:
@@ -141,7 +141,7 @@ namespace AoiBase
     // Selects interface.
         switch( interfaceType() )
         {
-            case ::_Serial:
+            case AoiCore::_Serial:
                 b = m_abstractSerial->isBegan();
                 break;
             default:
@@ -161,7 +161,7 @@ namespace AoiBase
     // Selects interface.
         switch( interfaceType() )
         {
-            case ::_Serial:
+            case AoiCore::_Serial:
                 s = m_abstractSerial->read();
                 break;
             default:
@@ -192,7 +192,7 @@ namespace AoiBase
     // Selects interface.
         switch( interfaceType() )
         {
-            case ::_Serial:
+            case AoiCore::_Serial:
                 i = m_abstractSerial->write( data );
                 break;
             default:
@@ -213,7 +213,7 @@ namespace AoiBase
         String s = String( char(input) );
         String *bf = buffer;
     // Writes to interface only serial. Because some network don't use echo mode.
-        if( interfaceType()==::_Serial )
+        if( interfaceType()==AoiCore::_Serial )
             app << s;
 
         switch( input )
@@ -328,7 +328,7 @@ namespace AoiBase
     // Selects interface.
         switch( interfaceType() )
         {
-            case ::_Serial:
+            case AoiCore::_Serial:
                 i = m_abstractSerial->readByte();
                 break;
             default:

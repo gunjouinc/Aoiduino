@@ -10,7 +10,7 @@
 #ifdef ARDUINO_AVR_UNO
 #pragma once
 
-#include "base-abstractbase.h"
+#include "base-arduino.h"
 /**
  * @namespace AoiAvr
  * @brief Aoi Avr classes.
@@ -19,13 +19,13 @@ namespace AoiAvr
 {
     using namespace AoiCore;
     /**
-     * @class AnalogIO
+     * @class Uno
      * @brief Provides AVR UNO functions.
      *
      * This class provides AVR UNO function.
      */
     class Uno :
-        public AoiBase::AbstractBase
+        public AoiBase::Arduino
     {
     // members
     public:
@@ -40,17 +40,6 @@ namespace AoiAvr
     // static members
     protected:
         // ^ Please set your function to use.
-        static String analogRead( StringList *args );
-        static String analogWrite( StringList *args );
-        static String delay( StringList *args );
-        static String delayMicroseconds( StringList *args );
-        static String digitalRead( StringList *args );
-        static String digitalWrite( StringList *args );
-        static String micros( StringList *args );
-        static String millis( StringList *args );
-        static String noTone( StringList *args );
-        static String pinMode( StringList *args );
-        static String tone( StringList *args );
         // $ Please set your function to use.
     // static variables
     private:

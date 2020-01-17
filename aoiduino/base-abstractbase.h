@@ -83,7 +83,7 @@ namespace AoiBase
         virtual String usages( void ) = 0;
     // members
     public:
-        virtual bool begin( StringList *args, InterfaceType type = _Serial );
+        virtual bool begin( StringList *args, InterfaceType type = AoiCore::_Serial );
         virtual int bytesAvailable( void );
         virtual void end( void );
         virtual void flush( void );
