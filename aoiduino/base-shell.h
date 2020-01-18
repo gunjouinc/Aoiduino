@@ -58,8 +58,6 @@ namespace AoiBase
         StringList *m_history;
         /** Communication history index. */
         StringList *m_historyIndex;
-        /** Holds returned value. */
-        StringList *m_returnedValue;
     // static variables
     private:
         /** Holds function table. */

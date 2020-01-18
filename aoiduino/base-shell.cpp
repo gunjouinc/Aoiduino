@@ -53,7 +53,6 @@ namespace AoiBase
 
         m_history = new StringList[ HISTORY_SIZE ];
         m_historyIndex = m_history;
-        m_returnedValue = new StringList[ HISTORY_SIZE ];
     }
     /**
      * @fn Shell::~Shell( void )
@@ -260,12 +259,6 @@ namespace AoiBase
      */
     void Shell::afterPractice( const String &value )
     {
-        int i = HISTORY_SIZE - 1;
-
-        for( int j=1; j<=i; j++ )
-            (m_returnedValue+j-1)->value = (m_returnedValue+j)->value;
-
-        (m_returnedValue+i)->value = value;
     }
     /**
      * @fn bool Shell::beforeKeyInput( int input, String *buffer )
@@ -329,30 +322,6 @@ namespace AoiBase
      */
     void Shell::beforePractice( StringList *args )
     {
-        int c = count( args );
-
-        for( int i=0; i<c; i++ )
-        {
-            String s = _a( i );
-
-            if( s.indexOf("$") )
-                continue;
-
-            String t = s.substring( 1 );
-            DynamicJsonBuffer json;
-
-            _a( i ) = "";
-            for( int j=(HISTORY_SIZE-1); 0<=j; j-- )
-            {
-                JsonObject &r = json.parseObject( (m_returnedValue+j)->value );
-
-                if( r.containsKey(t) )
-                {
-                    _a( i ) = static_cast<const char*>( r[t] );
-                    break;
-                }
-            }
-        }
     }
     /**
      * @fn String Shell::practice( const String &args )
