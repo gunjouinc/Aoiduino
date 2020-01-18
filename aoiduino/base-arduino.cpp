@@ -401,15 +401,20 @@ namespace AoiBase
     String Arduino::echo( StringList *args )
     {
         String s;
+        int c = count( args );
 
-        switch( count(args) )
+        if( c<1 )
+            s = usage( "echo .+" );
+        else
         {
-            case 1:
-                s = prettyPrintTo( "value" , _a(0) );
-                break;
-            default:
-                s = usage( "echo message" );
-                break;
+            String t;
+            for( int i=0; i<c; i++ )
+            {
+                if( 0<i )
+                    t += STR_SPACE;
+                t += _a( i );
+            }
+            s = prettyPrintTo( "value" , t );
         }
 
         return s;
