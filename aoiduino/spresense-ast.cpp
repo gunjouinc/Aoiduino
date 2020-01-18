@@ -256,26 +256,25 @@ namespace AoiSpresense
       * @param[in] args Reference to arguments.
       * @return value string.
       */
-     String Ast::append( StringList *args )
-     {
-         String s;
-         File f;
+    String Ast::append( StringList *args )
+    {
+        String s;
+        int c = count( args );
 
-         switch( count(args) )
-         {
-             case 2:
-                f = AstStorage->open( _a(0), FILE_WRITE );
-                if( f )
-                {
-                    f.print( _a(1) );
-                    f.seek( 0 );
-                    s = prettyPrintTo( "value", f.readString() );
-                    f.close();
-                }
-                break;
-             default:
-                s = usage( ">> file value" );
-                break;
+        if( c<2 )
+            s = usage( ">> file .+" );
+        else
+        {
+            File f = AstStorage->open( _a(0), FILE_WRITE );
+            for( int i=1; i<c; i++ )
+            {
+                if( 1<i )
+                    f.print( STR_SPACE );
+                f.print( _a(i) );
+            }
+            f.seek( 0 );
+            s = prettyPrintTo( "value", f.readString() );
+            f.close();
          }
 
          return s;
@@ -323,23 +322,21 @@ namespace AoiSpresense
       * @param[in] args Reference to arguments.
       * @return value string.
       */
-     String Ast::create( StringList *args )
-     {
-         String s;
+    String Ast::create( StringList *args )
+    {
+        String s;
+        int c = count( args );
 
-         switch( count(args) )
-         {
-             case 2:
-                if( AstStorage->exists(_a(0)) )
-                    AstStorage->remove( _a(0) );
-                s = append( args );
-                break;
-             default:
-                s = usage( "> file value" );
-                break;
-         }
+        if( c<2 )
+            s = usage( "> file .+" );
+        else
+        {
+            if( AstStorage->exists(_a(0)) )
+                AstStorage->remove( _a(0) );
+            s = append( args );
+        }
 
-         return s;
+        return s;
      }
     /**
      * @fn String Ast::ll( StringList *args )
