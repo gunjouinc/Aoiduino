@@ -65,7 +65,7 @@ namespace AoiSpresense
             { "delayMicroseconds", &Arduino::delayMicroseconds },
             { "digitalRead", &Arduino::digitalRead },
             { "digitalWrite", &Arduino::digitalWrite },
-            { "echo", &Ast::print },
+            { "echo", &Arduino::echo },
             { "led", &Ast::led },
             { "micros", &Arduino::micros },
             { "millis", &Arduino::millis },
@@ -73,6 +73,8 @@ namespace AoiSpresense
             { "pinMode", &Arduino::pinMode },
             { "tone", &Arduino::tone },
             /* File */
+            { ">", &Ast::create },
+            { ">>", &Ast::append },
             { "cat", &Ast::read },
             { "cd", &Ast::cd },
             { "ll", &Ast::ll },
@@ -247,6 +249,38 @@ namespace AoiSpresense
         return s;
     }
     /**
+      * @fn String Ast::append( StringList *args )
+      *
+      * Append value on current device.
+      *
+      * @param[in] args Reference to arguments.
+      * @return value string.
+      */
+     String Ast::append( StringList *args )
+     {
+         String s;
+         File f;
+
+         switch( count(args) )
+         {
+             case 2:
+                f = AstStorage->open( _a(0), FILE_WRITE );
+                if( f )
+                {
+                    f.print( _a(1) );
+                    f.seek( 0 );
+                    s = prettyPrintTo( "value", f.readString() );
+                    f.close();
+                }
+                break;
+             default:
+                s = usage( ">> file value" );
+                break;
+         }
+
+         return s;
+     }
+    /**
      * @fn String Ast::cd( StringList *args )
      *
      * Change device.
@@ -281,6 +315,32 @@ namespace AoiSpresense
 
         return s;
     }
+    /**
+      * @fn String Ast::Create( StringList *args )
+      *
+      * Create value on current device.
+      *
+      * @param[in] args Reference to arguments.
+      * @return value string.
+      */
+     String Ast::create( StringList *args )
+     {
+         String s;
+
+         switch( count(args) )
+         {
+             case 2:
+                if( AstStorage->exists(_a(0)) )
+                    AstStorage->remove( _a(0) );
+                s = append( args );
+                break;
+             default:
+                s = usage( "> file value" );
+                break;
+         }
+
+         return s;
+     }
     /**
      * @fn String Ast::ll( StringList *args )
      *
@@ -402,47 +462,6 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "mkdir path" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Ast::print( StringList *args )
-     *
-     * Print value or write value on current device.
-     *
-     * @param[in] args Reference to arguments.
-     * @return value string.
-     */
-    String Ast::print( StringList *args )
-    {
-        String s;
-        File f;
-
-        switch( count(args) )
-        {
-            case 1:
-                s = Arduino::echo( args );
-                break;
-            case 3:
-                if( (_a(1)!=">") && (_a(1)!=">>") )
-                    s = echo( 0 );
-                else
-                {
-                    if( (_a(1)==">") && AstStorage->exists(_a(2)) )
-                        AstStorage->remove( _a(2) );
-                    f = AstStorage->open( _a(2), FILE_WRITE );
-                    if( f )
-                    {
-                        f.print( _a(0) );
-                        f.close();
-                        s = prettyPrintTo( "value", _a(0) );
-                    }
-                }
-                break;
-            default:
-                s = usage( "echo value ((>|>>) file)?" );
                 break;
         }
 

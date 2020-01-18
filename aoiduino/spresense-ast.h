@@ -45,11 +45,12 @@ namespace AoiSpresense
         static String analogRead( StringList *args );
         static String led( StringList *args );
         /* File ( Flash, SDHC, eMMC ) */
+        static String append( StringList *args );
         static String cd( StringList *args );
+        static String create( StringList *args );
         static String ll( StringList *args );
         static String format( StringList *args );
         static String mkdir( StringList *args );
-        static String print( StringList *args );
         static String pwd( StringList *args );
         static String read( StringList *args );
         static String remove( StringList *args );
