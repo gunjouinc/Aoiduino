@@ -48,9 +48,7 @@ namespace AoiBase
     // members
     protected:
         virtual void afterKeyInput( int input, String *buffer );
-        virtual void afterPractice( const String &value );
         virtual bool beforeKeyInput( int input, String *buffer );
-        virtual void beforePractice( StringList *args );
         virtual String practice( const String &args );
     // variables
     private:

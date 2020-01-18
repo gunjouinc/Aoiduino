@@ -251,16 +251,6 @@ namespace AoiBase
         AbstractBase::afterKeyInput( input, buffer );
     }
     /**
-     * @fn void Shell::afterPractice( const String &value )
-     *
-     * This method is called after practice, Stores returned value.
-     *
-     * @param[in] value Value to store.
-     */
-    void Shell::afterPractice( const String &value )
-    {
-    }
-    /**
      * @fn bool Shell::beforeKeyInput( int input, String *buffer )
      *
      * @see AbstractBase::beforeKeyInput( int input, String *buffer ).
@@ -310,18 +300,6 @@ namespace AoiBase
             m_keyCode = 0;
 
         return b;
-    }
-    /**
-     * @fn void Shell::beforePractice( StringList *args )
-     *
-     * This method is called before practice, args is transfered to returned value.
-     * ( ex. $value to 56, value to value )
-     *
-     * @param[in] args Argument to transfer. If args has "$" charactor at
-     * first and there is no returned value, Returns empty value.
-     */
-    void Shell::beforePractice( StringList *args )
-    {
     }
     /**
      * @fn String Shell::practice( const String &args )
@@ -393,9 +371,7 @@ namespace AoiBase
             else
                 t = args;
             sl = split( t, " " );
-            beforePractice( sl );
             s = ab->practice( sl );
-            afterPractice( s );
             b = true;
             break;
         }
