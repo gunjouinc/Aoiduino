@@ -27,6 +27,8 @@ SpGnss Gnss;
 LTE Lte;
 LTEScanner LteScanner;
 LTEModemVerification LteModem;
+/* MP */
+#include <MP.h>
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -903,6 +905,7 @@ namespace AoiSpresense
     String Ast::dmesg( StringList *args )
     {
         String s;
+        int used, free, largest;
         DynamicJsonBuffer json;
         JsonObject &r = json.createObject();
 
@@ -912,6 +915,10 @@ namespace AoiSpresense
                 r[ "bootCause" ] = static_cast<int>( LowPower.bootCause() );
                 r[ "clockMode" ] = static_cast<int>( LowPower.getClockMode() );
                 r[ "current" ] = LowPower.getCurrent();
+                MP.GetMemoryInfo( used, free, largest );
+                r[ "memoryFree" ] = free;
+                r[ "memoryLargestFree" ] = largest;
+                r[ "memoryUsed" ] = used;
                 r[ "voltage" ] = LowPower.getVoltage();
                 r.prettyPrintTo( s );
                 break;
