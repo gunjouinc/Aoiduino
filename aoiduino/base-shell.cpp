@@ -364,23 +364,71 @@ namespace AoiBase
      */
     String Shell::practice( const String &args )
     {
-        String s;
-        StringList *sl = split( args, " " );
+        String s, t = args.substring( 0, args.indexOf(STR_SPACE) );
+        String key = "value", sep;
+        StringList *sl = 0;
+        DynamicJsonBuffer json;
+
     // Practices functions.
         bool b = false;
         ClassTable *ct = loader.classTable();
         while( ct->pointer )
         {
             AbstractBase *ab = ct->pointer;
-            if( ab->isExist(sl->value) )
+            if( !ab->isExist(t) )
             {
-                beforePractice( sl );
-                s = ab->practice( sl );
-                afterPractice( s );
-                b = true;
-                break;
+                ct++;
+                continue;
             }
-            ct++;
+            if( -1<args.indexOf(STR_SHELL_CREATE) )
+            {
+                sep = STR_SHELL_CREATE;
+            // First practice
+                t = args.substring( 0, args.indexOf(sep) );
+                sl = split( t, STR_SPACE );
+                s = ab->practice( sl );
+                delete [] sl;
+            // Second practice using same AbstractBase
+                JsonObject &r = json.parseObject( s );
+                t = String( "> " )
+                  + args.substring( args.indexOf(sep)+sep.length() )
+                  + String( STR_SPACE ) + static_cast<const char*>( r[key] );
+            }
+            else if( -1<args.indexOf(STR_SHELL_APPEND) )
+            {
+                sep = STR_SHELL_APPEND;
+            // First practice
+                t = args.substring( 0, args.indexOf(sep) );
+                sl = split( t, STR_SPACE );
+                s = ab->practice( sl );
+                delete [] sl;
+            // Second practice using same AbstractBase
+                JsonObject &r = json.parseObject( s );
+                t = String(">> ")
+                  + args.substring( args.indexOf(sep)+sep.length() )
+                  + String( STR_SPACE ) + static_cast<const char*>( r[key] );
+            }
+            else if( -1<args.indexOf(STR_SHELL_PIPE) )
+            {
+                sep = STR_SHELL_PIPE;
+            // First practice
+                t = args.substring( 0, args.indexOf(sep) );
+                sl = split( t, STR_SPACE );
+                s = ab->practice( sl );
+                delete [] sl;
+            // Second practice using same AbstractBase
+                JsonObject &r = json.parseObject( s );
+                t = args.substring( args.indexOf(sep)+sep.length() )
+                  + String( STR_SPACE ) + static_cast<const char*>( r[key] );
+            }
+            else
+                t = args;
+            sl = split( t, " " );
+            beforePractice( sl );
+            s = ab->practice( sl );
+            afterPractice( s );
+            b = true;
+            break;
         }
     // Shows error message if need.
         if( !b )
