@@ -18,6 +18,7 @@ Supported boards are Arduino Uno, Spresense Ast. Below functions were implemente
     - LTE       [add] lteBegin, lteConfig, lteEnd
 
 ## Operation example on Spresense Ast
+
 ### Low Power
 ```
 # reboot
@@ -183,6 +184,23 @@ ERROR: nw_stat : 0
   "ipAddress": "153.140.192.26",
   "imei": "3             9",
   "signalStrength": "-94",
+  "status": 4
+}
+```
+
+### Redirect and pipe
+```
+# echo line.me line@line line > lime.me
+{
+  "value": "line.me line@line line"
+}
+# cat line.me | lteBegin
+{
+  "carrier": "NTT DOCOMO",
+  "firmware": "RK_02_01_01_10_41_15",
+  "ipAddress": "114.169.149.246",
+  "imei": "351521100209899",
+  "signalStrength": "-81",
   "status": 4
 }
 # 
