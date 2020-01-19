@@ -151,6 +151,17 @@ namespace AoiBase
         return b;
     }
     /**
+     * @fn StringList* AbstractBase::rcScript( void )
+     *
+     * Return rc script. Return string list in child class, If need.
+     *
+     * @return null pointer.
+     */
+    StringList* AbstractBase::rcScript( void )
+    {
+        return 0;
+    }
+    /**
      * @fn String AbstractBase::read( void )
      *
      * @see AbstractCore::read( void ).

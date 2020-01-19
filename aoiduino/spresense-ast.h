@@ -38,6 +38,9 @@ namespace AoiSpresense
         virtual bool isExist( const String &function );
         virtual String practice( StringList *args );
         virtual String usages( void );
+    // members
+    public:
+        virtual StringList* rcScript( void );
     // static members
     protected:
         // ^ Please set your function to use.

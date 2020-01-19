@@ -34,6 +34,7 @@ namespace AoiBase
     // members
     public:
         virtual int bash( const String &prompt );
+        virtual void rc( void );
     // members
     public:
         virtual String className( void );

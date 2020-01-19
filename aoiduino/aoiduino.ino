@@ -94,6 +94,7 @@ AoiProduct::Template *product = new AoiProduct::Template;
  */
 void afterSetup( void )
 {
+    shell.rc();
     loader.end();
 // Sets product template.
     product->setup();

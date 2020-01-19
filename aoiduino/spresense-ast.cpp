@@ -158,6 +158,15 @@ namespace AoiSpresense
         return Arduino::usages( m_functionTable );
     }
     /**
+     * @fn StringList* Ast::rcScript( void )
+     *
+     * @see StringList* AbstractBase::rcScript( void )
+     */
+    StringList* Ast::rcScript( void )
+    {
+        return 0;
+    }
+    /**
      * @fn String Ast::analogRead( StringList *args )
      *
      * Reads the value from the specified analog pin.

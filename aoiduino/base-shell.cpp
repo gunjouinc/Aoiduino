@@ -122,6 +122,29 @@ namespace AoiBase
         return i;
     }
     /**
+      * @fn void Shell::rc( void )
+      *
+      * Practices rc scripts.
+      */
+    void Shell::rc( void )
+    {
+        String s;
+        ClassTable *ct = loader.classTable();
+
+        while( ct->pointer )
+        {
+            StringList *sl = ct->pointer->rcScript();
+            for( int i=0; i<count(sl); i++ )
+            {
+                debug( (sl+i)->value );
+                s = shell.practice( (sl+i)->value );
+                debug( s );
+            }
+            delete [] sl;
+            ct++;
+        }
+    }
+    /**
      * @fn String Shell::className( void )
      *
      * @see bool AbstractBase::className( void )
