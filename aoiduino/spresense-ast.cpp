@@ -443,7 +443,7 @@ namespace AoiSpresense
                 if( count(args) )
                 {
                     if( !AstStorage->exists(_a(0)) )
-                        return mkdir( 0 );
+                        return ll( 0 );
                     d = AstStorage->open( _a(0) );
                     p = d.name() + String("/");
                 }
@@ -475,7 +475,7 @@ namespace AoiSpresense
                 r.prettyPrintTo( s );
                 break;
             default:
-                s = usage( "ll" );
+                s = usage( "ll( path)?" );
                 break;
         }
 
