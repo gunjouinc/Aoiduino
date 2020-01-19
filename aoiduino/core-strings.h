@@ -45,14 +45,14 @@
 /** Sharp */
 #define STR_SHARP "#"
 /** Shell append */
-#define STR_SHELL_APPEND " >> "
+#define STR_SHELL_APPEND ">>"
 /** Shell boot message */
 #define STR_SHELL_BOOT_1 "*** Welcome to aoiduino, aoi environment for arduino. ***"
 #define STR_SHELL_BOOT_2 "help * : Show all usages."
 #define STR_SHELL_BOOT_3 "exit   : Back to login."
 /** Shell create */
-#define STR_SHELL_CREATE " > "
+#define STR_SHELL_CREATE ">"
 /** Shell pipe */
-#define STR_SHELL_PIPE " | "
+#define STR_SHELL_PIPE "|"
 /** Space */
 #define STR_SPACE " "

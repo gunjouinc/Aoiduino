@@ -311,73 +311,51 @@ namespace AoiBase
      */
     String Shell::practice( const String &args )
     {
-        String s, t = args.substring( 0, args.indexOf(STR_SPACE) );
-        String key = "value", sep;
-        StringList *sl = 0;
+        String s, t, arg1, arg2;
+        StringList *sl = split( args, " " );
         DynamicJsonBuffer json;
 
-    // Practices functions.
-        bool b = false;
-        ClassTable *ct = loader.classTable();
-        while( ct->pointer )
+    // Practice functions.
+        for( int i=0; i<count(sl); i++ )
         {
-            AbstractBase *ab = ct->pointer;
-            if( !ab->isExist(t) )
+            t = (sl+i)->value;
+            if( (t!=STR_SHELL_APPEND) && (t!=STR_SHELL_CREATE) && (t!=STR_SHELL_PIPE) )
             {
-                ct++;
-                continue;
+                if( arg1.length() )
+                    arg1 += STR_SPACE;
+                arg1 += t;
+                if( i<(count(sl)-1) )
+                    continue;
             }
-            if( -1<args.indexOf(STR_SHELL_CREATE) )
+
+            bool b = false;
+            StringList *sm = split( arg1+arg2, STR_SPACE );
+            ClassTable *ct = loader.classTable();
+            while( ct->pointer )
             {
-                sep = STR_SHELL_CREATE;
-            // First practice
-                t = args.substring( 0, args.indexOf(sep) );
-                sl = split( t, STR_SPACE );
-                s = ab->practice( sl );
-                delete [] sl;
-            // Second practice using same AbstractBase
-                JsonObject &r = json.parseObject( s );
-                t = String( "> " )
-                  + args.substring( args.indexOf(sep)+sep.length() )
-                  + String( STR_SPACE ) + static_cast<const char*>( r[key] );
+                AbstractBase *ab = ct->pointer;
+                if( !ab->isExist(sm->value) )
+                {
+                    ct++;
+                    continue;
+                }
+                s = ab->practice( sm );
+                b = true;
+                break;
             }
-            else if( -1<args.indexOf(STR_SHELL_APPEND) )
-            {
-                sep = STR_SHELL_APPEND;
-            // First practice
-                t = args.substring( 0, args.indexOf(sep) );
-                sl = split( t, STR_SPACE );
-                s = ab->practice( sl );
-                delete [] sl;
-            // Second practice using same AbstractBase
-                JsonObject &r = json.parseObject( s );
-                t = String(">> ")
-                  + args.substring( args.indexOf(sep)+sep.length() )
-                  + String( STR_SPACE ) + static_cast<const char*>( r[key] );
-            }
-            else if( -1<args.indexOf(STR_SHELL_PIPE) )
-            {
-                sep = STR_SHELL_PIPE;
-            // First practice
-                t = args.substring( 0, args.indexOf(sep) );
-                sl = split( t, STR_SPACE );
-                s = ab->practice( sl );
-                delete [] sl;
-            // Second practice using same AbstractBase
-                JsonObject &r = json.parseObject( s );
-                t = args.substring( args.indexOf(sep)+sep.length() )
-                  + String( STR_SPACE ) + static_cast<const char*>( r[key] );
-            }
-            else
-                t = args;
-            sl = split( t, " " );
-            s = ab->practice( sl );
-            b = true;
-            break;
+        // Show error message if need.
+            if( !b )
+                s = sm->value + STR_COMMAND_NOT_FOUND;
+            delete [] sm;
+            if( !b )
+                break;
+        // For next practice.
+            JsonObject &r = json.parseObject( s );
+            arg1 = (t==STR_SHELL_PIPE) ? "" : t;
+            arg2 = static_cast<const char*>( r["value"] );
+            if( 0<arg2.length() )
+                arg2 = STR_SPACE + arg2;
         }
-    // Shows error message if need.
-        if( !b )
-            s = sl->value + STR_COMMAND_NOT_FOUND;
         delete [] sl;
 
         return s;
