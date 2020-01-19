@@ -29,6 +29,8 @@ namespace AoiBase
         FunctionTable ftl[] =
         {
         // ^ Please set your function to use.
+            { ">", &Arduino::create },
+            { ">>", &Arduino::append },
             { "analogRead", &Arduino::analogRead },
             { "analogWrite", &Arduino::analogWrite },
             { "delay", &Arduino::delay },
@@ -561,6 +563,48 @@ namespace AoiBase
                 break;
             default:
                 s = usage( "tone pin frequency (duration)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Arduino::append( StringList *args )
+     *
+     * Append value on current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return value string.
+     */
+    String Arduino::append( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            default:
+                s = usage( STR_COMMAND_NOT_INPLEMENTED );
+                break;
+        }
+
+        return s;
+     }
+    /**
+     * @fn String Arduino::create( StringList *args )
+     *
+     * Create value on current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return value string.
+     */
+    String Arduino::create( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            default:
+                s = usage( STR_COMMAND_NOT_INPLEMENTED );
                 break;
         }
 

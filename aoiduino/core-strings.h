@@ -20,6 +20,8 @@
 #define STR_ATMARK "@"
 /** Command not found */
 #define STR_COMMAND_NOT_FOUND ": command not found"
+/** Command not implemented */
+#define STR_COMMAND_NOT_INPLEMENTED ": command not implemented"
 /** Date time format */
 #define STR_DATETIME_FORMAT "%04d-%02d-%02d %02d:%02d:%02d"
 /** Incorrect */

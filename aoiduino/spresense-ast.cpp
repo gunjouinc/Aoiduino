@@ -249,13 +249,13 @@ namespace AoiSpresense
         return s;
     }
     /**
-      * @fn String Ast::append( StringList *args )
-      *
-      * Append value on current device.
-      *
-      * @param[in] args Reference to arguments.
-      * @return value string.
-      */
+     * @fn String Ast::append( StringList *args )
+     *
+     * Append value on current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return value string.
+     */
     String Ast::append( StringList *args )
     {
         String s;
@@ -278,7 +278,7 @@ namespace AoiSpresense
          }
 
          return s;
-     }
+    }
     /**
      * @fn String Ast::cd( StringList *args )
      *
@@ -315,13 +315,13 @@ namespace AoiSpresense
         return s;
     }
     /**
-      * @fn String Ast::Create( StringList *args )
-      *
-      * Create value on current device.
-      *
-      * @param[in] args Reference to arguments.
-      * @return value string.
-      */
+     * @fn String Ast::create( StringList *args )
+     *
+     * Create value on current device.
+     *
+     * @param[in] args Reference to arguments.
+     * @return value string.
+     */
     String Ast::create( StringList *args )
     {
         String s;
@@ -337,7 +337,7 @@ namespace AoiSpresense
         }
 
         return s;
-     }
+    }
     /**
      * @fn String Ast::ll( StringList *args )
      *

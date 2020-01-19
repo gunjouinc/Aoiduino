@@ -62,6 +62,8 @@ namespace AoiBase
         static String noTone( StringList *args );
         static String pinMode( StringList *args );
         static String tone( StringList *args );
+        static String append( StringList *args );
+        static String create( StringList *args );
         // $ Please set your function to use.
     // static variables
     private:
