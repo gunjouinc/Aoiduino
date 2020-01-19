@@ -75,8 +75,11 @@ namespace AoiSpresense
             /* File */
             { ">", &Ast::create },
             { ">>", &Ast::append },
+            { "beginUsbMsc", &Ast::beginUsbMsc },
+            { "cat", &Ast::read },
             { "cat", &Ast::read },
             { "cd", &Ast::cd },
+            { "endUsbMsc", &Ast::endUsbMsc },
             { "ll", &Ast::ll },
             { "format", &Ast::format },
             { "mkdir", &Ast::mkdir },
@@ -280,6 +283,44 @@ namespace AoiSpresense
          return s;
     }
     /**
+     * @fn String Ast::beginUsbMsc( StringList *args )
+     *
+     * Start USB Mass Storage Class.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::beginUsbMsc( StringList *args )
+    {
+        String s;
+        String path;
+
+        switch( count(args) )
+        {
+            case 1:
+                path = _a( 0 );
+                if( path==_EMMC_ )
+                {
+                    eMMC.begin();
+                    eMMC.beginUsbMsc();
+                }
+                else if( path==_SD_ )
+                {
+                    AstSD.begin();
+                    AstSD.beginUsbMsc();
+                }
+                else
+                    s = beginUsbMsc( 0 );
+                break;
+            default:
+                s = usage( "beginUsbMsc ("+String(_EMMC_)
+                                      +"|"+String(_SD_)+")" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Ast::cd( StringList *args )
      *
      * Change device.
@@ -297,11 +338,17 @@ namespace AoiSpresense
             case 1:
                 path = _a( 0 );
                 if( path==_EMMC_ )
+                {
+                    eMMC.begin();
                     AstStorage = &eMMC;
+                }
                 else if( (path==_FLASH_) || (path=="/") )
                     AstStorage = &Flash;
                 else if( path==_SD_ )
+                {
+                    AstSD.begin();
                     AstStorage = &AstSD;
+                }
                 else
                     s = cd( 0 );
                 break;
@@ -334,6 +381,38 @@ namespace AoiSpresense
             if( AstStorage->exists(_a(0)) )
                 AstStorage->remove( _a(0) );
             s = append( args );
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::endUsbMsc( StringList *args )
+     *
+     * Stop USB Mass Storage Class.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::endUsbMsc( StringList *args )
+    {
+        String s;
+        String path;
+
+        switch( count(args) )
+        {
+            case 1:
+                path = _a( 0 );
+                if( path==_EMMC_ )
+                    eMMC.endUsbMsc();
+                else if( path==_SD_ )
+                    AstSD.endUsbMsc();
+                else
+                    s = endUsbMsc( 0 );
+                break;
+            default:
+                s = usage( "endUsbMsc ("+String(_EMMC_)
+                                    +"|"+String(_SD_)+")" );
+                break;
         }
 
         return s;
