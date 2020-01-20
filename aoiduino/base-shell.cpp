@@ -82,7 +82,7 @@ namespace AoiBase
         while( true )
         {
             int j = app >> NULL;
-            if( j=='\r' )
+            if( j==_cr )
             {
                 t = "";
                 m_historyIndex = m_history;
@@ -108,7 +108,7 @@ namespace AoiBase
                 }
                 app << prompt + STR_SPACE;
             }
-            else if( j=='\n' )
+            else if( j==_lf )
             {
             }
             else if( j!=-1 )

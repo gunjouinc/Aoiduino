@@ -52,7 +52,7 @@ namespace AoiBase
         while( true )
         {
             int i = app >> NULL;
-            if( i=='\r' )
+            if( i==_cr )
             {
                 if( interfaceType()==AoiCore::_Serial )
                     app <= "";
@@ -77,7 +77,7 @@ namespace AoiBase
                     s = &sp;
                 }
             }
-            else if( i=='\n' )
+            else if( i==_lf )
             {}
             else if( i!=-1 )
             {

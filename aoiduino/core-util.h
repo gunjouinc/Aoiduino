@@ -28,6 +28,10 @@
 #define _atoul(x) AoiCore::toULong(_a(x))
 /** Argument to unsigned long from hex. */
 #define _atoulh(x) AoiCore::toULong(_a(x),16)
+/** CR */
+#define _cr '\r'
+/** LF */
+#define _lf '\n'
 /** Communication new line. */
 #define _n AoiCore::newLine()
 /** Communication terminator. */
