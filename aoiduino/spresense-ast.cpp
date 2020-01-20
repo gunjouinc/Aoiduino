@@ -158,13 +158,26 @@ namespace AoiSpresense
         return Arduino::usages( m_functionTable );
     }
     /**
-     * @fn StringList* Ast::rcScript( void )
+     * @fn StringList* Ast::rcScript( const String &index )
      *
-     * @see StringList* AbstractBase::rcScript( void )
+     * @see StringList* AbstractBase::rcScript( const String &index )
      */
-    StringList* Ast::rcScript( void )
+    StringList* Ast::rcScript( const String &index )
     {
-        return 0;
+        StringList *sl = 0;
+
+        if( !AstStorage->exists(index) )
+            return sl;
+
+        File f = AstStorage->open( index, FILE_READ );
+        if( f )
+        {
+            String s = f.readString();
+            f.close();
+            sl = split( s, String(_lf) );
+        }
+
+        return sl;
     }
     /**
      * @fn String Ast::analogRead( StringList *args )

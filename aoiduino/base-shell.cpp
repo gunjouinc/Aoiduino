@@ -133,14 +133,17 @@ namespace AoiBase
 
         while( ct->pointer )
         {
-            StringList *sl = ct->pointer->rcScript();
-            for( int i=0; i<count(sl); i++ )
+            for( int n=0; n<10; n++ )
             {
-                debug( (sl+i)->value );
-                s = shell.practice( (sl+i)->value );
-                debug( s );
+                StringList *sl = ct->pointer->rcScript( STR_RCD+String(n) );
+                for( int i=0; i<count(sl); i++ )
+                {
+                    debug( (sl+i)->value );
+                    s = shell.practice( (sl+i)->value );
+                    debug( s );
+                }
+                delete [] sl;
             }
-            delete [] sl;
             ct++;
         }
     }

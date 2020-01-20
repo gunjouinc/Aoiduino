@@ -90,7 +90,7 @@ namespace AoiBase
         virtual InterfaceType interfaceType( void ) const;
         virtual bool isBegan( void );
         virtual String read( void );
-        virtual StringList* rcScript( void );
+        virtual StringList* rcScript( const String &index );
         virtual void setTemplate( AoiProduct::Template *product );
         virtual int write( const String &data );
     // members

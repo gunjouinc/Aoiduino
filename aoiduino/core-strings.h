@@ -42,6 +42,8 @@
 #define STR_PASSWORD "password : "
 /** Period */
 #define STR_PERIOD "."
+/** rc. */
+#define STR_RCD "rc."
 /** Sharp */
 #define STR_SHARP "#"
 /** Shell append */

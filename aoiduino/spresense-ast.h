@@ -40,7 +40,7 @@ namespace AoiSpresense
         virtual String usages( void );
     // members
     public:
-        virtual StringList* rcScript( void );
+        virtual StringList* rcScript( const String &index );
     // static members
     protected:
         // ^ Please set your function to use.

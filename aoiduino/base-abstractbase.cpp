@@ -151,13 +151,14 @@ namespace AoiBase
         return b;
     }
     /**
-     * @fn StringList* AbstractBase::rcScript( void )
+     * @fn StringList* AbstractBase::rcScript( const String &index )
      *
      * Return rc script. Return string list in child class, If need.
      *
+     * @param[in] path Script index.
      * @return null pointer.
      */
-    StringList* AbstractBase::rcScript( void )
+    StringList* AbstractBase::rcScript( const String &index )
     {
         return 0;
     }
