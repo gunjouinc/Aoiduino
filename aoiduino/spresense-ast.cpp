@@ -75,6 +75,7 @@ namespace AoiSpresense
             /* Camera */
             { "cameraBegin", &Ast::cameraBegin },
             { "cameraEnd", &Ast::cameraEnd },
+            { "cameraAutoWhiteBalanceMode", &Ast::cameraSetAutoWhiteBalanceMode },
             { "cameraPictureFormat", &Ast::cameraSetStillPictureImageFormat },
             { "cameraTakePicture", &Ast::cameraTakePicture },
             /* File */
@@ -334,6 +335,37 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "cameraEnd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::cameraSetAutoWhiteBalanceMode( StringList *args )
+     *
+     * Set camera auto white balance mode.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::cameraSetAutoWhiteBalanceMode( StringList *args )
+    {
+        String s;
+        CAM_WHITE_BALANCE wb;
+        CamErr r;
+
+        switch( count(args) )
+        {
+            case 1:
+                if( !whiteBalanceFromString(_a(0),&wb) )
+                    return cameraSetAutoWhiteBalanceMode( 0 );
+
+                r = theCamera.setAutoWhiteBalanceMode( wb );
+                if( r!=CAM_ERR_SUCCESS )
+                    return cameraSetAutoWhiteBalanceMode( 0 );
+                break;
+            default:
+                s = usage( "cameraAutoWhiteBalanceMode (AUTO|INCANDESCENT|FLUORESCENT|DAYLIGHT|FLASH|CLOUDY|SHADE)" );
                 break;
         }
 
@@ -1394,6 +1426,38 @@ namespace AoiSpresense
             *fps = CAM_VIDEO_FPS_60;
         else if( value=="120" )
             *fps = CAM_VIDEO_FPS_120;
+        else
+            b = false;
+
+        return b;
+    }
+    /**
+     * @fn bool Ast::whiteBalanceFromString( const String &value, CAM_WHITE_BALANCE *wb )
+     *
+     * Return CAM_WHITE_BALANCE from string.
+     *
+     * @param[in] value Format type string like "AUTO".
+     * @param[in,out] wb reference to CAM_WHITE_BALANCE.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::whiteBalanceFromString( const String &value, CAM_WHITE_BALANCE *wb )
+    {
+        bool b = true;
+
+        if( value=="AUTO" )
+            *wb = CAM_WHITE_BALANCE_AUTO;
+        else if( value=="5" )
+            *wb = CAM_WHITE_BALANCE_INCANDESCENT;
+        else if( value=="INCANDESCENT" )
+            *wb = CAM_WHITE_BALANCE_FLUORESCENT;
+        else if( value=="DAYLIGHT" )
+            *wb = CAM_WHITE_BALANCE_DAYLIGHT;
+        else if( value=="FLASH" )
+            *wb = CAM_WHITE_BALANCE_FLASH;
+        else if( value=="CLOUDY" )
+            *wb = CAM_WHITE_BALANCE_CLOUDY;
+        else if( value=="SHADE" )
+            *wb = CAM_WHITE_BALANCE_SHADE;
         else
             b = false;
 

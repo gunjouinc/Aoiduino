@@ -53,6 +53,7 @@ namespace AoiSpresense
         /* Camera */
         static String cameraBegin( StringList *args );
         static String cameraEnd( StringList *args );
+        static String cameraSetAutoWhiteBalanceMode( StringList *args );
         static String cameraSetStillPictureImageFormat( StringList *args );
         static String cameraTakePicture( StringList *args );
 //        static String cameraStartStreaming( StringList *args );
@@ -91,6 +92,7 @@ namespace AoiSpresense
     protected:
         static bool formatFromString( const String &value, CAM_IMAGE_PIX_FMT *format );
         static bool fpsFromString( const String &value, CAM_VIDEO_FPS *fps );
+        static bool whiteBalanceFromString( const String &value, CAM_WHITE_BALANCE *wb );
         static bool sizeFromString( const String &value, int *width, int *height );
     // static variables
     private:
