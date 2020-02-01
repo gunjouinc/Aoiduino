@@ -76,6 +76,7 @@ namespace AoiSpresense
             { "cameraBegin", &Ast::cameraBegin },
             { "cameraEnd", &Ast::cameraEnd },
             { "cameraAutoWhiteBalanceMode", &Ast::cameraSetAutoWhiteBalanceMode },
+            { "cameraColorEffect", &Ast::cameraSetColorEffect },
             { "cameraPictureFormat", &Ast::cameraSetStillPictureImageFormat },
             { "cameraTakePicture", &Ast::cameraTakePicture },
             /* File */
@@ -366,6 +367,37 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "cameraAutoWhiteBalanceMode (AUTO|INCANDESCENT|FLUORESCENT|DAYLIGHT|FLASH|CLOUDY|SHADE)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::cameraSetColorEffect( StringList *args )
+     *
+     * Set camera color effect.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::cameraSetColorEffect( StringList *args )
+    {
+        String s;
+        CAM_COLOR_FX effect;
+        CamErr r;
+
+        switch( count(args) )
+        {
+            case 1:
+                if( !effectFromString(_a(0),&effect) )
+                    return cameraSetColorEffect( 0 );
+
+                r = theCamera.setColorEffect( effect );
+                if( r!=CAM_ERR_SUCCESS )
+                    return cameraSetColorEffect( 0 );
+                break;
+            default:
+                s = usage( "cameraColorEffect (NONE|BW|SEPIA|NEGATIVE|EMBOSS|SKETCH|BLUE|GREEN|WHITEN|VIVID|AQUA|FREEZE|SILHOUETTE|SOLARIZATION|ANTIQUE|CBCR|PASTEL)" );
                 break;
         }
 
@@ -1370,6 +1402,58 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn bool Ast::effectFromString( const String &value, CAM_COLOR_FX *effect )
+     *
+     * Return CAM_COLOR_FX from string.
+     *
+     * @param[in] value effect type string like "SEPIA".
+     * @param[in,out] effect reference to CAM_COLOR_FX.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::effectFromString( const String &value, CAM_COLOR_FX *effect )
+    {
+        bool b = true;
+
+        if( value=="NONE" )
+            *effect = CAM_COLOR_FX_NONE;
+        else if( value=="BW" )
+            *effect = CAM_COLOR_FX_BW;
+        else if( value=="SEPIA" )
+            *effect = CAM_COLOR_FX_SEPIA;
+        else if( value=="NEGATIVE" )
+            *effect = CAM_COLOR_FX_NEGATIVE;
+        else if( value=="EMBOSS" )
+            *effect = CAM_COLOR_FX_EMBOSS;
+        else if( value=="SKETCH" )
+            *effect = CAM_COLOR_FX_SKETCH;
+        else if( value=="BLUE" )
+            *effect = CAM_COLOR_FX_SKY_BLUE;
+        else if( value=="GREEN" )
+            *effect = CAM_COLOR_FX_GRASS_GREEN;
+        else if( value=="WHITEN" )
+            *effect = CAM_COLOR_FX_SKIN_WHITEN;
+        else if( value=="VIVID" )
+            *effect = CAM_COLOR_FX_VIVID;
+        else if( value=="AQUA" )
+            *effect = CAM_COLOR_FX_AQUA;
+        else if( value=="FREEZE" )
+            *effect = CAM_COLOR_FX_ART_FREEZE;
+        else if( value=="SILHOUETTE" )
+            *effect = CAM_COLOR_FX_SILHOUETTE;
+        else if( value=="SOLARIZATION" )
+            *effect = CAM_COLOR_FX_SOLARIZATION;
+        else if( value=="ANTIQUE" )
+            *effect = CAM_COLOR_FX_ANTIQUE;
+        else if( value=="CBCR" )
+            *effect = CAM_COLOR_FX_SET_CBCR;
+        else if( value=="PASTEL" )
+            *effect = CAM_COLOR_FX_PASTEL;
+        else
+            b = false;
+
+        return b;
+    }
+    /**
      * @fn bool Ast::formatFromString( const String &value, CAM_IMAGE_PIX_FMT *format )
      *
      * Return CAM_IMAGE_PIX_FMT from string.
@@ -1402,7 +1486,7 @@ namespace AoiSpresense
      *
      * Return CAM_VIDEO_FPS from string.
      *
-     * @param[in] value Format type string like "30".
+     * @param[in] value fps type string like "30".
      * @param[in,out] fps reference to CAM_VIDEO_FPS.
      * @return Return true if value is valid, Otherwise return false.
      */
@@ -1436,7 +1520,7 @@ namespace AoiSpresense
      *
      * Return CAM_WHITE_BALANCE from string.
      *
-     * @param[in] value Format type string like "AUTO".
+     * @param[in] value white balance type string like "AUTO".
      * @param[in,out] wb reference to CAM_WHITE_BALANCE.
      * @return Return true if value is valid, Otherwise return false.
      */
@@ -1468,7 +1552,7 @@ namespace AoiSpresense
      *
      * Return size (width, height) from string.
      *
-     * @param[in] value Format type string like "QVGA".
+     * @param[in] value size type string like "QVGA".
      * @param[in,out] width reference to width.
      * @param[in,out] height reference to height.
      * @return Return true if value is valid, Otherwise return false.

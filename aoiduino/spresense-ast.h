@@ -54,9 +54,9 @@ namespace AoiSpresense
         static String cameraBegin( StringList *args );
         static String cameraEnd( StringList *args );
         static String cameraSetAutoWhiteBalanceMode( StringList *args );
+        static String cameraSetColorEffect( StringList *args );
         static String cameraSetStillPictureImageFormat( StringList *args );
         static String cameraTakePicture( StringList *args );
-//        static String cameraStartStreaming( StringList *args );
         /* File ( Flash, SDHC, eMMC ) */
         static String append( StringList *args );
         static String beginUsbMsc( StringList *args );
@@ -90,6 +90,7 @@ namespace AoiSpresense
         // $ Please set your function to use.
     // static members
     protected:
+        static bool effectFromString( const String &value, CAM_COLOR_FX *effect );
         static bool formatFromString( const String &value, CAM_IMAGE_PIX_FMT *format );
         static bool fpsFromString( const String &value, CAM_VIDEO_FPS *fps );
         static bool whiteBalanceFromString( const String &value, CAM_WHITE_BALANCE *wb );
