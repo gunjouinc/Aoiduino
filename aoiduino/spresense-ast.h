@@ -10,6 +10,9 @@
 #ifdef ARDUINO_spresense_ast
 #pragma once
 
+/* Camera */
+#include <Camera.h>
+
 #include "base-arduino.h"
 /**
  * @namespace AoiSpresense
@@ -47,6 +50,12 @@ namespace AoiSpresense
         /* Spresense Arduino Core, Other core functions are defined in base class. */
         static String analogRead( StringList *args );
         static String led( StringList *args );
+        /* Camera */
+        static String cameraBegin( StringList *args );
+        static String cameraEnd( StringList *args );
+        static String cameraSetStillPictureImageFormat( StringList *args );
+        static String cameraTakePicture( StringList *args );
+//        static String cameraStartStreaming( StringList *args );
         /* File ( Flash, SDHC, eMMC ) */
         static String append( StringList *args );
         static String beginUsbMsc( StringList *args );
@@ -78,6 +87,11 @@ namespace AoiSpresense
         static String lteConfig( StringList *args );
         static String lteEnd( StringList *args );
         // $ Please set your function to use.
+    // static members
+    protected:
+        static bool formatFromString( const String &value, CAM_IMAGE_PIX_FMT *format );
+        static bool fpsFromString( const String &value, CAM_VIDEO_FPS *fps );
+        static bool sizeFromString( const String &value, int *width, int *height );
     // static variables
     private:
         /** Holds function table. */

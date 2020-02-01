@@ -72,6 +72,11 @@ namespace AoiSpresense
             { "noTone", &Arduino::noTone },
             { "pinMode", &Arduino::pinMode },
             { "tone", &Arduino::tone },
+            /* Camera */
+            { "cameraBegin", &Ast::cameraBegin },
+            { "cameraEnd", &Ast::cameraEnd },
+            { "cameraPictureFormat", &Ast::cameraSetStillPictureImageFormat },
+            { "cameraTakePicture", &Ast::cameraTakePicture },
             /* File */
             { ">", &Ast::create },
             { ">>", &Ast::append },
@@ -268,6 +273,135 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "led 0-3 (ON|OFF)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::cameraBegin( StringList *args )
+     *
+     * Begin camera function.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::cameraBegin( StringList *args )
+    {
+        String s;
+        CAM_VIDEO_FPS fps;
+        int width, height;
+        CAM_IMAGE_PIX_FMT format;
+        CamErr r;
+
+        switch( count(args) )
+        {
+            case 4:
+                if( !fpsFromString(_a(1),&fps) )
+                    return cameraBegin( 0 );
+                if( !sizeFromString(_a(2),&width,&height) )
+                    return cameraBegin( 0 );
+                if( !formatFromString(_a(3),&format) )
+                    return cameraBegin( 0 );
+
+                r = theCamera.begin( _atoi(0), fps, width, height, format );
+                if( r!=CAM_ERR_SUCCESS )
+                    return cameraBegin( 0 );
+                break;
+            default:
+                s = usage( "cameraBegin buffNum (5|6|7.5|15|30|120) (QVGA|VGA|HD|QUADVGA|FULLHD|5M|3M) (RGB565|YUV422|JPG|GRAY|NONE)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::cameraEnd( StringList *args )
+     *
+     * End camera function.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::cameraEnd( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                theCamera.end();
+                break;
+            default:
+                s = usage( "cameraEnd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::cameraSetStillPictureImageFormat( StringList *args )
+     *
+     * Set camera still picture image format.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::cameraSetStillPictureImageFormat( StringList *args )
+    {
+        String s;
+        int width, height;
+        CAM_IMAGE_PIX_FMT format;
+        CamErr r;
+
+        switch( count(args) )
+        {
+            case 2:
+                if( !sizeFromString(_a(0),&width,&height) )
+                    return cameraSetStillPictureImageFormat( 0 );
+                if( !formatFromString(_a(1),&format) )
+                    return cameraSetStillPictureImageFormat( 0 );
+
+                r = theCamera.setStillPictureImageFormat( width, height, format );
+                if( r!=CAM_ERR_SUCCESS )
+                    return cameraSetStillPictureImageFormat( 0 );
+                break;
+            default:
+                s = usage( "cameraPictureFormat (QVGA|VGA|HD|QUADVGA|FULLHD|5M|3M) (RGB565|YUV422|JPG|GRAY|NONE)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::cameraTakePicture( StringList *args )
+     *
+     * Take picture.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::cameraTakePicture( StringList *args )
+    {
+        String s;
+        CamImage image;
+        File f;
+
+        switch( count(args) )
+        {
+            case 1:
+                image = theCamera.takePicture();
+                if( !image.isAvailable() )
+                    return cameraTakePicture( 0 );
+            // Save to current storage
+                if( AstStorage->exists(_a(0)) )
+                    AstStorage->remove( _a(0) );
+                f = AstStorage->open( _a(0), FILE_WRITE );
+                f.write( image.getImgBuff(), image.getImgSize() );
+                f.close();
+                break;
+            default:
+                s = usage( "cameraTakePicture file" );
                 break;
         }
 
@@ -1202,6 +1336,101 @@ namespace AoiSpresense
         }
 
         return s;
+    }
+    /**
+     * @fn bool Ast::formatFromString( const String &value, CAM_IMAGE_PIX_FMT *format )
+     *
+     * Return CAM_IMAGE_PIX_FMT from string.
+     *
+     * @param[in] value Format type string like "YUV422".
+     * @param[in,out] format reference to CAM_IMAGE_PIX_FMT.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::formatFromString( const String &value, CAM_IMAGE_PIX_FMT *format )
+    {
+        bool b = true;
+
+        if( value=="RGB565" )
+            *format = CAM_IMAGE_PIX_FMT_RGB565;
+        else if( value=="YUV422" )
+            *format = CAM_IMAGE_PIX_FMT_YUV422;
+        else if( value=="JPG" )
+            *format = CAM_IMAGE_PIX_FMT_JPG;
+        else if( value=="GRAY" )
+            *format = CAM_IMAGE_PIX_FMT_GRAY;
+        else if( value=="NONE" )
+            *format = CAM_IMAGE_PIX_FMT_NONE;
+        else
+            b = false;
+
+        return b;
+    }
+    /**
+     * @fn bool Ast::fpsFromString( const String &value, CAM_VIDEO_FPS *fps )
+     *
+     * Return CAM_VIDEO_FPS from string.
+     *
+     * @param[in] value Format type string like "30".
+     * @param[in,out] fps reference to CAM_VIDEO_FPS.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::fpsFromString( const String &value, CAM_VIDEO_FPS *fps )
+    {
+        bool b = true;
+
+        if( value=="NONE" )
+            *fps = CAM_VIDEO_FPS_NONE;
+        else if( value=="5" )
+            *fps = CAM_VIDEO_FPS_5;
+        else if( value=="6" )
+            *fps = CAM_VIDEO_FPS_6;
+        else if( value=="7.5" )
+            *fps = CAM_VIDEO_FPS_7_5;
+        else if( value=="15" )
+            *fps = CAM_VIDEO_FPS_15;
+        else if( value=="30" )
+            *fps = CAM_VIDEO_FPS_30;
+        else if( value=="60" )
+            *fps = CAM_VIDEO_FPS_60;
+        else if( value=="120" )
+            *fps = CAM_VIDEO_FPS_120;
+        else
+            b = false;
+
+        return b;
+    }
+    /**
+     * @fn bool Ast::sizeFromString( const String &value, int *width, int *height )
+     *
+     * Return size (width, height) from string.
+     *
+     * @param[in] value Format type string like "QVGA".
+     * @param[in,out] width reference to width.
+     * @param[in,out] height reference to height.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::sizeFromString( const String &value, int *width, int *height )
+    {
+        bool b = true;
+
+        if( value=="QVGA" )
+            { *width = CAM_IMGSIZE_QVGA_H; *height = CAM_IMGSIZE_QVGA_V; }
+        else if( value=="VGA" )
+            { *width = CAM_IMGSIZE_VGA_H; *height = CAM_IMGSIZE_VGA_V; }
+        else if( value=="HD" )
+            { *width = CAM_IMGSIZE_HD_H; *height = CAM_IMGSIZE_HD_V; }
+        else if( value=="QUADVGA" )
+            { *width = CAM_IMGSIZE_QUADVGA_H; *height = CAM_IMGSIZE_QUADVGA_V; }
+        else if( value=="FULLHD" )
+            { *width = CAM_IMGSIZE_FULLHD_H; *height = CAM_IMGSIZE_FULLHD_V; }
+        else if( value=="5M" )
+            { *width = CAM_IMGSIZE_5M_H; *height = CAM_IMGSIZE_5M_V; }
+        else if( value=="3M" )
+            { *width = CAM_IMGSIZE_3M_H; *height = CAM_IMGSIZE_3M_V; }
+        else
+            b = false;
+
+        return b;
     }
 }
 #endif
