@@ -443,12 +443,14 @@ namespace AoiSpresense
      * Take picture.
      *
      * @param[in] args Reference to arguments.
-     * @return Empty string.
+     * @return Taked picture information.
      */
     String Ast::cameraTakePicture( StringList *args )
     {
         String s;
         CamImage image;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
         File f;
 
         switch( count(args) )
@@ -457,6 +459,11 @@ namespace AoiSpresense
                 image = theCamera.takePicture();
                 if( !image.isAvailable() )
                     return cameraTakePicture( 0 );
+                r[ "format" ] = image.getPixFormat();
+                r[ "height" ] = image.getHeight();
+                r[ "size" ] = image.getImgSize();
+                r[ "width" ] = image.getWidth();
+                r.prettyPrintTo( s );
             // Save to current storage
                 if( AstStorage->exists(_a(0)) )
                     AstStorage->remove( _a(0) );
