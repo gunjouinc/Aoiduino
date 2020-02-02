@@ -17,6 +17,11 @@ Supported boards are Arduino Uno, Spresense Ast. Below functions were implemente
     - Low Power [add] clockMode, coldSleep, deepSleep, dmesg, reboot, sleep
     - LTE       [add] lteBegin, lteConfig, lteEnd
 
+- 2020/02/02
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - Camera    [add] cameraBegin, cameraEnd, cameraAutoWhiteBalanceMode, cameraColorEffect, cameraPictureFormat, cameraTakePicture
+    - File      [add] beginUsbMsc, endUsbMsc
+
 ## Operation example on Spresense Ast
 
 ### Low Power
@@ -39,6 +44,32 @@ password : italy
   "voltage": 4021
 }
 # 
+```
+
+### Camera
+```
+# cameraBegin 1 30 QVGA YUV422
+
+# cameraAutoWhiteBalanceMode AUTO
+
+# cameraColorEffect SEPIA
+
+# cameraPictureFormat VGA JPG
+
+# cd /mnt/sd0
+
+# cameraTakePicture picture.jpg
+{
+  "format": true,
+  "height": 480,
+  "size": 27520,
+  "width": 640
+}
+# beginUsbMsc /mnt/sd0
+
+# endUsbMsc /mnt/sd0
+
+#
 ```
 
 ### File
