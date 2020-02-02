@@ -84,7 +84,6 @@ namespace AoiSpresense
             { ">>", &Ast::append },
             { "beginUsbMsc", &Ast::beginUsbMsc },
             { "cat", &Ast::read },
-            { "cat", &Ast::read },
             { "cd", &Ast::cd },
             { "endUsbMsc", &Ast::endUsbMsc },
             { "ll", &Ast::ll },
