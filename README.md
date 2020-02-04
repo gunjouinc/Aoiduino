@@ -208,7 +208,7 @@ ERROR: nw_stat : 0
   "signalStrength": "-82",
   "status": 3
 }
-# lteBegin line.me line@line line
+# lteBegin so-net.jp nuro nuro
 {
   "carrier": "NTT DOCOMO",
   "firmware": "RK_02_01_01_10_41_15",
@@ -221,16 +221,16 @@ ERROR: nw_stat : 0
 
 ### Redirect and pipe
 ```
-# echo line.me line@line line > lime.me
+# echo so-net.jp nuro nuro > nuro
 {
-  "value": "line.me line@line line"
+  "value": "so-net.jp nuro nuro"
 }
-# cat line.me | lteBegin
+# cat nuro | lteBegin
 {
   "carrier": "NTT DOCOMO",
   "firmware": "RK_02_01_01_10_41_15",
   "ipAddress": "114.169.149.246",
-  "imei": "351521100209899",
+  "imei": "3             9",
   "signalStrength": "-81",
   "status": 4
 }
