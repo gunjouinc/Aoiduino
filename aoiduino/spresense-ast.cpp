@@ -25,10 +25,14 @@ SpGnss Gnss;
 /* LTE */
 #include <LTE.h>
 LTE Lte;
+LTETLSClient LteTlsClient;
 LTEScanner LteScanner;
 LTEModemVerification LteModem;
 /* MP */
 #include <MP.h>
+/* MQTT */
+#include <ArduinoMqttClient.h>
+MqttClient MqttTlsClient( LteTlsClient );
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -109,6 +113,13 @@ namespace AoiSpresense
             { "lteBegin", &Ast::lteBegin },
             { "lteConfig", &Ast::lteConfig },
             { "lteEnd", &Ast::lteEnd },
+            /* MQTT */
+            { "mqttBegin", &Ast::mqttBegin },
+            { "mqttConnect", &Ast::mqttConnect },
+            { "mqttPublish", &Ast::mqttPublish },
+            { "mqttPoll", &Ast::mqttPoll },
+            { "mqttSubscribe", &Ast::mqttSubscribe },
+            { "mqttUnSubscribe", &Ast::mqttUnSubscribe },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -1408,6 +1419,168 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn String Ast::mqttBegin( StringList *args )
+     *
+     * Initalize mqtt certs.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mqttBegin( StringList *args )
+    {
+        String s;
+        File rc, cc, pk;
+
+        switch( count(args) )
+        {
+            case 3:
+            // RootCA
+                rc = AstStorage->open( _a(0), FILE_READ );
+                LteTlsClient.setCACert( rc, rc.available() );
+                rc.close();
+            // Client certificate
+                cc = AstStorage->open( _a(1), FILE_READ );
+                LteTlsClient.setCertificate( cc, cc.available() );
+                cc.close();
+            // Client private key
+                pk = AstStorage->open( _a(2), FILE_READ );
+                LteTlsClient.setPrivateKey( pk, pk.available() );
+                pk.close();
+                break;
+            default:
+                s = usage( "mqttBegin CACert Certificate PrivateKey" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::mqttConnect( StringList *args )
+     *
+     * Connect to mqtt broker.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mqttConnect( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 2:
+                if( !MqttTlsClient.connect(_a(0).c_str(),_atoi(1)) )
+                    return mqttConnect( 0 );
+                break;
+            default:
+                s = usage( "mqttConnect broker port" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::mqttPublish( StringList *args )
+     *
+     * Publish message to topic.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mqttPublish( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 2:
+                if( !MqttTlsClient.beginMessage(_a(0)) )
+                    return mqttPublish( 0 );
+                MqttTlsClient.print( _a(1) );
+                MqttTlsClient.endMessage();
+                break;
+            default:
+                s = usage( "mqttPublish topic message" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::mqttPoll( StringList *args )
+     *
+     * Regularly to allow the library to receive MQTT messages and
+     * send MQTT keep alives which avoids being disconnected by the broker.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mqttPoll( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                MqttTlsClient.poll();
+                break;
+            default:
+                s = usage( "mqttPoll" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::mqttSubscribe( StringList *args )
+     *
+     * Subscribe message from topic.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mqttSubscribe( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                MqttTlsClient.onMessage( mqttMessage );
+                MqttTlsClient.subscribe( _a(0) );
+                break;
+            default:
+                s = usage( "mqttSubscribe topic" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::mqttUnSubscribe( StringList *args )
+     *
+     * Unsubscribe message from topic.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mqttUnSubscribe( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                MqttTlsClient.unsubscribe( _a(0) );
+                break;
+            default:
+                s = usage( "mqttUnSubscribe topic" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn bool Ast::effectFromString( const String &value, CAM_COLOR_FX *effect )
      *
      * Return CAM_COLOR_FX from string.
@@ -1585,6 +1758,19 @@ namespace AoiSpresense
             b = false;
 
         return b;
+    }
+    /**
+     * @fn void Ast::mqttMessage( int messageSize )
+     *
+     * Receive message from topic.
+     *
+     * @param[in] message size.
+     */
+    void Ast::mqttMessage( int messageSize )
+    {
+        while( MqttTlsClient.available() )
+            Serial.print( (char)MqttTlsClient.read() );
+      Serial.println();
     }
 }
 #endif
