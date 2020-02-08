@@ -1493,14 +1493,14 @@ namespace AoiSpresense
 
         switch( count(args) )
         {
-            case 2:
-                if( !MqttTlsClient.beginMessage(_a(0)) )
+            case 3:
+                if( !MqttTlsClient.beginMessage(_a(0),false,_atoui(1)) )
                     return mqttPublish( 0 );
-                MqttTlsClient.print( _a(1) );
+                MqttTlsClient.print( _a(2) );
                 MqttTlsClient.endMessage();
                 break;
             default:
-                s = usage( "mqttPublish topic message" );
+                s = usage( "mqttPublish topic [0-2] message" );
                 break;
         }
 
@@ -1545,12 +1545,12 @@ namespace AoiSpresense
 
         switch( count(args) )
         {
-            case 1:
+            case 2:
                 MqttTlsClient.onMessage( mqttMessage );
-                MqttTlsClient.subscribe( _a(0) );
+                MqttTlsClient.subscribe( _a(0), _atoui(1) );
                 break;
             default:
-                s = usage( "mqttSubscribe topic" );
+                s = usage( "mqttSubscribe topic [0-2]" );
                 break;
         }
 
