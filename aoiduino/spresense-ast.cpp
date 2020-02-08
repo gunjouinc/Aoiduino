@@ -22,6 +22,8 @@ SDClass AstSD;
 SpGnss Gnss;
 /* LowPower */
 #include <LowPower.h>
+#include <RTC.h>
+#include <Watchdog.h>
 /* LTE */
 #include <LTE.h>
 LTE Lte;
@@ -129,6 +131,7 @@ namespace AoiSpresense
     // Initalize library
         /* LowPower */
         LowPower.begin();
+        RTC.begin();
     }
     /**
      * @fn Ast::~Ast( void )
@@ -1280,8 +1283,12 @@ namespace AoiSpresense
             case 0:
                 LowPower.reboot();
                 break;
+            case 1:
+                Watchdog.begin();
+                Watchdog.start( _atoi(0) );
+                break;
             default:
-                s = usage( "reboot" );
+                s = usage( "reboot [0-9]*" );
                 break;
         }
 
