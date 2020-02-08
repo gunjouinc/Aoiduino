@@ -1284,11 +1284,13 @@ namespace AoiSpresense
                 LowPower.reboot();
                 break;
             case 1:
+                if( 40000<_atoi(0) )
+                    return reboot( 0 );
                 Watchdog.begin();
                 Watchdog.start( _atoi(0) );
                 break;
             default:
-                s = usage( "reboot [0-9]*" );
+                s = usage( "reboot (0-40000)*" );
                 break;
         }
 
