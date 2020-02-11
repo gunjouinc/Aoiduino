@@ -42,6 +42,7 @@ namespace AoiBase
             { "millis", &Arduino::millis },
             { "noTone", &Arduino::noTone },
             { "pinMode", &Arduino::pinMode },
+            { "sed", &Arduino::sed },
             { "tone", &Arduino::tone },
         // $ Please set your function to use.
             { "", 0 }
@@ -533,6 +534,40 @@ namespace AoiBase
                 }
             default:
                 s = usage( "pinMode pin (INPUT|OUTPUT|INPUT_PULLUP)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Arduino::sed( StringList *args )
+     *
+     * Replace content and output.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Replaced string.
+     */
+    String Arduino::sed( StringList *args )
+    {
+        String s;
+        StringList *sl;
+
+        switch( count(args) )
+        {
+            case 2:
+                sl = split( _a(0), "/" );
+                if( count(sl)!=2 )
+                {
+                    delete [] sl;
+                    return sed( 0 );
+                }
+            // Replace before to after
+                _a( 1 ).replace( (sl+0)->value, (sl+1)->value );
+                s = prettyPrintTo( "value" , _a(1) );
+                delete [] sl;
+                break;
+            default:
+                s = usage( "sed before/after target" );
                 break;
         }
 
