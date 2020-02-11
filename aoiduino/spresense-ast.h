@@ -100,7 +100,7 @@ namespace AoiSpresense
         static bool fpsFromString( const String &value, CAM_VIDEO_FPS *fps );
         static bool whiteBalanceFromString( const String &value, CAM_WHITE_BALANCE *wb );
         static bool sizeFromString( const String &value, int *width, int *height );
-        static void mqttOnMessage( int messageSize );
+        static void mqttOnMessage( char *topic, byte *payload, unsigned int length );
     // static variables
     private:
         /** Holds function table. */

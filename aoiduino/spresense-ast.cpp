@@ -33,8 +33,8 @@ LTEModemVerification LteModem;
 /* MP */
 #include <MP.h>
 /* MQTT */
-#include <ArduinoMqttClient.h>
-MqttClient MqttTlsClient( LteTlsClient );
+#include <PubSubClient.h>
+PubSubClient MqttTlsClient( LteTlsClient );
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -1486,7 +1486,8 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 2:
-                if( !MqttTlsClient.connect(_a(0).c_str(),_atoi(1)) )
+                MqttTlsClient.setServer( _a(0).c_str(), _atoi(1) );
+                if( !MqttTlsClient.connect(STR_AOIDUINO) )
                     return mqttConnect( 0 );
                 break;
             default:
@@ -1509,17 +1510,15 @@ namespace AoiSpresense
         String s;
         int c = count( args );
 
-        if( c<3 )
-            s = usage( "mqttPublish topic [0-2] message" );
+        if( c<2 )
+            s = usage( "mqttPublish topic message" );
         else
         {
-        // restore argument after qos
-            String t = join( args, STR_SPACE, 2 );
+        // restore argument after topic
+            String t = join( args, STR_SPACE, 1 );
         // Publish message
-            if( !MqttTlsClient.beginMessage(_a(0),false,_atoui(1)) )
+            if( !MqttTlsClient.publish(_a(0).c_str(),t.c_str()) )
                 return mqttPublish( 0 );
-            MqttTlsClient.print( t );
-            MqttTlsClient.endMessage();
         }
 
         return s;
@@ -1540,9 +1539,9 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 3:
-                MqttTlsClient.onMessage( mqttOnMessage );
+                MqttTlsClient.setCallback( mqttOnMessage );
             // subscribe method returns 0 or false or true.
-                if( !MqttTlsClient.subscribe(_a(0),_atoui(1)) )
+                if( !MqttTlsClient.subscribe(_a(0).c_str(),_atoui(1)) )
                     return mqttSubscribe( 0 );
             // polling
                 m_mqttSubscribed = false;
@@ -1550,14 +1549,14 @@ namespace AoiSpresense
                 start = ::millis() / 1000;
                 while( !m_mqttSubscribed )
                 {
-                    MqttTlsClient.poll();
+                    MqttTlsClient.loop();
                     if( _atoi(2)<((::millis()/1000)-start) )
                         break;
                 }
                 s = prettyPrintTo( "value" , m_mqttSubscribedMessage );
             // unsubscribe
-                MqttTlsClient.unsubscribe( _a(0) );
-                MqttTlsClient.onMessage( 0 );
+                MqttTlsClient.unsubscribe( _a(0).c_str() );
+                MqttTlsClient.setCallback( 0 );
                 break;
             default:
                 s = usage( "mqttSubscribe topic [0-2] timeout" );
@@ -1746,20 +1745,22 @@ namespace AoiSpresense
         return b;
     }
     /**
-     * @fn void Ast::mqttOnMessage( int messageSize )
+     * @fn void Ast::mqttOnMessage( char *topic, byte *payload, unsigned int length )
      *
      * Receive message from topic.
      *
      * @param[in] message size.
      */
-    void Ast::mqttOnMessage( int messageSize )
+    void Ast::mqttOnMessage( char *topic, byte *payload, unsigned int length )
     {
         if( m_mqttSubscribed )
             return;
 
-        m_mqttSubscribedMessage = "";
-        while( MqttTlsClient.available() )
-            m_mqttSubscribedMessage += (char)MqttTlsClient.read();
+        char *p = new char[ length+1 ];
+        memcpy( p, payload, length );
+        memset( p+length, 0, 1 );
+        m_mqttSubscribedMessage = p;
+        delete [] p;
 
         m_mqttSubscribed = true;
     }
