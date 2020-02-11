@@ -1546,11 +1546,11 @@ namespace AoiSpresense
             // polling
                 m_mqttSubscribed = false;
                 m_mqttSubscribedMessage = "";
-                start = ::millis();
+                start = ::millis() / 1000;
                 while( !m_mqttSubscribed )
                 {
                     MqttTlsClient.poll();
-                    if( _atoi(2)<(::millis()-start) )
+                    if( _atoi(2)<((::millis()/1000)-start) )
                         break;
                 }
                 s = prettyPrintTo( "value" , m_mqttSubscribedMessage );
