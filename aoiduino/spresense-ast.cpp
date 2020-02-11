@@ -94,6 +94,7 @@ namespace AoiSpresense
             { "pwd", &Ast::pwd },
             { "rm", &Ast::remove },
             { "rmdir", &Ast::rmdir },
+            { "sed", &Arduino::sed },
             { "touch", &Ast::touch },
             /* GNSS */
             { "gnssBegin", &Ast::gnssBegin },
