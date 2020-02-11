@@ -44,6 +44,7 @@ namespace AoiBase
             { "pinMode", &Arduino::pinMode },
             { "sed", &Arduino::sed },
             { "tone", &Arduino::tone },
+            { "yield", &Arduino::yield },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -598,6 +599,37 @@ namespace AoiBase
                 break;
             default:
                 s = usage( "tone pin frequency (duration)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn tring Arduino::yield( StringList *args )
+     *
+     * Passes control to other tasks when called.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Arduino::yield( StringList *args )
+    {
+        String s;
+        int start = 0;
+
+        switch( count(args) )
+        {
+            case 1:
+                start = ::millis() / 1000;
+                while( true )
+                {
+                    ::yield();
+                    if( _atoi(0)<((::millis()/1000)-start) )
+                        break;
+                }
+                break;
+            default:
+                s = usage( "yield [0-9]+" );
                 break;
         }
 

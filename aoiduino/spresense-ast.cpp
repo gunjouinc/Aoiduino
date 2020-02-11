@@ -80,6 +80,7 @@ namespace AoiSpresense
             { "noTone", &Arduino::noTone },
             { "pinMode", &Arduino::pinMode },
             { "tone", &Arduino::tone },
+            { "yield", &Arduino::yield },
             /* Camera */
             { "cameraBegin", &Ast::cameraBegin },
             { "cameraEnd", &Ast::cameraEnd },
