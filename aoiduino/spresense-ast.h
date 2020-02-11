@@ -91,9 +91,7 @@ namespace AoiSpresense
         static String mqttBegin( StringList *args );
         static String mqttConnect( StringList *args );
         static String mqttPublish( StringList *args );
-        static String mqttPoll( StringList *args );
         static String mqttSubscribe( StringList *args );
-        static String mqttUnSubscribe( StringList *args );
         // $ Please set your function to use.
     // static members
     protected:
@@ -102,11 +100,15 @@ namespace AoiSpresense
         static bool fpsFromString( const String &value, CAM_VIDEO_FPS *fps );
         static bool whiteBalanceFromString( const String &value, CAM_WHITE_BALANCE *wb );
         static bool sizeFromString( const String &value, int *width, int *height );
-        static void mqttMessage( int messageSize );
+        static void mqttOnMessage( int messageSize );
     // static variables
     private:
         /** Holds function table. */
         static AoiBase::FunctionTable *m_functionTable;
+        /** Holds mqtt subscribed statud. */
+        static bool m_mqttSubscribed;
+        /** Holds mqtt subscribed message. */
+        static String m_mqttSubscribedMessage;
     };
 }
 #endif

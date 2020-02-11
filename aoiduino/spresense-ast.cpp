@@ -51,6 +51,8 @@ namespace AoiSpresense
 {
 // Static variables.
     AoiBase::FunctionTable *Ast::m_functionTable = 0;
+    bool Ast::m_mqttSubscribed = false;
+    String Ast::m_mqttSubscribedMessage = "";
     /**
      * @fn Ast::Ast( void )
      *
@@ -119,9 +121,7 @@ namespace AoiSpresense
             { "mqttBegin", &Ast::mqttBegin },
             { "mqttConnect", &Ast::mqttConnect },
             { "mqttPublish", &Ast::mqttPublish },
-            { "mqttPoll", &Ast::mqttPoll },
             { "mqttSubscribe", &Ast::mqttSubscribe },
-            { "mqttUnSubscribe", &Ast::mqttUnSubscribe },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -1522,31 +1522,6 @@ namespace AoiSpresense
         return s;
     }
     /**
-     * @fn String Ast::mqttPoll( StringList *args )
-     *
-     * Regularly to allow the library to receive MQTT messages and
-     * send MQTT keep alives which avoids being disconnected by the broker.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty string.
-     */
-    String Ast::mqttPoll( StringList *args )
-    {
-        String s;
-
-        switch( count(args) )
-        {
-            case 0:
-                MqttTlsClient.poll();
-                break;
-            default:
-                s = usage( "mqttPoll" );
-                break;
-        }
-
-        return s;
-    }
-    /**
      * @fn String Ast::mqttSubscribe( StringList *args )
      *
      * Subscribe message from topic.
@@ -1557,39 +1532,32 @@ namespace AoiSpresense
     String Ast::mqttSubscribe( StringList *args )
     {
         String s;
+        int start = 0;
 
         switch( count(args) )
         {
-            case 2:
-                MqttTlsClient.onMessage( mqttMessage );
-                MqttTlsClient.subscribe( _a(0), _atoui(1) );
-                break;
-            default:
-                s = usage( "mqttSubscribe topic [0-2]" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Ast::mqttUnSubscribe( StringList *args )
-     *
-     * Unsubscribe message from topic.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty string.
-     */
-    String Ast::mqttUnSubscribe( StringList *args )
-    {
-        String s;
-
-        switch( count(args) )
-        {
-            case 1:
+            case 3:
+                MqttTlsClient.onMessage( mqttOnMessage );
+            // subscribe method returns 0 or false or true.
+                if( !MqttTlsClient.subscribe(_a(0),_atoui(1)) )
+                    return mqttSubscribe( 0 );
+            // polling
+                m_mqttSubscribed = false;
+                m_mqttSubscribedMessage = "";
+                start = ::millis();
+                while( !m_mqttSubscribed )
+                {
+                    MqttTlsClient.poll();
+                    if( _atoi(2)<(::millis()-start) )
+                        break;
+                }
+                s = prettyPrintTo( "value" , m_mqttSubscribedMessage );
+            // unsubscribe
                 MqttTlsClient.unsubscribe( _a(0) );
+                MqttTlsClient.onMessage( 0 );
                 break;
             default:
-                s = usage( "mqttUnSubscribe topic" );
+                s = usage( "mqttSubscribe topic [0-2] timeout" );
                 break;
         }
 
@@ -1775,17 +1743,22 @@ namespace AoiSpresense
         return b;
     }
     /**
-     * @fn void Ast::mqttMessage( int messageSize )
+     * @fn void Ast::mqttOnMessage( int messageSize )
      *
      * Receive message from topic.
      *
      * @param[in] message size.
      */
-    void Ast::mqttMessage( int messageSize )
+    void Ast::mqttOnMessage( int messageSize )
     {
+        if( m_mqttSubscribed )
+            return;
+
+        m_mqttSubscribedMessage = "";
         while( MqttTlsClient.available() )
-            Serial.print( (char)MqttTlsClient.read() );
-      Serial.println();
+            m_mqttSubscribedMessage += (char)MqttTlsClient.read();
+
+        m_mqttSubscribed = true;
     }
 }
 #endif
