@@ -116,6 +116,33 @@ namespace AoiCore
         return s;
     }
     /**
+     * @fn String join( StringList *list, const String &sep, int from = 0 )
+     *
+     * Join string list values using separator.
+     *
+     * @param[in] list Refernce to string list.
+     * @param[in] sep separator.
+     * @param[in] from index in fist list to join.
+     * @return Joined string. If argument is invalid, Return empty string.
+     */
+    String join( StringList *list, const String &sep, int from )
+    {
+        String s;
+        int c = count( list );
+
+        if( c<=from )
+            return s;
+
+        for( int i=from; i<c; i++ )
+        {
+            if( 0<s.length() )
+                s += sep;
+            s += (list+i)->value;
+        }
+
+        return s;
+    }
+    /**
      * @fn String newLine( void )
      *
      * Returns new line in interface.

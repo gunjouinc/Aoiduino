@@ -410,13 +410,7 @@ namespace AoiBase
             s = usage( "echo .+" );
         else
         {
-            String t;
-            for( int i=0; i<c; i++ )
-            {
-                if( 0<i )
-                    t += STR_SPACE;
-                t += _a( i );
-            }
+            String t = join( args, STR_SPACE );
             s = prettyPrintTo( "value" , t );
         }
 
