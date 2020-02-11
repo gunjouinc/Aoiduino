@@ -38,6 +38,8 @@
 #define _term AoiCore::terminator()
 /** Key Back space. */
 #define KEY_BS String(char(0x08))+" "+String(char(0x08))
+/** Null string. */
+#define NULL_STR "_NULL_STR_"
 /**
  * @namespace AoiCore
  * @brief Aoi core classes.
@@ -50,7 +52,7 @@ namespace AoiCore
     struct StringList
     {
         /** Holds string value. */
-        String value;
+        String value = NULL_STR;
     };
 // Utils
     int count( StringList *list );

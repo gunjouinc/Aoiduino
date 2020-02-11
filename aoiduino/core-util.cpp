@@ -34,7 +34,7 @@ namespace AoiCore
 
         while( true )
         {
-            if( (list+i)->value=="" )
+            if( (list+i)->value==NULL_STR )
                 break;
             i++;
         }
