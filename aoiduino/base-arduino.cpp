@@ -551,24 +551,30 @@ namespace AoiBase
     {
         String s;
         StringList *sl;
+        int c = count( args );
 
-        switch( count(args) )
+        if( c<2 )
+            s = usage( "sed before/after target" );
+        else
         {
-            case 2:
-                sl = split( _a(0), "/" );
-                if( count(sl)!=2 )
-                {
-                    delete [] sl;
-                    return sed( 0 );
-                }
-            // Replace before to after
-                _a( 1 ).replace( (sl+0)->value, (sl+1)->value );
-                s = prettyPrintTo( "value" , _a(1) );
+            sl = split( _a(0), "/" );
+            if( count(sl)!=2 )
+            {
                 delete [] sl;
-                break;
-            default:
-                s = usage( "sed before/after target" );
-                break;
+                return sed( 0 );
+            }
+        // restore argument after replacement pattern
+            String t;
+            for( int i=1; i<c; i++ )
+            {
+                if( 1<i )
+                    t += STR_SPACE;
+                t += _a( i );
+            }
+        // Replace before to after
+            t.replace( (sl+0)->value, (sl+1)->value );
+            s = prettyPrintTo( "value" , t );
+            delete [] sl;
         }
 
         return s;
