@@ -63,6 +63,7 @@ namespace AoiBase
         static String pinMode( StringList *args );
         static String sed( StringList *args );
         static String tone( StringList *args );
+        static String yield( StringList *args );
         static String append( StringList *args );
         static String create( StringList *args );
         // $ Please set your function to use.
