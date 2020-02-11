@@ -1506,18 +1506,19 @@ namespace AoiSpresense
     String Ast::mqttPublish( StringList *args )
     {
         String s;
+        int c = count( args );
 
-        switch( count(args) )
+        if( c<3 )
+            s = usage( "mqttPublish topic [0-2] message" );
+        else
         {
-            case 3:
-                if( !MqttTlsClient.beginMessage(_a(0),false,_atoui(1)) )
-                    return mqttPublish( 0 );
-                MqttTlsClient.print( _a(2) );
-                MqttTlsClient.endMessage();
-                break;
-            default:
-                s = usage( "mqttPublish topic [0-2] message" );
-                break;
+        // restore argument after qos
+            String t = join( args, STR_SPACE, 2 );
+        // Publish message
+            if( !MqttTlsClient.beginMessage(_a(0),false,_atoui(1)) )
+                return mqttPublish( 0 );
+            MqttTlsClient.print( t );
+            MqttTlsClient.endMessage();
         }
 
         return s;
