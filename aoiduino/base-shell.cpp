@@ -36,6 +36,7 @@ namespace AoiBase
         FunctionTable ftl[] =
         {
         // ^ Please set your function to use.
+            { "eval", &Shell::eval },
             { "help", &Shell::help },
         // $ Please set your function to use.
             { "", 0 }
@@ -229,6 +230,29 @@ namespace AoiBase
         return s;
     }
     /**
+     * @fn String Shell::eval( StringList *args )
+     *
+     * Evaluate string to shell.
+     *
+     * @return Evaluate result.
+     */
+    String Shell::eval( StringList *args )
+    {
+        String s;
+        String t;
+        int c = count( args );
+
+        if( c<1 )
+            s = usage( "eval .+" );
+        else
+        {
+            t = join( args, STR_SPACE );
+            s = shell.practice( t );
+        }
+
+        return s;
+    }
+    /**
      * @fn String Shell::help( StringList *args )
      *
      * Shows help message.
@@ -338,7 +362,7 @@ namespace AoiBase
     String Shell::practice( const String &args )
     {
         String s, t, arg1, arg2;
-        StringList *sl = split( args, " " );
+        StringList *sl = split( args, STR_SPACE );
         DynamicJsonBuffer json;
 
     // Practice functions.
