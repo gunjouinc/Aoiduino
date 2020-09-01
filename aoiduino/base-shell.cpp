@@ -11,6 +11,8 @@
 #include "base-shell.h"
 /** Communication history size. */
 #define HISTORY_SIZE 1+10+1
+/** Loop history size. */
+#define LOOP_SIZE 10+1
 /** Holds boot loader. */
 extern AoiBase::BootLoader loader;
 /** Holds shell. */
@@ -36,6 +38,8 @@ namespace AoiBase
         FunctionTable ftl[] =
         {
         // ^ Please set your function to use.
+            { "do", &Shell::doBegin },
+            { "done", &Shell::doEnd },
             { "eval", &Shell::eval },
             { "help", &Shell::help },
         // $ Please set your function to use.
@@ -54,6 +58,8 @@ namespace AoiBase
 
         m_history = new StringList[ HISTORY_SIZE ];
         m_historyIndex = m_history;
+        m_loop = new StringList[ LOOP_SIZE ];
+        m_loopStarted = false;
     }
     /**
      * @fn Shell::~Shell( void )
@@ -63,6 +69,7 @@ namespace AoiBase
     Shell::~Shell( void )
     {
         delete [] m_history;
+        delete [] m_loop;
     }
     /**
      * @fn bool Shell::bash( const String &prompt )
@@ -99,7 +106,8 @@ namespace AoiBase
                     else
                     {
                         t = practice( s );
-                        app << t + _n;
+                        if( 0<t.length() )
+                            app << t + _n;
                     // Updates History. First and last history must be empty.
                         for( int k=HISTORY_SIZE-3; 0<k; k-- )
                             (m_history+k+1)->value = (m_history+k)->value;
@@ -230,6 +238,76 @@ namespace AoiBase
         return s;
     }
     /**
+     * @fn String Shell::doBegin( StringList *args )
+     *
+     * Start loop.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty String.
+     */
+    String Shell::doBegin( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                delete [] shell.m_loop;
+                shell.m_loop = new StringList[ LOOP_SIZE ];
+                shell.m_loopStarted = true;
+                break;
+            default:
+                s = usage( "do" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::doEnd( StringList *args )
+     *
+     * Stop loop and Practice loop.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty String.
+     */
+    String Shell::doEnd( StringList *args )
+    {
+        String s, t;
+        int i=0, j=0;
+
+        switch( count(args) )
+        {
+            case 0:
+                shell.m_loopStarted = false;
+                j = count( shell.m_loop );
+                while( true )
+                {
+                    t = (shell.m_loop+i)->value;
+                    if( t=="break" )
+                        break;
+                    shell << t + _n;
+                    s = shell.practice( t );
+                    if( 0<s.length() )
+                        shell << s + _n;
+                // Next index or first
+                    ::yield;
+                    i++;
+                    if( i==j )
+                        i = 0;
+                }
+                delete [] shell.m_loop;
+                shell.m_loop = new StringList[ LOOP_SIZE ];
+                s = "";
+                break;
+            default:
+                s = usage( "done" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Shell::eval( StringList *args )
      *
      * Evaluate string to shell.
@@ -238,8 +316,7 @@ namespace AoiBase
      */
     String Shell::eval( StringList *args )
     {
-        String s;
-        String t;
+        String s, t;
         int c = count( args );
 
         if( c<1 )
@@ -352,6 +429,30 @@ namespace AoiBase
         return b;
     }
     /**
+     * @fn bool Shell::doAdd( const String &args )
+     *
+     * Add args to loop list.
+     *
+     * @return Return true if args is add, Otherwise return false.
+     */
+    bool Shell::doAdd( const String &args )
+    {
+        bool b = false;
+        int c = count( m_loop );
+
+        if( args=="do" || args=="done" )
+        {
+        // Reserved word
+        }
+        else if( m_loopStarted && c<LOOP_SIZE )
+        {
+            (m_loop+c)->value = args;
+            b = true;
+        }
+
+        return b;
+    }
+    /**
      * @fn String Shell::practice( const String &args )
      *
      * Practices functions with arguments.
@@ -362,6 +463,10 @@ namespace AoiBase
     String Shell::practice( const String &args )
     {
         String s, t, arg1, arg2;
+
+        if( doAdd(args) )
+            return s;
+
         StringList *sl = split( args, STR_SPACE );
         DynamicJsonBuffer json;
 

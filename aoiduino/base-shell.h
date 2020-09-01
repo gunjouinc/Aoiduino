@@ -44,6 +44,8 @@ namespace AoiBase
     // static members
     protected:
         // ^ Please set your function to use.
+        static String doBegin( StringList *args );
+        static String doEnd( StringList *args );
         static String eval( StringList *args );
         static String help( StringList *args );
         // $ Please set your function to use.
@@ -51,6 +53,7 @@ namespace AoiBase
     protected:
         virtual void afterKeyInput( int input, String *buffer );
         virtual bool beforeKeyInput( int input, String *buffer );
+        virtual bool doAdd( const String &args );
         virtual String practice( const String &args );
     // variables
     private:
@@ -58,6 +61,10 @@ namespace AoiBase
         StringList *m_history;
         /** Communication history index. */
         StringList *m_historyIndex;
+        /** Loop list. */
+        StringList *m_loop;
+        /** Hold loop started. */
+        bool m_loopStarted;
     // static variables
     private:
         /** Holds function table. */
