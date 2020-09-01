@@ -149,7 +149,8 @@ namespace AoiBase
                 {
                     debug( (sl+i)->value );
                     s = shell.practice( (sl+i)->value );
-                    debug( s );
+                    if( 0<s.length() )
+                        debug( s );
                 }
                 delete [] sl;
             }
