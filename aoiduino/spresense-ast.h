@@ -87,6 +87,7 @@ namespace AoiSpresense
         static String lteBegin( StringList *args );
         static String lteConfig( StringList *args );
         static String lteEnd( StringList *args );
+        static String lteHttpGet( StringList *args );
         // $ Please set your function to use.
     // static members
     protected:

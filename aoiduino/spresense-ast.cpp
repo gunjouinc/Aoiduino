@@ -113,6 +113,7 @@ namespace AoiSpresense
             { "lteBegin", &Ast::lteBegin },
             { "lteConfig", &Ast::lteConfig },
             { "lteEnd", &Ast::lteEnd },
+            { "lteHttpGet", &Ast::lteHttpGet },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -1419,6 +1420,73 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "lteEnd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::letHttpGet( StringList *args )
+     *
+     * Send HTTP GET to server.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Recieved content.
+     */
+    String Ast::lteHttpGet( StringList *args )
+    {
+        String s;
+        LTEClient client;
+        String host;
+        int port = 80;
+        int start = 0;
+        int timeout = 30 * 1000;
+        int i = 0;
+
+        switch( count(args) )
+        {
+            case 4:
+                timeout = _atoi( 3 ) * 1000;
+            case 3:
+                port = _atoi( 2 );
+            case 2:
+                host = _a( 0 );
+                if( !client.connect(host.c_str(),port) )
+                    break;
+                client.print( "GET " );
+                client.print( _a(1) );
+                client.println( " HTTP/1.1" );
+                client.print( "Host: " );
+                client.println( host );
+                client.println( "Connection: close" );
+                client.println();
+                start = ::millis();
+                while( true )
+                {
+                    if( i=client.available() )
+                    {
+                        char c[ i+1 ];
+                        c[ i ] = NULL;
+                        client.read( (uint8_t*)c, i );
+                        s += c;
+                    }
+                    if( !client.available() && !client.connected() )
+                    {
+                        client.stop();
+                        break;
+                    }
+                // timeout
+                    if( timeout<(::millis()-start) )
+                        break;
+                }
+            // Only content
+                i = s.indexOf( "\r\n\r\n" );
+                if( -1<i )
+                    s = s.substring( i+4 );
+                s = prettyPrintTo( "value", s );
+                break;
+            default:
+                s = usage( "letHttpGet host path (port timeout)?" );
                 break;
         }
 
