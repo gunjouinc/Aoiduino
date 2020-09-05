@@ -1515,7 +1515,7 @@ namespace AoiSpresense
         else
         {
         // restore argument after topic
-            String t = join( args, STR_SPACE, 1 );
+            String t = join( args, STR_SPACE, 2 );
         // Publish message
             if( !MqttTlsClient.publish(_a(0).c_str(),t.c_str()) )
                 return mqttPublish( 0 );
