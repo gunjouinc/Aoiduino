@@ -55,6 +55,7 @@ namespace AoiCore
         String value = NULL_STR;
     };
 // Utils
+    StringList* bracket( StringList *list, const String &start, const String &end );
     int count( StringList *list );
     String debug( const String &data );
     bool isDigit( const String &data );

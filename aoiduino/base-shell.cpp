@@ -469,6 +469,9 @@ namespace AoiBase
             return s;
 
         StringList *sl = split( args, STR_SPACE );
+        StringList *sl2 = bracket( sl, String("\""), String("\"") );
+        delete [] sl;
+        sl = sl2;
         DynamicJsonBuffer json;
 
     // Practice functions.
