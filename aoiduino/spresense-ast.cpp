@@ -27,6 +27,7 @@ SpGnss Gnss;
 /* LTE */
 #include <LTE.h>
 LTE Lte;
+LTEClient LteClient;
 LTETLSClient LteTlsClient;
 LTEScanner LteScanner;
 LTEModemVerification LteModem;
@@ -34,7 +35,9 @@ LTEModemVerification LteModem;
 #include <MP.h>
 /* MQTT */
 #include <PubSubClient.h>
+PubSubClient MqttClient( LteClient );
 PubSubClient MqttTlsClient( LteTlsClient );
+PubSubClient *mqtt = &MqttTlsClient;
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -1518,7 +1521,11 @@ namespace AoiSpresense
 
         switch( count(args) )
         {
+            case 0:
+                mqtt = &MqttClient;
+                break;
             case 3:
+                mqtt = &MqttTlsClient;
             // RootCA
                 rc = AstStorage->open( _a(0), FILE_READ );
                 LteTlsClient.setCACert( rc, rc.available() );
@@ -1550,16 +1557,20 @@ namespace AoiSpresense
     String Ast::mqttConnect( StringList *args )
     {
         String s;
+        int port = 1883;
 
         switch( count(args) )
         {
             case 2:
-                MqttTlsClient.setServer( _a(0).c_str(), _atoi(1) );
-                if( !MqttTlsClient.connect(STR_AOIDUINO) )
+                port = _atoi( 1 );
+            case 1:
+                mqtt->setServer( _a(0).c_str(), port );
+                if( !mqtt->connect(STR_AOIDUINO) )
                     return mqttConnect( 0 );
+                mqtt->setCallback( mqttOnMessage );
                 break;
             default:
-                s = usage( "mqttConnect broker port" );
+                s = usage( "mqttConnect broker (port)?" );
                 break;
         }
 
@@ -1583,9 +1594,9 @@ namespace AoiSpresense
         else
         {
         // restore argument after topic
-            String t = join( args, STR_SPACE, 2 );
+            String t = join( args, STR_SPACE, 1 );
         // Publish message
-            if( !MqttTlsClient.publish(_a(0).c_str(),t.c_str()) )
+            if( !mqtt->publish(_a(0).c_str(),t.c_str()) )
                 return mqttPublish( 0 );
         }
 
@@ -1603,13 +1614,15 @@ namespace AoiSpresense
     {
         String s;
         int start = 0;
+        int timeout = 180;
 
         switch( count(args) )
         {
             case 3:
-                MqttTlsClient.setCallback( mqttOnMessage );
+                timeout = _atoi( 2 );
+            case 2:
             // subscribe method returns 0 or false or true.
-                if( !MqttTlsClient.subscribe(_a(0).c_str(),_atoui(1)) )
+                if( !mqtt->subscribe(_a(0).c_str(),_atoui(1)) )
                     return mqttSubscribe( 0 );
             // polling
                 m_mqttSubscribed = false;
@@ -1617,17 +1630,16 @@ namespace AoiSpresense
                 start = ::millis() / 1000;
                 while( !m_mqttSubscribed )
                 {
-                    MqttTlsClient.loop();
-                    if( _atoi(2)<((::millis()/1000)-start) )
+                    mqtt->loop();
+                    if( timeout<((::millis()/1000)-start) )
                         break;
                 }
                 s = prettyPrintTo( "value" , m_mqttSubscribedMessage );
             // unsubscribe
-                MqttTlsClient.unsubscribe( _a(0).c_str() );
-                MqttTlsClient.setCallback( 0 );
+                mqtt->unsubscribe( _a(0).c_str() );
                 break;
             default:
-                s = usage( "mqttSubscribe topic [0-2] timeout" );
+                s = usage( "mqttSubscribe topic [0-2] (timeout)?" );
                 break;
         }
 
