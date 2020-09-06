@@ -60,3 +60,5 @@
 #define STR_SHELL_SEPARATOR ";"
 /** Space */
 #define STR_SPACE " "
+/** User Agent */
+#define STR_USER_AGENT "jp.co.gunjou.aoi.aoiduino"

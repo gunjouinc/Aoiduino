@@ -1456,8 +1456,8 @@ namespace AoiSpresense
                 client.print( "GET " );
                 client.print( _a(1) );
                 client.println( " HTTP/1.1" );
-                client.print( "Host: " );
-                client.println( host );
+                client.println( "Host: " + host );
+                client.println( "User-Agent: " + String(STR_USER_AGENT) );
                 client.println( "Connection: close" );
                 client.println();
                 start = ::millis();
