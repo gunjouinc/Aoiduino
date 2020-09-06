@@ -18,6 +18,67 @@
 namespace AoiCore
 {
     /**
+     * @fn void bracket( StringList *list, const string &start, const string &end )
+     *
+     * Merge bracket string list to string list.
+     *
+     * Example
+     * StringList This is "aoi and arduino" is
+     * [0] = This
+     * [1] = is
+     * [2] = "aoi
+     * [3] = and
+     * [4] = arduino"
+     * [5] = empty
+     *
+     * This method merge bracket like below list.
+     * [0] = This
+     * [1] = is
+     * [2] = aoi and arduino
+     * [3] = empty
+     *
+     * @param[in/out] list String list to merge.
+     * @param[in] start Start bracket.
+     * @param[in] end End bracket.
+     * @return Reference to string list. Please call delete [] to delete returned value.
+     */
+    StringList* bracket( StringList *list, const String &start, const String &end )
+    {
+        int c = count( list );
+        StringList *l = new StringList[ c+1 ];
+
+        for( int i=0; i<c; i++ )
+        {
+            String s = (list+i)->value;
+
+        // Add string to new list
+            if( s.indexOf(start) )
+            {
+                (l+count(l))->value = (list+i)->value;
+                continue;
+            }
+            (l+count(l))->value = s.substring( 1 );
+
+        // Append string to last string in new list
+            for( int j=i+1; j<c; j++ )
+            {
+                String t = (list+j)->value;
+                if( t.lastIndexOf(end)!=(t.length()-1) )
+                    (l+count(l)-1)->value += STR_SPACE + t;
+                else
+                {
+                    t = t.substring( 0, t.length()-1 );
+                    (l+count(l)-1)->value += STR_SPACE + t;
+                    i = j;
+                    break;
+                }
+            }
+
+        }
+
+        return l;
+    }
+    /**
      * @fn int count( StringList *list )
      *
      * Returns string list count.
