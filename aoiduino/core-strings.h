@@ -56,5 +56,7 @@
 #define STR_SHELL_CREATE ">"
 /** Shell pipe */
 #define STR_SHELL_PIPE "|"
+/** Shell separator */
+#define STR_SHELL_SEPARATOR ";"
 /** Space */
 #define STR_SPACE " "
