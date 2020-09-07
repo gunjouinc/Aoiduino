@@ -22,6 +22,14 @@ Supported boards are Arduino Uno, Spresense Ast. Below functions were implemente
     - Camera    [add] cameraBegin, cameraEnd, cameraAutoWhiteBalanceMode, cameraColorEffect, cameraPictureFormat, cameraTakePicture
     - File      [add] beginUsbMsc, endUsbMsc
 
+- 2020/0９/07
+  - All boards
+    - [add] eval, do, done
+    - [add] command separator (;), enclosed string (")
+
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - LTE       [add] lteHttpGet
+
 ## Operation example on Spresense Ast
 
 ### Low Power
@@ -233,6 +241,22 @@ ERROR: nw_stat : 0
   "imei": "3             9",
   "signalStrength": "-81",
   "status": 4
+}
+# 
+```
+### Command separator, enclosed string and eval
+```
+# echo "This sentense contains | pattern." ; echo =>
+{
+  "value": "=>"
+}
+# echo "This sentense contains | pattern." | echo =>
+{
+  "value": "=> This sentense contains | pattern."
+}
+# echo "echo This sentense is evaluated by eval" | eval
+{
+  "value": "This sentense is evaluated by eval"
 }
 # 
 ```
