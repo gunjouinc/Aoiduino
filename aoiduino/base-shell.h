@@ -54,6 +54,9 @@ namespace AoiBase
         virtual void afterKeyInput( int input, String *buffer );
         virtual bool beforeKeyInput( int input, String *buffer );
         virtual bool doAdd( const String &args );
+        virtual bool isAdditionalArgCharacter( const String &value );
+        virtual bool isMethodCharacter( const String &value );
+        virtual bool isSpecialCharacter( const String &value );
         virtual String practice( const String &args );
     // variables
     private:

@@ -454,6 +454,73 @@ namespace AoiBase
         return b;
     }
     /**
+     * @fn bool Shell::isAdditionalArgCharacter( const String &value )
+     *
+     * Return true if value is additinal arg character.
+     *
+     * @param[in] value Charactar.
+     * @return Return true if value is additional character, Otherwise return false.
+     */
+    bool Shell::isAdditionalArgCharacter( const String &value )
+    {
+        bool b = false;
+
+        if( value==STR_SHELL_APPEND )
+            b = true;
+        else if( value==STR_SHELL_CREATE )
+            b = true;
+        else if( value==STR_SHELL_PIPE )
+            b = true;
+        else if( value==STR_SHELL_PIPE_ALL )
+            b = true;
+
+        return b;
+    }
+    /**
+     * @fn bool Shell::isMethodCharacter( const String &value )
+     *
+     * Return true if value is method character.
+     *
+     * @param[in] value Charactar.
+     * @return Return true if value is method character, Otherwise return false.
+     */
+    bool Shell::isMethodCharacter( const String &value )
+    {
+        bool b = false;
+
+        if( value==STR_SHELL_APPEND )
+            b = true;
+        else if( value==STR_SHELL_CREATE )
+            b = true;
+
+        return b;
+    }
+    /**
+     * @fn bool Shell::isSpecialCharacter( const String &value )
+     *
+     * Return true if value is special character.
+     *
+     * @param[in] value Charactar.
+     * @return Return true if value is special character, Otherwise return false.
+     */
+    bool Shell::isSpecialCharacter( const String &value )
+    {
+        bool b = false;
+
+        if( value==STR_SHELL_APPEND )
+            b = true;
+        else if( value==STR_SHELL_CREATE )
+            b = true;
+        else if( value==STR_SHELL_PIPE )
+            b = true;
+        else if( value==STR_SHELL_PIPE_ALL )
+            b = true;
+        else if( value==STR_SHELL_SEPARATOR )
+            b = true;
+
+        return b;
+    }
+    /**
      * @fn String Shell::practice( const String &args )
      *
      * Practices functions with arguments.
@@ -478,8 +545,7 @@ namespace AoiBase
         for( int i=0; i<count(sl); i++ )
         {
             t = (sl+i)->value;
-            if( (t!=STR_SHELL_APPEND) && (t!=STR_SHELL_CREATE) &&
-                (t!=STR_SHELL_PIPE) && (t!=STR_SHELL_SEPARATOR) )
+            if( !isSpecialCharacter(t) )
             {
                 if( arg1.length() )
                     arg1 += STR_SPACE;
@@ -509,20 +575,21 @@ namespace AoiBase
             delete [] sm;
             if( !b )
                 break;
-        // For next practice.
+        // For next practice, Set method and additional arg
             JsonObject &r = json.parseObject( s );
-            if( t==STR_SHELL_SEPARATOR )
+            arg1 = "";
+            if( isMethodCharacter(t) )
+                arg1 = t;
+            arg2 = "";
+            if( isAdditionalArgCharacter(t) )
             {
-                arg1 = ""; // no method
-                arg2 = ""; // no addtional arg
+                if( t==STR_SHELL_PIPE_ALL )
+                    arg2 = "\"" + s + "\"";
+                else
+                    arg2 = static_cast<const char*>( r["value"] );
             }
-            else
-            {
-                arg1 = (t==STR_SHELL_PIPE) ? "" : t;
-                arg2 = static_cast<const char*>( r["value"] );
-                if( 0<arg2.length() )
-                    arg2 = STR_SPACE + arg2;
-            }
+            if( 0<arg2.length() )
+                arg2 = STR_SPACE + arg2;
         }
         delete [] sl;
 
