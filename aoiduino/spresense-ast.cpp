@@ -1564,6 +1564,7 @@ namespace AoiSpresense
             case 2:
                 port = _atoi( 1 );
             case 1:
+                mqtt->setBufferSize( 1024 );
                 mqtt->setServer( _a(0).c_str(), port );
                 if( !mqtt->connect(STR_AOIDUINO) )
                     return mqttConnect( 0 );
