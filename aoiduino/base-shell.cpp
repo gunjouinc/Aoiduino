@@ -256,16 +256,12 @@ namespace AoiBase
 
         switch( count(args) )
         {
-            case 0:
-                delete [] shell.m_loop;
-                shell.m_loop = new StringList[ LOOP_SIZE ];
-                shell.m_loopStarted = true;
-                break;
             case 3:
                 shell.m_loopStart = _atoi( 0 );
                 shell.m_loopEnd = _atoi( 1 );
                 shell.m_loopStep = _atoi( 2 );
                 shell.m_loopCurrent = shell.m_loopStart;
+            case 0:
                 delete [] shell.m_loop;
                 shell.m_loop = new StringList[ LOOP_SIZE ];
                 shell.m_loopStarted = true;
