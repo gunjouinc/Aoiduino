@@ -68,6 +68,16 @@ namespace AoiBase
         StringList *m_loop;
         /** Hold loop started. */
         bool m_loopStarted;
+    // variables - loop index
+    private:
+        /** Hold loop current index. */
+        int m_loopCurrent = 0;;
+        /** Hold loop end index. */
+        int m_loopEnd = 0;
+        /** Hold loop start index. */
+        int m_loopStart = 0;
+        /** Hold loop step. */
+        int m_loopStep = 0;
     // static variables
     private:
         /** Holds function table. */

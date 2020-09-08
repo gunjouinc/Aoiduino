@@ -249,6 +249,10 @@ namespace AoiBase
     String Shell::doBegin( StringList *args )
     {
         String s;
+        shell.m_loopStart = 0;
+        shell.m_loopEnd = 0;
+        shell.m_loopStep = 0;
+        shell.m_loopCurrent = shell.m_loopStart;
 
         switch( count(args) )
         {
@@ -257,8 +261,17 @@ namespace AoiBase
                 shell.m_loop = new StringList[ LOOP_SIZE ];
                 shell.m_loopStarted = true;
                 break;
+            case 3:
+                shell.m_loopStart = _atoi( 0 );
+                shell.m_loopEnd = _atoi( 1 );
+                shell.m_loopStep = _atoi( 2 );
+                shell.m_loopCurrent = shell.m_loopStart;
+                delete [] shell.m_loop;
+                shell.m_loop = new StringList[ LOOP_SIZE ];
+                shell.m_loopStarted = true;
+                break;
             default:
-                s = usage( "do" );
+                s = usage( "do (start end step)?" );
                 break;
         }
 
@@ -275,6 +288,7 @@ namespace AoiBase
     String Shell::doEnd( StringList *args )
     {
         String s, t;
+        String rep = "{$i}";
         int i=0, j=0;
 
         switch( count(args) )
@@ -287,6 +301,7 @@ namespace AoiBase
                     t = (shell.m_loop+i)->value;
                     if( t=="break" )
                         break;
+                    t.replace( rep, String(shell.m_loopCurrent) );
                     shell << t + _n;
                     s = shell.practice( t );
                     if( 0<s.length() )
@@ -296,6 +311,10 @@ namespace AoiBase
                     i++;
                     if( i==j )
                         i = 0;
+                // Set loop index
+                    shell.m_loopCurrent += shell.m_loopStep;
+                    if( shell.m_loopEnd<shell.m_loopCurrent )
+                        break;
                 }
                 delete [] shell.m_loop;
                 shell.m_loop = new StringList[ LOOP_SIZE ];
