@@ -27,10 +27,17 @@ SpGnss Gnss;
 /* LTE */
 #include <LTE.h>
 LTE Lte;
+LTEClient LteClient;
+LTETLSClient LteTlsClient;
 LTEScanner LteScanner;
 LTEModemVerification LteModem;
 /* MP */
 #include <MP.h>
+/* MQTT */
+#include <PubSubClient.h>
+PubSubClient MqttClient( LteClient );
+PubSubClient MqttTlsClient( LteTlsClient );
+PubSubClient *mqtt = &MqttTlsClient;
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -47,6 +54,8 @@ namespace AoiSpresense
 {
 // Static variables.
     AoiBase::FunctionTable *Ast::m_functionTable = 0;
+    bool Ast::m_mqttSubscribed = false;
+    String Ast::m_mqttSubscribedMessage = "";
     /**
      * @fn Ast::Ast( void )
      *
@@ -114,6 +123,11 @@ namespace AoiSpresense
             { "lteConfig", &Ast::lteConfig },
             { "lteEnd", &Ast::lteEnd },
             { "lteHttpGet", &Ast::lteHttpGet },
+            /* MQTT */
+            { "mqttBegin", &Ast::mqttBegin },
+            { "mqttConnect", &Ast::mqttConnect },
+            { "mqttPublish", &Ast::mqttPublish },
+            { "mqttSubscribe", &Ast::mqttSubscribe },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -1493,6 +1507,145 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn String Ast::mqttBegin( StringList *args )
+     *
+     * Initalize mqtt certs.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mqttBegin( StringList *args )
+    {
+        String s;
+        File rc, cc, pk;
+
+        switch( count(args) )
+        {
+            case 0:
+                mqtt = &MqttClient;
+                break;
+            case 3:
+                mqtt = &MqttTlsClient;
+            // RootCA
+                rc = AstStorage->open( _a(0), FILE_READ );
+                LteTlsClient.setCACert( rc, rc.available() );
+                rc.close();
+            // Client certificate
+                cc = AstStorage->open( _a(1), FILE_READ );
+                LteTlsClient.setCertificate( cc, cc.available() );
+                cc.close();
+            // Client private key
+                pk = AstStorage->open( _a(2), FILE_READ );
+                LteTlsClient.setPrivateKey( pk, pk.available() );
+                pk.close();
+                break;
+            default:
+                s = usage( "mqttBegin CACert Certificate PrivateKey" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::mqttConnect( StringList *args )
+     *
+     * Connect to mqtt broker.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mqttConnect( StringList *args )
+    {
+        String s;
+        int port = 1883;
+
+        switch( count(args) )
+        {
+            case 2:
+                port = _atoi( 1 );
+            case 1:
+                mqtt->setServer( _a(0).c_str(), port );
+                if( !mqtt->connect(STR_AOIDUINO) )
+                    return mqttConnect( 0 );
+                mqtt->setCallback( mqttOnMessage );
+                break;
+            default:
+                s = usage( "mqttConnect broker (port)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::mqttPublish( StringList *args )
+     *
+     * Publish message to topic.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mqttPublish( StringList *args )
+    {
+        String s;
+        int c = count( args );
+
+        if( c<2 )
+            s = usage( "mqttPublish topic message" );
+        else
+        {
+        // restore argument after topic
+            String t = join( args, STR_SPACE, 1 );
+        // Publish message
+            if( !mqtt->publish(_a(0).c_str(),t.c_str()) )
+                return mqttPublish( 0 );
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::mqttSubscribe( StringList *args )
+     *
+     * Subscribe message from topic.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::mqttSubscribe( StringList *args )
+    {
+        String s;
+        int start = 0;
+        int timeout = 180;
+
+        switch( count(args) )
+        {
+            case 3:
+                timeout = _atoi( 2 );
+            case 2:
+            // subscribe method returns 0 or false or true.
+                if( !mqtt->subscribe(_a(0).c_str(),_atoui(1)) )
+                    return mqttSubscribe( 0 );
+            // polling
+                m_mqttSubscribed = false;
+                m_mqttSubscribedMessage = "";
+                start = ::millis() / 1000;
+                while( !m_mqttSubscribed )
+                {
+                    mqtt->loop();
+                    if( timeout<((::millis()/1000)-start) )
+                        break;
+                }
+                s = prettyPrintTo( "value" , m_mqttSubscribedMessage );
+            // unsubscribe
+                mqtt->unsubscribe( _a(0).c_str() );
+                break;
+            default:
+                s = usage( "mqttSubscribe topic [0-2] (timeout)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn bool Ast::effectFromString( const String &value, CAM_COLOR_FX *effect )
      *
      * Return CAM_COLOR_FX from string.
@@ -1670,6 +1823,26 @@ namespace AoiSpresense
             b = false;
 
         return b;
+    }
+    /**
+     * @fn void Ast::mqttOnMessage( char *topic, byte *payload, unsigned int length )
+     *
+     * Receive message from topic.
+     *
+     * @param[in] message size.
+     */
+    void Ast::mqttOnMessage( char *topic, byte *payload, unsigned int length )
+    {
+        if( m_mqttSubscribed )
+            return;
+
+        char *p = new char[ length+1 ];
+        memcpy( p, payload, length );
+        memset( p+length, 0, 1 );
+        m_mqttSubscribedMessage = p;
+        delete [] p;
+
+        m_mqttSubscribed = true;
     }
 }
 #endif
