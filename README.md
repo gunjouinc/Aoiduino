@@ -22,10 +22,10 @@ Supported boards are Arduino Uno, Spresense Ast. Below functions were implemente
     - Camera    [add] cameraBegin, cameraEnd, cameraAutoWhiteBalanceMode, cameraColorEffect, cameraPictureFormat, cameraTakePicture
     - File      [add] beginUsbMsc, endUsbMsc
 
-- 2020/0９/07
+- 2020/09/08
   - All boards
     - [add] eval, do, done
-    - [add] command separator (;), enclosed string (")
+    - [add] command separator (;), enclosed string ("), use all result in pipe (||)
 
   - Spresense Ast, Type 'help Ast' to show usage.
     - LTE       [add] lteHttpGet
