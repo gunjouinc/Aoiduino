@@ -1078,6 +1078,8 @@ namespace AoiSpresense
                         r[ "direction" ] = nav.direction;
                         r[ "latitude" ] = nav.latitude;
                         r[ "longitude" ] = nav.longitude;
+                        r[ "maps" ] = "https://www.google.com/maps?q="
+                                     + String(nav.latitude,5) + "," + String(nav.longitude,5);
                         r[ "velocity" ] = nav.velocity;
                         r.prettyPrintTo( s );
                     }
