@@ -52,6 +52,8 @@
 #define STR_SHELL_BOOT_1 "*** Welcome to aoiduino, aoi environment for arduino. ***"
 #define STR_SHELL_BOOT_2 "help * : Show all usages."
 #define STR_SHELL_BOOT_3 "exit   : Back to login."
+/** Shell bracket */
+#define STR_SHELL_BRACKET "'"
 /** Shell create */
 #define STR_SHELL_CREATE ">"
 /** Shell pipe */

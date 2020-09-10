@@ -551,7 +551,7 @@ namespace AoiBase
             return s;
 
         StringList *sl = split( args, STR_SPACE );
-        StringList *sl2 = bracket( sl, String("\""), String("\"") );
+        StringList *sl2 = bracket( sl, STR_SHELL_BRACKET, STR_SHELL_BRACKET );
         delete [] sl;
         sl = sl2;
         DynamicJsonBuffer json;
@@ -571,6 +571,9 @@ namespace AoiBase
 
             bool b = false;
             StringList *sm = split( arg1+arg2, STR_SPACE );
+            StringList *sm2 = bracket( sm, STR_SHELL_BRACKET, STR_SHELL_BRACKET );
+            delete [] sm;
+            sm = sm2;
             ClassTable *ct = loader.classTable();
             while( ct->pointer )
             {
@@ -598,13 +601,12 @@ namespace AoiBase
             arg2 = "";
             if( isAdditionalArgCharacter(t) )
             {
+                arg2 += STR_SPACE;
                 if( t==STR_SHELL_PIPE_ALL )
-                    arg2 = "\"" + s + "\"";
+                    arg2 += STR_SHELL_BRACKET + s + STR_SHELL_BRACKET;
                 else
-                    arg2 = static_cast<const char*>( r["value"] );
+                    arg2 += static_cast<const char*>( r["value"] );
             }
-            if( 0<arg2.length() )
-                arg2 = STR_SPACE + arg2;
         }
         delete [] sl;
 
