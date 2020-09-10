@@ -45,38 +45,40 @@ namespace AoiCore
     StringList* bracket( StringList *list, const String &start, const String &end )
     {
         int c = count( list );
-        StringList *l = new StringList[ c+1 ];
+        StringList *sl = new StringList[ c+1 ];
 
         for( int i=0; i<c; i++ )
         {
+        // There is no bracket on 1st word
             String s = (list+i)->value;
-
-        // Add string to new list
             if( s.indexOf(start) )
             {
-                (l+count(l))->value = (list+i)->value;
+                (sl+count(sl))->value = s;
                 continue;
             }
-            (l+count(l))->value = s.substring( 1 );
-
-        // Append string to last string in new list
-            for( int j=i+1; j<c; j++ )
+        // There is some bracket on 1st word
+            if( s.lastIndexOf(end)==(s.length()-1) )
+                (sl+count(sl))->value = s.substring( 1, s.length()-1 );
+            else
             {
-                String t = (list+j)->value;
-                if( t.lastIndexOf(end)!=(t.length()-1) )
-                    (l+count(l)-1)->value += STR_SPACE + t;
-                else
+                (sl+count(sl))->value = s.substring( 1 );
+                for( int j=i+1; j<c; j++ )
                 {
-                    t = t.substring( 0, t.length()-1 );
-                    (l+count(l)-1)->value += STR_SPACE + t;
-                    i = j;
-                    break;
+                    s = (list+j)->value;
+                    if( !s.length() || s.lastIndexOf(end)!=(s.length()-1) )
+                        (sl+count(sl)-1)->value += STR_SPACE + s;
+                    else
+                    {
+                        s = s.substring( 0, s.length()-1 );
+                        (sl+count(sl)-1)->value += STR_SPACE + s;
+                        i = j;
+                        break;
+                    }
                 }
             }
-
         }
 
-        return l;
+        return sl;
     }
     /**
      * @fn int count( StringList *list )
