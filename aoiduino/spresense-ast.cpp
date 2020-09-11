@@ -675,55 +675,37 @@ namespace AoiSpresense
      */
     String Ast::ll( StringList *args )
     {
-        String s, p;
+        String s, p, root;
         DynamicJsonBuffer json;
         JsonArray &r = json.createArray();
         File d, f;
-        StringList *sl, *sm;
 
         switch( count(args) )
         {
-            case 0:
             case 1:
+                root = _a( 0 );
+            case 0:
             // Root path
-                d = AstStorage->open( "" );
-                p = d.name();
-                if( count(args) )
-                {
-                    if( !AstStorage->exists(_a(0)) )
-                        return ll( 0 );
-                    d = AstStorage->open( _a(0) );
-                    p = d.name() + String("/");
-                }
-            // File info to string
+                if( !AstStorage->exists(root) )
+                    return ll( 0 );
+                d = AstStorage->open( root );
+                p = String(d.name()) + (root.length()?"/":"");
+            // File info to JSON
                 f = d.openNextFile();
                 while( f )
                 {
-                    if( s.length() )
-                        s += ",";
-                    s += (f.isDirectory()?"d":"-")
-                       + String(":") + String(f.name()).substring(p.length())
-                       + String(":") + f.size();
+                    JsonObject &o = r.createNestedObject();
+                    o[ "type" ] = f.isDirectory() ? "d" : "-";
+                    o[ "name" ] = String(f.name()).substring( p.length() );
+                    o[ "size" ] = f.size();
+                    f.close();
                     f = d.openNextFile();
                 }
-                f.close();
-            // String to JSON
-                sl = split( s, "," );
-                for( int i=0; i<count(sl); i++ )
-                {
-                    sm = split( (sl+i)->value, ":" );
-                    JsonObject &o = r.createNestedObject();
-                    o[ "type" ] = (sm+0)->value;
-                    o[ "name" ] = (sm+1)->value;
-                    o[ "size" ] = (sm+2)->value;
-                    delete [] sm;
-                }
-                delete [] sl;
                 s = "";
                 r.prettyPrintTo( s );
                 break;
             default:
-                s = usage( "ll( path)?" );
+                s = usage( "ll (path)?" );
                 break;
         }
 
