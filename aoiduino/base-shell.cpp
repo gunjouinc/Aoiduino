@@ -547,7 +547,7 @@ namespace AoiBase
     {
         String s, t, arg1, arg2;
 
-        if( doAdd(args) )
+        if( !args.indexOf(STR_SHELL_COMMENT) || doAdd(args) )
             return s;
 
         StringList *sl = split( args, STR_SPACE );

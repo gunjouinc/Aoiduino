@@ -54,6 +54,8 @@
 #define STR_SHELL_BOOT_3 "exit   : Back to login."
 /** Shell bracket */
 #define STR_SHELL_BRACKET "'"
+/** Shell comment */
+#define STR_SHELL_COMMENT "#"
 /** Shell create */
 #define STR_SHELL_CREATE ">"
 /** Shell pipe */
