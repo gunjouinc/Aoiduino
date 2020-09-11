@@ -147,8 +147,11 @@ namespace AoiBase
                 StringList *sl = ct->pointer->rcScript( STR_RCD+String(n) );
                 for( int i=0; i<count(sl); i++ )
                 {
-                    debug( (sl+i)->value );
-                    s = shell.practice( (sl+i)->value );
+                    s = (sl+i)->value;
+                    if( !s.length() )
+                        continue;
+                    debug( s );
+                    s = shell.practice( s );
                     if( 0<s.length() )
                         debug( s );
                 }
