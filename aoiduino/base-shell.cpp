@@ -133,32 +133,46 @@ namespace AoiBase
     /**
       * @fn void Shell::rc( void )
       *
-      * Practices rc scripts.
+      * Practices rc scripts from rc.0 to rc.9
       */
     void Shell::rc( void )
     {
-        String s;
         ClassTable *ct = loader.classTable();
 
+    // Practice script every boards
         while( ct->pointer )
         {
             for( int n=0; n<10; n++ )
             {
+            // sl is splitted by LF
                 StringList *sl = ct->pointer->rcScript( STR_RCD+String(n) );
                 for( int i=0; i<count(sl); i++ )
-                {
-                    s = (sl+i)->value;
-                    if( !s.length() )
-                        continue;
-                    debug( s );
-                    s = shell.practice( s );
-                    if( 0<s.length() )
-                        debug( s );
-                }
+                    rc( (sl+i)->value );
                 delete [] sl;
             }
             ct++;
         }
+    }
+    /**
+      * @fn void Shell::rc( const String &args )
+      *
+      * Practices rc scripts.
+      *
+      * param[in] args script.
+      */
+    void Shell::rc( const String &args )
+    {
+        String s;
+
+        if( !args.length() || !args.indexOf(STR_SHELL_COMMENT) )
+            return;
+
+        debug( args );
+        s = shell.practice( args );
+        if( 0<s.length() )
+            debug( s );
+
+        return;
     }
     /**
      * @fn String Shell::className( void )
@@ -550,7 +564,7 @@ namespace AoiBase
     {
         String s, t, arg1, arg2;
 
-        if( !args.indexOf(STR_SHELL_COMMENT) || doAdd(args) )
+        if( doAdd(args) )
             return s;
 
         StringList *sl = split( args, STR_SPACE );
