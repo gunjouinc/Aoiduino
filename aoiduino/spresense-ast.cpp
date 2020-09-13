@@ -1452,7 +1452,7 @@ namespace AoiSpresense
                     break;
                 client.print( "GET " );
                 client.print( _a(1) );
-                client.println( " HTTP/1.1" );
+                client.println( " HTTP/1.0" );
                 client.println( "Host: " + host );
                 client.println( "User-Agent: " + String(STR_USER_AGENT) );
                 client.println( "Connection: close" );
