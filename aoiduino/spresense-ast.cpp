@@ -34,10 +34,10 @@ LTEModemVerification LteModem;
 /* MP */
 #include <MP.h>
 /* MQTT */
-#include <PubSubClient.h>
-PubSubClient MqttClient( LteClient );
-PubSubClient MqttTlsClient( LteTlsClient );
-PubSubClient *mqtt = &MqttTlsClient;
+#include <ArduinoMqttClient.h>
+MqttClient mqttClient( LteClient );
+MqttClient mqttTlsClient( LteTlsClient );
+MqttClient *mqtt = &mqttTlsClient;
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -54,8 +54,6 @@ namespace AoiSpresense
 {
 // Static variables.
     AoiBase::FunctionTable *Ast::m_functionTable = 0;
-    bool Ast::m_mqttSubscribed = false;
-    String Ast::m_mqttSubscribedMessage = "";
     /**
      * @fn Ast::Ast( void )
      *
@@ -126,6 +124,7 @@ namespace AoiSpresense
             /* MQTT */
             { "mqttBegin", &Ast::mqttBegin },
             { "mqttConnect", &Ast::mqttConnect },
+            { "mqttPoll", &Ast::mqttPoll },
             { "mqttPublish", &Ast::mqttPublish },
             { "mqttSubscribe", &Ast::mqttSubscribe },
         // $ Please set your function to use.
@@ -1506,10 +1505,10 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 0:
-                mqtt = &MqttClient;
+                mqtt = &mqttClient;
                 break;
             case 3:
-                mqtt = &MqttTlsClient;
+                mqtt = &mqttTlsClient;
             // RootCA
                 rc = AstStorage->open( _a(0), FILE_READ );
                 LteTlsClient.setCACert( rc, rc.available() );
@@ -1548,14 +1547,54 @@ namespace AoiSpresense
             case 2:
                 port = _atoi( 1 );
             case 1:
-                mqtt->setBufferSize( 1024 );
-                mqtt->setServer( _a(0).c_str(), port );
-                if( !mqtt->connect(STR_AOIDUINO) )
+                mqtt->setId( STR_AOIDUINO );
+                if( !mqtt->connect(_a(0).c_str(),port) )
                     return mqttConnect( 0 );
-                mqtt->setCallback( mqttOnMessage );
                 break;
             default:
                 s = usage( "mqttConnect broker (port)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::mqttPoll( StringList *args )
+     *
+     * Poll subscribed message from topic.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Subscribed message.
+     */
+    String Ast::mqttPoll( StringList *args )
+    {
+        String s;
+        int start = 0;
+        int timeout = 180;
+
+        switch( count(args) )
+        {
+            case 1:
+                timeout = _atoi( 0 );
+            case 0:
+                start = ::millis() / 1000;
+                while( true )
+                {
+                    int size = mqtt->parseMessage();
+                    if( size )
+                    {
+                        while( mqtt->available() )
+                            s += (char)mqtt->read();
+                        break;
+                    }
+                // timeout
+                    else if( timeout<((::millis()/1000)-start) )
+                        break;
+                }
+                s = prettyPrintTo( "value" , s );
+                break;
+            default:
+                s = usage( "mqttPoll (timeout)?" );
                 break;
         }
 
@@ -1573,16 +1612,27 @@ namespace AoiSpresense
     {
         String s;
         int c = count( args );
+        int timeout = 180;
 
-        if( c<2 )
-            s = usage( "mqttPublish topic message" );
+        if( c<3 )
+            s = usage( "mqttPublish topic [0-2] message" );
         else
         {
-        // restore argument after topic
-            String t = join( args, STR_SPACE, 1 );
-        // Publish message
-            if( !mqtt->publish(_a(0).c_str(),t.c_str()) )
-                return mqttPublish( 0 );
+            int start = ::millis() / 1000;
+            int i = 0;
+        // restore argument after qos
+            String t = join( args, STR_SPACE, 2 );
+            char *buf = t.c_str();
+        // TX_PAYLOAD_BUFFER_SIZE is defined in MqttClient.cpp
+            while( i<t.length() )
+            {
+                mqtt->beginMessage( _a(0), false, _atoi(1) );
+                i += mqtt->print( buf+i );
+                mqtt->endMessage();
+            // timeout
+                if( timeout<((::millis()/1000)-start) )
+                    break;
+            }
         }
 
         return s;
@@ -1590,7 +1640,7 @@ namespace AoiSpresense
     /**
      * @fn String Ast::mqttSubscribe( StringList *args )
      *
-     * Subscribe message from topic.
+     * Start subscribe message from topic.
      *
      * @param[in] args Reference to arguments.
      * @return Empty string.
@@ -1598,33 +1648,15 @@ namespace AoiSpresense
     String Ast::mqttSubscribe( StringList *args )
     {
         String s;
-        int start = 0;
-        int timeout = 180;
 
         switch( count(args) )
         {
-            case 3:
-                timeout = _atoi( 2 );
             case 2:
-            // subscribe method returns 0 or false or true.
-                if( !mqtt->subscribe(_a(0).c_str(),_atoui(1)) )
+                if( !mqtt->subscribe(_a(0),_atoui(1)) )
                     return mqttSubscribe( 0 );
-            // polling
-                m_mqttSubscribed = false;
-                m_mqttSubscribedMessage = "";
-                start = ::millis() / 1000;
-                while( !m_mqttSubscribed )
-                {
-                    mqtt->loop();
-                    if( timeout<((::millis()/1000)-start) )
-                        break;
-                }
-                s = prettyPrintTo( "value" , m_mqttSubscribedMessage );
-            // unsubscribe
-                mqtt->unsubscribe( _a(0).c_str() );
                 break;
             default:
-                s = usage( "mqttSubscribe topic [0-2] (timeout)?" );
+                s = usage( "mqttSubscribe topic [0-2]" );
                 break;
         }
 
@@ -1808,26 +1840,6 @@ namespace AoiSpresense
             b = false;
 
         return b;
-    }
-    /**
-     * @fn void Ast::mqttOnMessage( char *topic, byte *payload, unsigned int length )
-     *
-     * Receive message from topic.
-     *
-     * @param[in] message size.
-     */
-    void Ast::mqttOnMessage( char *topic, byte *payload, unsigned int length )
-    {
-        if( m_mqttSubscribed )
-            return;
-
-        char *p = new char[ length+1 ];
-        memcpy( p, payload, length );
-        memset( p+length, 0, 1 );
-        m_mqttSubscribedMessage = p;
-        delete [] p;
-
-        m_mqttSubscribed = true;
     }
 }
 #endif
