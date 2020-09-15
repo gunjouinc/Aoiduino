@@ -94,6 +94,11 @@ namespace AoiSpresense
         static String mqttPoll( StringList *args );
         static String mqttPublish( StringList *args );
         static String mqttSubscribe( StringList *args );
+        /* Watchdog */
+        static String watchdogBegin( StringList *args );
+        static String watchdogEnd( StringList *args );
+        static String watchdogKick( StringList *args );
+        static String watchdogTimeleft( StringList *args );
         // $ Please set your function to use.
     // static members
     protected:

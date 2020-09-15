@@ -127,6 +127,11 @@ namespace AoiSpresense
             { "mqttPoll", &Ast::mqttPoll },
             { "mqttPublish", &Ast::mqttPublish },
             { "mqttSubscribe", &Ast::mqttSubscribe },
+            /* Watchdog */
+            { "watchdogBegin", &Ast::watchdogBegin },
+            { "watchdogKick", &Ast::watchdogKick },
+            { "watchdogEnd", &Ast::watchdogEnd },
+            { "watchdogTimeleft", &Ast::watchdogTimeleft },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -137,6 +142,8 @@ namespace AoiSpresense
         /* LowPower */
         LowPower.begin();
         RTC.begin();
+        /* Watchdog */
+        Watchdog.begin();
     }
     /**
      * @fn Ast::~Ast( void )
@@ -1657,6 +1664,104 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "mqttSubscribe topic [0-2]" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::watchdogBegin( StringList *args )
+     *
+     * Initialize the Watchdog and start to check timer(mesc).
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::watchdogBegin( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                Watchdog.start( _atoi(0) );
+                break;
+            default:
+                s = usage( "watchdogBegin 1-40000" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::watchdogEnd( StringList *args )
+     *
+     * Stop to check timer for avoid bite watchdog.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::watchdogEnd( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                Watchdog.stop();
+                break;
+            default:
+                s = usage( "watchdogEnd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::watchdogKick( StringList *args )
+     *
+     * Kick to watchdog for notify keep alive.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::watchdogKick( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                Watchdog.kick();
+                break;
+            default:
+                s = usage( "watchdogKick" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::watchdogTimeleft( StringList *args )
+     *
+     * Get a remain time for bite watchdog.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Remain time to expire timeout(mesc).
+     */
+    String Ast::watchdogTimeleft( StringList *args )
+    {
+        String s;
+        uint32_t i = 0;
+
+        switch( count(args) )
+        {
+            case 0:
+                i = Watchdog.timeleft();
+                s = prettyPrintTo( "value" , i );
+                break;
+            default:
+                s = usage( "watchdogTimeleft" );
                 break;
         }
 
