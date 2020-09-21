@@ -127,6 +127,8 @@ namespace AoiSpresense
             { "mqttPoll", &Ast::mqttPoll },
             { "mqttPublish", &Ast::mqttPublish },
             { "mqttSubscribe", &Ast::mqttSubscribe },
+            /* RTC */
+            { "date", &Ast::date },
             /* Watchdog */
             { "watchdogBegin", &Ast::watchdogBegin },
             { "watchdogKick", &Ast::watchdogKick },
@@ -1664,6 +1666,40 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "mqttSubscribe topic [0-2]" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::date( StringList *args )
+     *
+     * Print date.
+     *
+     * @param[in] args Reference to arguments.
+     * @return date string.
+     */
+    String Ast::date( StringList *args )
+    {
+        String s;
+        uint8_t size = 20;
+        char *buf = NULL;
+        RtcTime rtc;
+
+        switch( count(args) )
+        {
+            case 0:
+                rtc = RTC.getTime();
+                buf = new char[ size ];
+                snprintf( buf, size,
+                          "%04d-%02d-%02dT%02d:%02d:%02d",
+                          rtc.year(), rtc.month(), rtc.day(),
+                          rtc.hour(), rtc.minute(), rtc.second() );
+                s = prettyPrintTo( "value", buf );
+                delete [] buf;
+                break;
+            default:
+                s = usage( "date" );
                 break;
         }
 

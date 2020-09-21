@@ -94,6 +94,8 @@ namespace AoiSpresense
         static String mqttPoll( StringList *args );
         static String mqttPublish( StringList *args );
         static String mqttSubscribe( StringList *args );
+        /* RTC */
+        static String date( StringList *args );
         /* Watchdog */
         static String watchdogBegin( StringList *args );
         static String watchdogEnd( StringList *args );
