@@ -1,5 +1,5 @@
 # Aoiduino
-Aoi enviroment for Arduino. Provies command line interface and flexible enhancements for your product.
+Aoi enviroment for Arduino. Provides command line interface and flexible enhancements for your product.
 
 Supported boards are Arduino Uno, Spresense Ast. Below functions were implemented.
 
@@ -29,6 +29,14 @@ Supported boards are Arduino Uno, Spresense Ast. Below functions were implemente
 
   - Spresense Ast, Type 'help Ast' to show usage.
     - LTE       [add] lteHttpGet
+
+- 2020/09/21
+  - All boards
+    - [add] {$key} variable for 1 line notation
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - MQTT      [add] mqttBegin, mqttConnect, mqttPoll, mqttPublish, mqttSubscribe
+    - RTC       [add] date
+    - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
 
 ## Operation example on Spresense Ast
 
@@ -227,7 +235,43 @@ ERROR: nw_stat : 0
 }
 ```
 
-### Redirect and pipe
+### MQTT
+```
+# cd /mnt/sd0
+# mqttBegin chain.pem cert.pem privkey.pem
+# mqttConnect mqtt.yours.com 8883
+# mqttSubscribe spresense 0
+# mqttPoll
+{
+  "value": "Hi aoiduino!"
+}
+# mqttPublish spresense 0 Hi!
+```
+
+### RTC
+```
+# date
+{
+  "value": "1970-01-01T00:37:49"
+}
+```
+
+### Watchdog
+```
+# watchdogBegin 40000
+# watchdogTimeleft
+{
+  "value": 33237
+}
+# watchdogKick
+# watchdogTimeleft
+{
+  "value": 34015
+}
+# watchdogEnd
+```
+
+### Redirect, pipe, and variable
 ```
 # echo so-net.jp nuro nuro > nuro
 {
@@ -242,8 +286,13 @@ ERROR: nw_stat : 0
   "signalStrength": "-81",
   "status": 4
 }
+# lteConfig | echo ++ {$carrier} ++
+{
+  "value": "++ NTT DOCOMO ++"
+}
 # 
 ```
+
 ### Command separator, enclosed string and eval
 ```
 # echo "This sentense contains | pattern." ; echo =>
@@ -259,4 +308,23 @@ ERROR: nw_stat : 0
   "value": "This sentense is evaluated by eval"
 }
 # 
+```
+
+### Loop
+```
+# do 0 2 1
+# echo hello {$i}
+# done
+echo hello 0
+{
+  "value": "hello 0"
+}
+echo hello 1
+{
+  "value": "hello 1"
+}
+echo hello 2
+{
+  "value": "hello 2"
+}
 ```
