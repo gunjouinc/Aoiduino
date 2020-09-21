@@ -579,6 +579,14 @@ namespace AoiBase
             t = (sl+i)->value;
             if( !isSpecialCharacter(t) )
             {
+            // Reference previous result
+                JsonObject &v = json.parseObject( s );
+                for( JsonObject::iterator it=v.begin(); it!=v.end(); ++it )
+                {
+                    String rep = String("{$") + it->key + "}";
+                    t.replace( rep, it->value.as<char*>() );
+                }
+
                 if( arg1.length() )
                     arg1 += STR_SPACE;
                 arg1 += t;
@@ -618,11 +626,14 @@ namespace AoiBase
             arg2 = "";
             if( isAdditionalArgCharacter(t) )
             {
+                String arg = (t==STR_SHELL_PIPE_ALL) ? s : static_cast<const char*>(r["value"]);
+                if( !arg.length() )
+                    continue;
                 arg2 += STR_SPACE;
                 if( t==STR_SHELL_PIPE_ALL )
-                    arg2 += STR_SHELL_BRACKET + s + STR_SHELL_BRACKET;
+                    arg2 += STR_SHELL_BRACKET + arg + STR_SHELL_BRACKET;
                 else
-                    arg2 += static_cast<const char*>( r["value"] );
+                    arg2 += arg;
             }
         }
         delete [] sl;
