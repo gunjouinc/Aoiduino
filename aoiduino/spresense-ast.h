@@ -76,6 +76,7 @@ namespace AoiSpresense
         static String gnssEnd( StringList *args );
         static String gnssNavData( StringList *args );
         static String gnssSattellites( StringList *args );
+        static String gnssSaveEphemeris( StringList *args );
         /* LowPower */
         static String clockMode( StringList *args );
         static String coldSleep( StringList *args );

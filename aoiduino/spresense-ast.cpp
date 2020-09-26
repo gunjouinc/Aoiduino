@@ -109,6 +109,7 @@ namespace AoiSpresense
             { "gnssEnd", &Ast::gnssEnd },
             { "gnssConfig", &Ast::gnssNavData },
             { "gnssSattellites", &Ast::gnssSattellites },
+            { "gnssSave", &Ast::gnssSaveEphemeris },
             /* LowPower */
             { "clockMode", &Ast::clockMode },
             { "coldSleep", &Ast::coldSleep },
@@ -1146,6 +1147,33 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "gnssSattellites" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::gnssSaveEphemeris( StringList *args )
+     *
+     * Save the data stored in the backup RAM to Flash
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::gnssSaveEphemeris( StringList *args )
+    {
+        String s;
+        int r;
+
+        switch( count(args) )
+        {
+            case 0:
+                r = Gnss.saveEphemeris();
+                if( r )
+                    s = gnssSaveEphemeris( 0 );
+                break;
+            default:
+                s = usage( "gnssSaveEphemeris" );
                 break;
         }
 
