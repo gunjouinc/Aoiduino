@@ -984,7 +984,10 @@ namespace AoiSpresense
                     default:
                         return gnssBegin( 0 );
                 }
-                r = Gnss.start( COLD_START );
+                if( Flash.exists("gnss_backup.bin") )
+                    r = Gnss.start( HOT_START );
+                else
+                    r = Gnss.start( COLD_START );
                 if( r )
                     s = gnssBegin( 0 );
                 break;
@@ -1040,7 +1043,7 @@ namespace AoiSpresense
     {
         String s;
         SpNavData nav;
-        char buf[ 128 ];
+        char buf[ 33 ];
         int diff;
         DynamicJsonBuffer json;
         JsonObject &r = json.createObject();
