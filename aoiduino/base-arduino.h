@@ -45,10 +45,6 @@ namespace AoiBase
         virtual String usages( FunctionTable *table );
     // static members
     protected:
-        static String prettyPrintTo( const String &key, unsigned int value );
-        static String prettyPrintTo( const String &key, const String &value );
-    // static members
-    protected:
         // ^ Please set your function to use.
         static String analogRead( StringList *args );
         static String analogWrite( StringList *args );

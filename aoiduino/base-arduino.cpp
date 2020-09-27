@@ -192,46 +192,6 @@ namespace AoiBase
         return s;
     }
     /**
-     * @fn String Arduino::prettyPrintTo( const String &key, unsigned int value )
-     *
-     * Returns JSON string from key and value.
-     *
-     * @param[in] key Key of JSON.
-     * @param[in] value Value of JSON.
-     * @return JSON string like { "key": value }.
-     */
-    String Arduino::prettyPrintTo( const String &key, unsigned int value )
-    {
-        String s;
-        DynamicJsonBuffer json;
-        JsonObject &r = json.createObject();
-
-        r[ key ] = value;
-        r.prettyPrintTo( s );
-
-        return s;
-    }
-    /**
-     * @fn String Arduino::prettyPrintTo( const String &key, const String &value )
-     *
-     * Returns JSON string from key and value.
-     *
-     * @param[in] key Key of JSON.
-     * @param[in] value Value of JSON.
-     * @return JSON string like { "key": "value" }.
-     */
-    String Arduino::prettyPrintTo( const String &key, const String &value )
-    {
-        String s;
-        DynamicJsonBuffer json;
-        JsonObject &r = json.createObject();
-
-        r[ key ] = value;
-        r.prettyPrintTo( s );
-
-        return s;
-    }
-    /**
      * @fn String Arduino::analogRead( StringList *args )
      *
      * Reads the value from the specified analog pin.

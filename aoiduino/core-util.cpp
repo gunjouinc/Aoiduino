@@ -10,6 +10,7 @@
 #include "core-util.h"
 #include "core-global.h"
 #include "core-strings.h"
+#include "base-arduinojson.h"
 
 /**
  * @namespace AoiCore
@@ -215,6 +216,46 @@ namespace AoiCore
     String newLine( void )
     {
         return "\r\n";
+    }
+    /**
+     * @fn String prettyPrintTo( const String &key, unsigned int value )
+     *
+     * Returns JSON string from key and value.
+     *
+     * @param[in] key Key of JSON.
+     * @param[in] value Value of JSON.
+     * @return JSON string like { "key": value }.
+     */
+    String prettyPrintTo( const String &key, unsigned int value )
+    {
+        String s;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        r[ key ] = value;
+        r.prettyPrintTo( s );
+
+        return s;
+    }
+    /**
+     * @fn String prettyPrintTo( const String &key, const String &value )
+     *
+     * Returns JSON string from key and value.
+     *
+     * @param[in] key Key of JSON.
+     * @param[in] value Value of JSON.
+     * @return JSON string like { "key": "value" }.
+     */
+    String prettyPrintTo( const String &key, const String &value )
+    {
+        String s;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        r[ key ] = value;
+        r.prettyPrintTo( s );
+
+        return s;
     }
     /**
      * @fn StringList* split( const String &data, const String &delimiter )

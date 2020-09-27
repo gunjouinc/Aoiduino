@@ -62,6 +62,8 @@ namespace AoiCore
     String longToTime( unsigned long data );
     String join( StringList *list, const String &sep, int from = 0 );
     String newLine( void );
+    String prettyPrintTo( const String &key, unsigned int value );
+    String prettyPrintTo( const String &key, const String &value );
     StringList* split( const String &data, const String &delimiter );
     char* toCharArray( const String &data );
     String terminator( void );
