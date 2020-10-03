@@ -1,10 +1,10 @@
 /******************************************************************************
 **
 ** Copyright 2009-2020 Gunjou Inc. All rights reserved.
-** Contact: Gunjou Inc. (aoiduino@gunjou.co.jp)
+** Contact: Gunjou Inc. (information@gunjou.co.jp)
 **
 ** This software is released under the MIT License.
-** https://github.com/masaomiura/Aoiduino/blob/master/LICENSE
+** https://github.com/gunjouinc/Aoiduino/blob/master/LICENSE
 **
 ******************************************************************************/
 #include "base-arduino.h"
