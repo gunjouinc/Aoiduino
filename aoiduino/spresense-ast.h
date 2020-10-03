@@ -14,6 +14,7 @@
 #include <Camera.h>
 
 #include "base-arduino.h"
+#include "util-mqtt.h"
 /**
  * @namespace AoiSpresense
  * @brief Aoi Spresense classes.
@@ -29,7 +30,8 @@ namespace AoiSpresense
      * This class provides Spresense Ast function.
      */
     class Ast :
-        public AoiBase::Arduino
+        public AoiBase::Arduino,
+        public AoiUtil::Mqtt
     {
     // members
     public:
@@ -91,10 +93,6 @@ namespace AoiSpresense
         static String lteHttpGet( StringList *args );
         /* MQTT */
         static String mqttBegin( StringList *args );
-        static String mqttConnect( StringList *args );
-        static String mqttPoll( StringList *args );
-        static String mqttPublish( StringList *args );
-        static String mqttSubscribe( StringList *args );
         /* RTC */
         static String date( StringList *args );
         /* Watchdog */

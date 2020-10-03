@@ -34,10 +34,8 @@ LTEModemVerification LteModem;
 /* MP */
 #include <MP.h>
 /* MQTT */
-#include <ArduinoMqttClient.h>
 MqttClient mqttClient( LteClient );
 MqttClient mqttTlsClient( LteTlsClient );
-MqttClient *mqtt = &mqttTlsClient;
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -124,10 +122,10 @@ namespace AoiSpresense
             { "lteHttpGet", &Ast::lteHttpGet },
             /* MQTT */
             { "mqttBegin", &Ast::mqttBegin },
-            { "mqttConnect", &Ast::mqttConnect },
-            { "mqttPoll", &Ast::mqttPoll },
-            { "mqttPublish", &Ast::mqttPublish },
-            { "mqttSubscribe", &Ast::mqttSubscribe },
+            { "mqttConnect", &AoiUtil::Mqtt::mqttConnect },
+            { "mqttPoll", &AoiUtil::Mqtt::mqttPoll },
+            { "mqttPublish", &AoiUtil::Mqtt::mqttPublish },
+            { "mqttSubscribe", &AoiUtil::Mqtt::mqttSubscribe },
             /* RTC */
             { "date", &Ast::date },
             /* Watchdog */
@@ -1564,139 +1562,6 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "mqttBegin CACert Certificate PrivateKey" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Ast::mqttConnect( StringList *args )
-     *
-     * Connect to mqtt broker.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty string.
-     */
-    String Ast::mqttConnect( StringList *args )
-    {
-        String s;
-        int port = 1883;
-
-        switch( count(args) )
-        {
-            case 2:
-                port = _atoi( 1 );
-            case 1:
-                mqtt->setId( STR_AOIDUINO );
-                if( !mqtt->connect(_a(0).c_str(),port) )
-                    return mqttConnect( 0 );
-                break;
-            default:
-                s = usage( "mqttConnect broker (port)?" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Ast::mqttPoll( StringList *args )
-     *
-     * Poll subscribed message from topic.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Subscribed message.
-     */
-    String Ast::mqttPoll( StringList *args )
-    {
-        String s;
-        int start = 0;
-        int timeout = 180;
-
-        switch( count(args) )
-        {
-            case 1:
-                timeout = _atoi( 0 );
-            case 0:
-                start = ::millis() / 1000;
-                while( true )
-                {
-                    int size = mqtt->parseMessage();
-                    if( size )
-                    {
-                        while( mqtt->available() )
-                            s += (char)mqtt->read();
-                        break;
-                    }
-                // timeout
-                    else if( timeout<((::millis()/1000)-start) )
-                        break;
-                }
-                s = prettyPrintTo( "value" , s );
-                break;
-            default:
-                s = usage( "mqttPoll (timeout)?" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Ast::mqttPublish( StringList *args )
-     *
-     * Publish message to topic.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty string.
-     */
-    String Ast::mqttPublish( StringList *args )
-    {
-        String s;
-        int c = count( args );
-        int timeout = 180;
-
-        if( c<3 )
-            s = usage( "mqttPublish topic [0-2] message" );
-        else
-        {
-            int start = ::millis() / 1000;
-            int i = 0;
-        // restore argument after qos
-            String t = join( args, STR_SPACE, 2 );
-            char *buf = t.c_str();
-        // TX_PAYLOAD_BUFFER_SIZE is defined in MqttClient.cpp
-            while( i<t.length() )
-            {
-                mqtt->beginMessage( _a(0), false, _atoi(1) );
-                i += mqtt->print( buf+i );
-                mqtt->endMessage();
-            // timeout
-                if( timeout<((::millis()/1000)-start) )
-                    break;
-            }
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Ast::mqttSubscribe( StringList *args )
-     *
-     * Start subscribe message from topic.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty string.
-     */
-    String Ast::mqttSubscribe( StringList *args )
-    {
-        String s;
-
-        switch( count(args) )
-        {
-            case 2:
-                if( !mqtt->subscribe(_a(0),_atoui(1)) )
-                    return mqttSubscribe( 0 );
-                break;
-            default:
-                s = usage( "mqttSubscribe topic [0-2]" );
                 break;
         }
 
