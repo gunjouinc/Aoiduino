@@ -1487,10 +1487,8 @@ namespace AoiSpresense
             case 2:
                 host = _a( 0 );
                 if( !client.connect(host.c_str(),port) )
-                    break;
-                client.print( "GET " );
-                client.print( _a(1) );
-                client.println( " HTTP/1.0" );
+                    return lteHttpGet( 0 );
+                client.println( "GET "+_a(1)+" HTTP/1.0" );
                 client.println( "Host: " + host );
                 client.println( "User-Agent: " + String(STR_USER_AGENT) );
                 client.println( "Connection: close" );
@@ -1521,7 +1519,7 @@ namespace AoiSpresense
                 s = prettyPrintTo( "value", s );
                 break;
             default:
-                s = usage( "letHttpGet host path (port timeout)?" );
+                s = usage( "lteHttpGet host path (port timeout)?" );
                 break;
         }
 
