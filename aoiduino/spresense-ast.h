@@ -91,6 +91,7 @@ namespace AoiSpresense
         static String lteConfig( StringList *args );
         static String lteEnd( StringList *args );
         static String lteHttpGet( StringList *args );
+        static String lteHttpPost( StringList *args );
         /* MQTT */
         static String mqttBegin( StringList *args );
         /* RTC */
@@ -108,6 +109,10 @@ namespace AoiSpresense
         static bool fpsFromString( const String &value, CAM_VIDEO_FPS *fps );
         static bool whiteBalanceFromString( const String &value, CAM_WHITE_BALANCE *wb );
         static bool sizeFromString( const String &value, int *width, int *height );
+    // static members
+    protected:
+        static String requestBodyFooterInPut( const String &boundary );
+        static String requestBodyHeaderInPut( const String &boundary, const String &name, const String &value, int *size );
     // static variables
     private:
         /** Holds function table. */

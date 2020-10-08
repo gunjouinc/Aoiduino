@@ -18,6 +18,8 @@
 #define STR_AOIDUINO "aoiduino"
 /** @ */
 #define STR_ATMARK "@"
+/** BOUNDARY */
+#define STR_BOUNDARY "+=(?AOIDUINO:ONIUDIOA?)=+"
 /** Command not found */
 #define STR_COMMAND_NOT_FOUND ": command not found"
 /** Command not implemented */

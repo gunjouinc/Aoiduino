@@ -41,6 +41,8 @@ MqttClient mqttTlsClient( LteTlsClient );
 #define _EMMC_ "/mnt/emmc"
 /** Flash root path */
 #define _FLASH_ "/mnt/spif"
+/** HTTP buffer size */
+#define _HTTP_BUFFER_SIZE_ 1024
 /** SD root path */
 #define _SD_ "/mnt/sd0"
 
@@ -120,6 +122,7 @@ namespace AoiSpresense
             { "lteConfig", &Ast::lteConfig },
             { "lteEnd", &Ast::lteEnd },
             { "lteHttpGet", &Ast::lteHttpGet },
+            { "lteHttpPost", &Ast::lteHttpPost },
             /* MQTT */
             { "mqttBegin", &Ast::mqttBegin },
             { "mqttConnect", &AoiUtil::Mqtt::mqttConnect },
@@ -1526,6 +1529,101 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn String Ast::lteHttpPost( StringList *args )
+     *
+     * Send HTTP POST to server.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Recieved content.
+     */
+    String Ast::lteHttpPost( StringList *args )
+    {
+        String s, t, h, header, footer;
+        File f;
+        int size = 0;
+        LTEClient client;
+        String host;
+        int port = 80;
+        int start = 0;
+        int timeout = 30 * 1000;
+        int i = 0;
+
+        switch( count(args) )
+        {
+            case 5:
+                timeout = _atoi( 4 ) * 1000;
+            case 4:
+                port = _atoi( 3 );
+            case 3:
+            // Request body
+                t = _a( 2 );
+                header = requestBodyHeaderInPut( STR_BOUNDARY, STR_AOIDUINO, t,
+                                                 &size );
+                footer = requestBodyFooterInPut( STR_BOUNDARY );
+                size += header.length() + footer.length();
+            // POST
+                host = _a( 0 );
+                if( !client.connect(host.c_str(),port) )
+                    return lteHttpPost( 0 );
+                client.println( "POST "+_a(1)+" HTTP/1.0" );
+                client.println( "Host: " + host );
+                client.println( "User-Agent: " + String(STR_USER_AGENT) );
+                client.print( "Content-Type: multipart/form-data; " );
+                client.println( "boundary=\""+String(STR_BOUNDARY)+"\"" );
+                client.println( "Content-Length: "+String(size) );
+                client.println( "Connection: close" );
+                client.println();
+                client.print( header );
+              // If file is exitst, Upload file
+                if( !AstStorage->exists(t) )
+                    client.print( t );
+                else
+                {
+                    f = AstStorage->open( t, FILE_READ );
+                    uint8_t *buf = new uint8_t[ _HTTP_BUFFER_SIZE_ ];
+                    while( f.available() )
+                    {
+                        size = f.read( buf, _HTTP_BUFFER_SIZE_ );
+                        client.write( buf, size );
+                    }
+                    delete [] buf;
+                    f.close();
+                }
+                client.print( footer );
+            // Response
+                start = ::millis();
+                while( true )
+                {
+                    if( i=client.available() )
+                    {
+                        char c[ i+1 ];
+                        c[ i ] = NULL;
+                        client.read( (uint8_t*)c, i );
+                        s += c;
+                    }
+                    if( !client.available() && !client.connected() )
+                    {
+                        client.stop();
+                        break;
+                    }
+                // timeout
+                    if( timeout<(::millis()-start) )
+                        break;
+                }
+            // Only content
+                i = s.indexOf( "\r\n\r\n" );
+                if( -1<i )
+                    s = s.substring( i+4 );
+                s = prettyPrintTo( "value", s );
+                break;
+            default:
+                s = usage( "lteHttpPost host path (file|text) (port timeout)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Ast::mqttBegin( StringList *args )
      *
      * Initalize mqtt certs.
@@ -1875,6 +1973,55 @@ namespace AoiSpresense
             b = false;
 
         return b;
+    }
+    /**
+     * @fn String Ast::requestBodyFooterInPut( const String &boundary )
+     *
+     * Return request body footer in HTTP PUT.
+     *
+     * @param[in] boundary Boundary string.
+     * @return Request body footer string in HTTP PUT.
+     */
+    String Ast::requestBodyFooterInPut( const String &boundary )
+    {
+        return "\r\n--" + boundary + "\r\n";
+    }
+    /**
+     * @fn String Ast::requestBodyHeaderInPut( const String &value )
+     *
+     * Return request body header in HTTP PUT.
+     *
+     * @param[in] boundary Boundary string.
+     * @param[in] name Content-Disposition: name attribute string.
+     * @param[in] value Putted value.
+     * @param[in/out] size Putted value size. If value is file, File size is used.
+     * @return Request body header string in HTTP PUT.
+     */
+    String Ast::requestBodyHeaderInPut( const String &boundary, const String &name, const String &value, int *size )
+    {
+        String s;
+
+        s += "--" + boundary + "\r\n";
+        s += "Content-Disposition: form-data; name=\"" + name + "\";";
+    // If file is exitst, use file size
+        if( !AstStorage->exists(value) )
+        {
+            s += "\r\n";
+            s += "Content-Type: text/plain\r\n";
+            *size = value.length();
+        }
+        else
+        {
+            s += " filename=\"" + value + "\"\r\n";
+            s += "Content-Type: application/octet-stream\r\n";
+            s += "Content-Transfer-Encoding: binary\r\n";
+            File f = AstStorage->open( value, FILE_READ );
+            *size = f.size();
+            f.close();
+        }
+        s += "\r\n";
+
+        return s;
     }
 }
 #endif
