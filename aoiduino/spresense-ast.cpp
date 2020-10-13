@@ -41,8 +41,6 @@ MqttClient mqttTlsClient( LteTlsClient );
 #define _EMMC_ "/mnt/emmc"
 /** Flash root path */
 #define _FLASH_ "/mnt/spif"
-/** HTTP buffer size */
-#define _HTTP_BUFFER_SIZE_ 1024
 /** SD root path */
 #define _SD_ "/mnt/sd0"
 
@@ -117,12 +115,14 @@ namespace AoiSpresense
             { "dmesg", &Ast::dmesg },
             { "reboot", &Ast::reboot },
             { "sleep", &Ast::sleep },
+            /* HTTP */
+            { "httpBegin", &Ast::httpBegin },
+            { "httpGet", &AoiUtil::Http::httpGet },
+            { "httpPost", &Ast::httpPost },
             /* LTE */
             { "lteBegin", &Ast::lteBegin },
             { "lteConfig", &Ast::lteConfig },
             { "lteEnd", &Ast::lteEnd },
-            { "lteHttpGet", &Ast::lteHttpGet },
-            { "lteHttpPost", &Ast::lteHttpPost },
             /* MQTT */
             { "mqttBegin", &Ast::mqttBegin },
             { "mqttConnect", &AoiUtil::Mqtt::mqttConnect },
@@ -338,6 +338,18 @@ namespace AoiSpresense
                 r = theCamera.begin( _atoi(0), fps, width, height, format );
                 if( r!=CAM_ERR_SUCCESS )
                     return cameraBegin( 0 );
+/*
+            // Auto
+                r = theCamera.setAutoExposure( true );
+                if( r!=CAM_ERR_SUCCESS )
+                    return cameraBegin( 0 );
+                r = theCamera.setAutoISOSensitivity( true );
+                if( r!=CAM_ERR_SUCCESS )
+                    return cameraBegin( 0 );
+                r = theCamera.setAutoWhiteBalance( true );
+                if( r!=CAM_ERR_SUCCESS )
+                    return cameraBegin( 0 );
+*/
                 break;
             default:
                 s = usage( "cameraBegin buffNum (5|6|7.5|15|30|120) (QVGA|VGA|HD|QUADVGA|FULLHD|5M|3M) (RGB565|YUV422|JPG|GRAY|NONE)" );
@@ -1358,6 +1370,113 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn String Ast::httpBegin( StringList *args )
+     *
+     * Initalize https certs.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::httpBegin( StringList *args )
+    {
+        String s;
+        File rc, cc, pk;
+
+        switch( count(args) )
+        {
+            case 0:
+                http = &LteClient;
+                break;
+            case 3:
+                http = &LteTlsClient;
+            // RootCA
+                rc = AstStorage->open( _a(0), FILE_READ );
+                LteTlsClient.setCACert( rc, rc.available() );
+                rc.close();
+            // Client certificate
+                cc = AstStorage->open( _a(1), FILE_READ );
+                LteTlsClient.setCertificate( cc, cc.available() );
+                cc.close();
+            // Client private key
+                pk = AstStorage->open( _a(2), FILE_READ );
+                LteTlsClient.setPrivateKey( pk, pk.available() );
+                pk.close();
+                break;
+            default:
+                s = usage( "httpBegin CACert Certificate PrivateKey" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::httpPost( StringList *args )
+     *
+     * Send HTTP POST to server.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Recieved content.
+     */
+    String Ast::httpPost( StringList *args )
+    {
+        String s, t, header, footer;
+        File f;
+        int size = 0;
+        String host;
+        int port = 80;
+        int timeout = 30 * 1000;
+
+        switch( count(args) )
+        {
+            case 5:
+                timeout = _atoi( 4 ) * 1000;
+            case 4:
+                port = _atoi( 3 );
+            case 3:
+                t = _a( 2 );
+                if( !AstStorage->exists(t) )
+                    return AoiUtil::Http::httpPost( args );
+            // Request body
+                header = requestBodyHeaderInPut( STR_BOUNDARY, STR_AOIDUINO, t,
+                                                 &size );
+                footer = requestBodyFooterInPut( STR_BOUNDARY );
+                size += header.length() + footer.length();
+            // POST
+                host = _a( 0 );
+                if( !http->connect(host.c_str(),port) )
+                    return httpPost( 0 );
+                http->println( "POST "+_a(1)+" HTTP/1.0" );
+                http->println( "Host: " + host );
+                http->println( "User-Agent: " + String(STR_USER_AGENT) );
+                http->print( "Content-Type: multipart/form-data; " );
+                http->println( "boundary=\""+String(STR_BOUNDARY)+"\"" );
+                http->println( "Content-Length: "+String(size) );
+                http->println( "Connection: close" );
+                http->println();
+                http->print( header );
+              // Upload file
+                f = AstStorage->open( t, FILE_READ );
+                uint8_t *buf = new uint8_t[ _AOIUTIL_HTTP_BUFFER_SIZE_ ];
+                while( f.available() )
+                {
+                    size = f.read( buf, _AOIUTIL_HTTP_BUFFER_SIZE_ );
+                    http->write( buf, size );
+                }
+                delete [] buf;
+                f.close();
+                http->print( footer );
+            // Response
+                s = response( timeout );
+                s = prettyPrintTo( "value", s );
+                break;
+            default:
+                s = usage( "httpPost host path (file|text) (port timeout)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Ast::lteBegin( StringList *args )
      *
      * Power on the modem and start the network search. And register the modem
@@ -1458,166 +1577,6 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "lteEnd" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Ast::letHttpGet( StringList *args )
-     *
-     * Send HTTP GET to server.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Recieved content.
-     */
-    String Ast::lteHttpGet( StringList *args )
-    {
-        String s;
-        LTEClient client;
-        String host;
-        int port = 80;
-        int start = 0;
-        int timeout = 30 * 1000;
-        int i = 0;
-
-        switch( count(args) )
-        {
-            case 4:
-                timeout = _atoi( 3 ) * 1000;
-            case 3:
-                port = _atoi( 2 );
-            case 2:
-                host = _a( 0 );
-                if( !client.connect(host.c_str(),port) )
-                    return lteHttpGet( 0 );
-                client.println( "GET "+_a(1)+" HTTP/1.0" );
-                client.println( "Host: " + host );
-                client.println( "User-Agent: " + String(STR_USER_AGENT) );
-                client.println( "Connection: close" );
-                client.println();
-                start = ::millis();
-                while( true )
-                {
-                    if( i=client.available() )
-                    {
-                        char c[ i+1 ];
-                        c[ i ] = NULL;
-                        client.read( (uint8_t*)c, i );
-                        s += c;
-                    }
-                    if( !client.available() && !client.connected() )
-                    {
-                        client.stop();
-                        break;
-                    }
-                // timeout
-                    if( timeout<(::millis()-start) )
-                        break;
-                }
-            // Only content
-                i = s.indexOf( "\r\n\r\n" );
-                if( -1<i )
-                    s = s.substring( i+4 );
-                s = prettyPrintTo( "value", s );
-                break;
-            default:
-                s = usage( "lteHttpGet host path (port timeout)?" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Ast::lteHttpPost( StringList *args )
-     *
-     * Send HTTP POST to server.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Recieved content.
-     */
-    String Ast::lteHttpPost( StringList *args )
-    {
-        String s, t, h, header, footer;
-        File f;
-        int size = 0;
-        LTEClient client;
-        String host;
-        int port = 80;
-        int start = 0;
-        int timeout = 30 * 1000;
-        int i = 0;
-
-        switch( count(args) )
-        {
-            case 5:
-                timeout = _atoi( 4 ) * 1000;
-            case 4:
-                port = _atoi( 3 );
-            case 3:
-            // Request body
-                t = _a( 2 );
-                header = requestBodyHeaderInPut( STR_BOUNDARY, STR_AOIDUINO, t,
-                                                 &size );
-                footer = requestBodyFooterInPut( STR_BOUNDARY );
-                size += header.length() + footer.length();
-            // POST
-                host = _a( 0 );
-                if( !client.connect(host.c_str(),port) )
-                    return lteHttpPost( 0 );
-                client.println( "POST "+_a(1)+" HTTP/1.0" );
-                client.println( "Host: " + host );
-                client.println( "User-Agent: " + String(STR_USER_AGENT) );
-                client.print( "Content-Type: multipart/form-data; " );
-                client.println( "boundary=\""+String(STR_BOUNDARY)+"\"" );
-                client.println( "Content-Length: "+String(size) );
-                client.println( "Connection: close" );
-                client.println();
-                client.print( header );
-              // If file is exitst, Upload file
-                if( !AstStorage->exists(t) )
-                    client.print( t );
-                else
-                {
-                    f = AstStorage->open( t, FILE_READ );
-                    uint8_t *buf = new uint8_t[ _HTTP_BUFFER_SIZE_ ];
-                    while( f.available() )
-                    {
-                        size = f.read( buf, _HTTP_BUFFER_SIZE_ );
-                        client.write( buf, size );
-                    }
-                    delete [] buf;
-                    f.close();
-                }
-                client.print( footer );
-            // Response
-                start = ::millis();
-                while( true )
-                {
-                    if( i=client.available() )
-                    {
-                        char c[ i+1 ];
-                        c[ i ] = NULL;
-                        client.read( (uint8_t*)c, i );
-                        s += c;
-                    }
-                    if( !client.available() && !client.connected() )
-                    {
-                        client.stop();
-                        break;
-                    }
-                // timeout
-                    if( timeout<(::millis()-start) )
-                        break;
-                }
-            // Only content
-                i = s.indexOf( "\r\n\r\n" );
-                if( -1<i )
-                    s = s.substring( i+4 );
-                s = prettyPrintTo( "value", s );
-                break;
-            default:
-                s = usage( "lteHttpPost host path (file|text) (port timeout)?" );
                 break;
         }
 
@@ -1975,18 +1934,6 @@ namespace AoiSpresense
         return b;
     }
     /**
-     * @fn String Ast::requestBodyFooterInPut( const String &boundary )
-     *
-     * Return request body footer in HTTP PUT.
-     *
-     * @param[in] boundary Boundary string.
-     * @return Request body footer string in HTTP PUT.
-     */
-    String Ast::requestBodyFooterInPut( const String &boundary )
-    {
-        return "\r\n--" + boundary + "\r\n";
-    }
-    /**
      * @fn String Ast::requestBodyHeaderInPut( const String &value )
      *
      * Return request body header in HTTP PUT.
@@ -2001,25 +1948,21 @@ namespace AoiSpresense
     {
         String s;
 
-        s += "--" + boundary + "\r\n";
-        s += "Content-Disposition: form-data; name=\"" + name + "\";";
     // If file is exitst, use file size
         if( !AstStorage->exists(value) )
-        {
-            s += "\r\n";
-            s += "Content-Type: text/plain\r\n";
-            *size = value.length();
-        }
+            s = AoiUtil::Http::requestBodyHeaderInPut( boundary, name, value,size );
         else
         {
+            s += "--" + boundary + "\r\n";
+            s += "Content-Disposition: form-data; name=\"" + name + "\";";
             s += " filename=\"" + value + "\"\r\n";
             s += "Content-Type: application/octet-stream\r\n";
             s += "Content-Transfer-Encoding: binary\r\n";
             File f = AstStorage->open( value, FILE_READ );
             *size = f.size();
             f.close();
+            s += "\r\n";
         }
-        s += "\r\n";
 
         return s;
     }

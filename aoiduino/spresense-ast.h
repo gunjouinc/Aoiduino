@@ -14,6 +14,7 @@
 #include <Camera.h>
 
 #include "base-arduino.h"
+#include "util-http.h"
 #include "util-mqtt.h"
 /**
  * @namespace AoiSpresense
@@ -31,6 +32,7 @@ namespace AoiSpresense
      */
     class Ast :
         public AoiBase::Arduino,
+        public AoiUtil::Http,
         public AoiUtil::Mqtt
     {
     // members
@@ -86,12 +88,13 @@ namespace AoiSpresense
         static String dmesg( StringList *args );
         static String reboot( StringList *args );
         static String sleep( StringList *args );
+        /* HTTP */
+        static String httpBegin( StringList *args );
+        static String httpPost( StringList *args );
         /* LTE */
         static String lteBegin( StringList *args );
         static String lteConfig( StringList *args );
         static String lteEnd( StringList *args );
-        static String lteHttpGet( StringList *args );
-        static String lteHttpPost( StringList *args );
         /* MQTT */
         static String mqttBegin( StringList *args );
         /* RTC */
@@ -111,7 +114,6 @@ namespace AoiSpresense
         static bool sizeFromString( const String &value, int *width, int *height );
     // static members
     protected:
-        static String requestBodyFooterInPut( const String &boundary );
         static String requestBodyHeaderInPut( const String &boundary, const String &name, const String &value, int *size );
     // static variables
     private:
