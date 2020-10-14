@@ -123,6 +123,7 @@ namespace AoiSpresense
             { "lteBegin", &Ast::lteBegin },
             { "lteConfig", &Ast::lteConfig },
             { "lteEnd", &Ast::lteEnd },
+            { "lteRtc", &Ast::lteRtc },
             /* MQTT */
             { "mqttBegin", &Ast::mqttBegin },
             { "mqttConnect", &AoiUtil::Mqtt::mqttConnect },
@@ -1583,6 +1584,36 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn String Ast::lteRtc( StringList *args )
+     *
+     * Get rtc from the LTE network.
+     *
+     * @param[in] args Reference to arguments.
+     * @return unixtime string.
+     */
+    String Ast::lteRtc( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                if( Lte.getStatus()!=LTE_READY )
+                    s = lteRtc( 0 );
+                else
+                {
+                    s = String( Lte.getTime() );
+                    s = prettyPrintTo( "value", s );
+                }
+                break;
+            default:
+                s = usage( "lteRtc" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Ast::mqttBegin( StringList *args )
      *
      * Initalize mqtt certs.
@@ -1649,8 +1680,12 @@ namespace AoiSpresense
                 s = prettyPrintTo( "value", buf );
                 delete [] buf;
                 break;
+            case 1:
+                rtc.unixtime( _atoul(0) );
+                RTC.setTime( rtc );
+                break;
             default:
-                s = usage( "date" );
+                s = usage( "date (unixtime)?" );
                 break;
         }
 
