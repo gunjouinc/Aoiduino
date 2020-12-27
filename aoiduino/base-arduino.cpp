@@ -231,10 +231,13 @@ namespace AoiBase
 
         switch( count(args) )
         {
+#ifdef ESP32
+#else
             case 2:
                 i = _atoi( 0 );
                 j = _atoi( 1 );
                 ::analogWrite( i, j );
+#endif
                 break;
             default:
                 s = usage( "analogWrite pin 0-255" );
@@ -443,9 +446,12 @@ namespace AoiBase
 
         switch( count(args) )
         {
+#ifdef ESP32
+#else
             case 1:
                 ::noTone( _atoi(0) );
                 break;
+#endif
             default:
                 s = usage( "noTone pin" );
                 break;
@@ -549,6 +555,8 @@ namespace AoiBase
 
         switch( count(args) )
         {
+#ifdef ESP32
+#else
             case 2:
                 i = _atoi( 0 );
                 ::tone( i, _atoui(1) );
@@ -557,6 +565,7 @@ namespace AoiBase
                 i = _atoi( 0 );
                 ::tone( i, _atoui(1), _atoul(2) );
                 break;
+#endif
             default:
                 s = usage( "tone pin frequency (duration)" );
                 break;

@@ -179,7 +179,7 @@ namespace AoiUtil
     String Http::response( int timeout )
     {
         String s;
-        char *buf = new uint8_t[ _AOIUTIL_HTTP_BUFFER_SIZE_+1 ];
+        char *buf = new char[ _AOIUTIL_HTTP_BUFFER_SIZE_+1 ];
         int start = ::millis();
         int i = 0;
 

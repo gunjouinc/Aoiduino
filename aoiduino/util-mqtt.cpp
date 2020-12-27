@@ -126,7 +126,7 @@ namespace AoiUtil
             int i = 0;
         // restore argument after qos
             String t = join( args, STR_SPACE, 2 );
-            char *buf = t.c_str();
+            char *buf = (char*)t.c_str();
         // TX_PAYLOAD_BUFFER_SIZE is defined in MqttClient.cpp
             while( i<t.length() )
             {
