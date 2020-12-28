@@ -42,7 +42,7 @@ Supported boards are Arduino Uno, Spresense Ast, ESP32. Below functions were imp
   - ESP32, Type 'help Esp32' to show usage.
     - File      [add] >, >>, cat, format, ll, mkdir, pwd, rm, rmdir, touch
     - HTTP.     [add] httpBegin, httpGet, httpPost
-    - LowPower  [add] dmesg, reboot, sleep
+    - LowPower  [add] deepSleep, dmesg, reboot
     - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
     - WiFi.     [add] ifconfig, iwlist, wifiBegin, wifiEnd
 

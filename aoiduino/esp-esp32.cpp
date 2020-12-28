@@ -78,9 +78,9 @@ namespace AoiEsp
             { "rmdir", &Esp32::rmdir },
             { "touch", &Esp32::touch },
             /* LowPower */
+            { "deepSleep", &Esp32::deepSleep },
             { "dmesg", &Esp32::dmesg },
             { "reboot", &Esp32::restart },
-            { "sleep", &Esp32::sleep },
             /* HTTP */
             { "httpBegin", &Esp32::httpBegin },
             { "httpGet", &AoiUtil::Http::httpGet },
@@ -625,6 +625,33 @@ namespace AoiEsp
         return s;
     }
     /**
+     * @fn String Esp32::deepSleep( StringList *args )
+     *
+     * Enter the deep sleep state.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Esp32::deepSleep( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                esp_deep_sleep_start();
+                break;
+            case 1:
+                esp_deep_sleep( _atoi(0) * 1000 * 1000 );
+                break;
+            default:
+                s = usage( "deepSleep [0-9]*" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Esp32::dmesg( StringList *args )
      *
      * Returns system information.
@@ -680,31 +707,6 @@ namespace AoiEsp
                 break;
             default:
                 s = usage( "reboot ([0-9]+)" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Esp32::sleep( StringList *args )
-     *
-     * Sleep (yield) this thread.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty string.
-     */
-    String Esp32::sleep( StringList *args )
-    {
-        String s;
-
-        switch( count(args) )
-        {
-            case 1:
-                esp_sleep_enable_timer_wakeup( _atoi(0) * 1000 * 1000 );
-                esp_deep_sleep_start();
-                break;
-            default:
-                s = usage( "sleep [0-9]+" );
                 break;
         }
 

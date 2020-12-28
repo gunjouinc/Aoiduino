@@ -64,9 +64,9 @@ namespace AoiEsp
         static String httpBegin( StringList *args );
         static String httpPost( StringList *args );
         /* LowPower */
+        static String deepSleep( StringList *args );
         static String dmesg( StringList *args );
         static String restart( StringList *args );
-        static String sleep( StringList *args );
         /* Watchdog */
         static String watchdogBegin( StringList *args );
         static String watchdogEnd( StringList *args );
