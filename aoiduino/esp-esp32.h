@@ -62,6 +62,16 @@ namespace AoiEsp
         static String dmesg( StringList *args );
         static String restart( StringList *args );
         static String sleep( StringList *args );
+        /* Watchdog */
+        static String watchdogBegin( StringList *args );
+        static String watchdogEnd( StringList *args );
+        static String watchdogKick( StringList *args );
+        static String watchdogTimeleft( StringList *args );
+        /* WiFi */
+        static String ifConfig( StringList *args );
+        static String wifiBegin( StringList *args );
+        static String wifiEnd( StringList *args );
+        static String wifiScanNetworks( StringList *args );
         // $ Please set your function to use.
     // static members
     protected:

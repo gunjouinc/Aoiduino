@@ -19,6 +19,11 @@ FS *EspStorage = &SPIFFS;
 /* Ticker */
 #include <Ticker.h>
 Ticker ticker;
+Ticker watchdog;
+uint32_t watchdogSecond = 0;
+uint32_t watchdogMills = 0;
+/* WiFi */
+#include <WiFi.h>
 
 /** Flash root path */
 #define _FLASH_ "/mnt/spif"
@@ -73,6 +78,16 @@ namespace AoiEsp
             { "dmesg", &Esp32::dmesg },
             { "reboot", &Esp32::restart },
             { "sleep", &Esp32::sleep },
+            /* Watchdog */
+            { "watchdogBegin", &Esp32::watchdogBegin },
+            { "watchdogKick", &Esp32::watchdogKick },
+            { "watchdogEnd", &Esp32::watchdogEnd },
+            { "watchdogTimeleft", &Esp32::watchdogTimeleft },
+            /* WiFi */
+            { "ifconfig", &Esp32::ifConfig },
+            { "iwlist", &Esp32::wifiScanNetworks },
+            { "wifiBegin", &Esp32::wifiBegin },
+            { "wifiEnd", &Esp32::wifiEnd },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -539,11 +554,14 @@ namespace AoiEsp
 
         switch( count(args) )
         {
+            case 0:
+                ESP.restart();
+                break;
             case 1:
                 ticker.once_ms( _atoi(0), reboot );
                 break;
             default:
-                s = usage( "reboot delay(ms)" );
+                s = usage( "reboot ([0-9]+)" );
                 break;
         }
 
@@ -564,11 +582,281 @@ namespace AoiEsp
         switch( count(args) )
         {
             case 1:
-            // Not work?
                 esp_sleep_enable_timer_wakeup( _atoi(0) * 1000 * 1000 );
+                esp_deep_sleep_start();
                 break;
             default:
                 s = usage( "sleep [0-9]+" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::watchdogBegin( StringList *args )
+     *
+     * Initialize the Watchdog and start to check timer(mesc).
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Esp32::watchdogBegin( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                watchdog.once_ms( _atoi(0), reboot );
+                watchdogSecond = _atoi(0);
+                watchdogMills = ::millis();
+                break;
+            default:
+                s = usage( "watchdogBegin [0-9]+" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::watchdogEnd( StringList *args )
+     *
+     * Stop to check timer for avoid bite watchdog.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Esp32::watchdogEnd( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                watchdog.detach();
+                watchdogSecond = 0;
+                watchdogMills = 0;
+                break;
+            default:
+                s = usage( "watchdogEnd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::watchdogKick( StringList *args )
+     *
+     * Kick to watchdog for notify keep alive.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Esp32::watchdogKick( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                watchdog.detach();
+                watchdog.once_ms( watchdogSecond, reboot );
+                watchdogMills = ::millis();
+                break;
+            default:
+                s = usage( "watchdogKick" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::watchdogTimeleft( StringList *args )
+     *
+     * Get a remain time for bite watchdog.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Remain time to expire timeout(mesc).
+     */
+    String Esp32::watchdogTimeleft( StringList *args )
+    {
+        String s;
+        uint32_t i = 0;
+
+        switch( count(args) )
+        {
+            case 0:
+                i = watchdogSecond - (::millis()-watchdogMills);
+                s = prettyPrintTo( "value" , i );
+                break;
+            default:
+                s = usage( "watchdogTimeleft" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::ifConfig( StringList *args )
+     *
+     * Show network information.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Network information.
+     */
+    String Esp32::ifConfig( StringList *args )
+    {
+        String s;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        switch( count(args) )
+        {
+            case 0:
+                r[ "ipAddress" ] = WiFi.localIP().toString();
+                r[ "subnetMask" ] = WiFi.subnetMask().toString();
+                r[ "gatewayIp" ] = WiFi.gatewayIP().toString();
+                r[ "macAddress" ] = WiFi.macAddress();
+                r[ "dnsIP1" ] = WiFi.dnsIP( 0 ).toString();
+                r[ "dnsIP2" ] = WiFi.dnsIP( 1 ).toString();
+                r[ "softAP" ] = WiFi.softAPIP().toString();
+                r.prettyPrintTo( s );
+                break;
+            default:
+                s = usage( "ifconfig" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::wifiScanNetworks( StringList *args )
+     *
+     * Scan wifi networks.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Returns SSID, RSSI and Encryption type.
+     */
+    String Esp32::wifiScanNetworks( StringList *args )
+    {
+        String s;
+        int i = 0;
+        DynamicJsonBuffer json;
+        JsonArray &r = json.createArray();
+
+        switch( count(args) )
+        {
+            case 0:
+                i = WiFi.scanNetworks();
+                if( !i )
+                    s = STR_NO_NETWORKS_FOUND;
+                else
+                {
+                    for( int j=0; j<i; j++ )
+                    {
+                        JsonObject &o = r.createNestedObject();
+                        o[ "ssid" ] = WiFi.SSID( j );
+                        o[ "rssi" ] = WiFi.RSSI( j );
+                    // Sets encription type.
+                        String t = "";
+                        switch( WiFi.encryptionType(j) )
+                        {
+                            case WIFI_AUTH_OPEN:
+                                t = "OPEN";
+                                break;
+                            case WIFI_AUTH_WEP:
+                                t = "WEP";
+                                break;
+                            case WIFI_AUTH_WPA_PSK:
+                                t = "WPA(PSK)";
+                                break;
+                            case WIFI_AUTH_WPA2_PSK:
+                                t = "WPA2(PSK)";
+                                break;
+                            case WIFI_AUTH_WPA_WPA2_PSK:
+                                t = "WPA/WPA2(PSK)";
+                                break;
+                            case WIFI_AUTH_WPA2_ENTERPRISE:
+                                t = "WPA2(ENTERPRISE)";
+                                break;
+                            default:
+                                t = "Other";
+                                break;
+                        }
+                        o[ "type" ] = t;
+                    }
+                    r.prettyPrintTo( s );
+                }
+                break;
+            default:
+                s = usage( "iwlist" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::wifiBegin( StringList *args )
+     *
+     * Connect to wireless network.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Wireless ip address, Otherwise error string.
+     */
+    String Esp32::wifiBegin( StringList *args )
+    {
+        String s;
+        unsigned long i = 0;
+
+        switch( count(args) )
+        {
+            case 2:
+            // Start
+                WiFi.disconnect();
+                WiFi.mode( WIFI_STA );
+                WiFi.begin( _a(0).c_str(), _a(1).c_str() );
+            // Waiting
+                i = ::millis();
+                while( WiFi.status()!=WL_CONNECTED && (::millis()-i)<ESP_WIFI_TIMEOUT )
+                    ::delay( 500 );
+            // Result
+                if( WiFi.status()!=WL_CONNECTED )
+                    s = STR_CANT_CONNECT_TO_WIRELESS_NETWORK;
+                else
+                {
+                    StringList sl;
+                    s = ifConfig( &sl );
+                }
+                break;
+            default:
+                s = usage( "wifiBegin ssid password" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::wifiEnd( StringList *args )
+     *
+     * Detach from wireless network.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Esp32::wifiEnd( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                if( WiFi.status()!=WL_CONNECTED )
+                    s = wifiEnd( 0 );
+                else
+                    WiFi.disconnect();
+                break;
+            default:
+                s = usage( "wifiEnd" );
                 break;
         }
 
@@ -598,7 +886,9 @@ namespace AoiEsp
      */
     void Esp32::reboot( void )
     {
-        ESP.restart();
+    // Use deep sleep because ESP.restart() not work when ticker.
+        esp_sleep_enable_timer_wakeup( 100 );
+        esp_deep_sleep_start();
     }
     /**
      * @fn String Esp32::resetReason( RESET_REASON reason )

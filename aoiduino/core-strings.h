@@ -20,6 +20,8 @@
 #define STR_ATMARK "@"
 /** BOUNDARY */
 #define STR_BOUNDARY "+=(?AOIDUINO:ONIUDIOA?)=+"
+/** Can't connect to wireless network. */
+#define STR_CANT_CONNECT_TO_WIRELESS_NETWORK "Can't connect to wireless network."
 /** Command not found */
 #define STR_COMMAND_NOT_FOUND ": command not found"
 /** Command not implemented */
@@ -38,6 +40,8 @@
 #define STR_LOGIN_PASS "italy"
 /** logout */
 #define STR_LOGOUT "logout"
+/** No networks found. */
+#define STR_NO_NETWORKS_FOUND "No networks found."
 /** Space */
 #define STR_NULL ""
 /** password */
