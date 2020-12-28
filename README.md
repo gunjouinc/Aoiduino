@@ -1,7 +1,7 @@
 # Aoiduino
 Aoi enviroment for Arduino. Provides command line interface and flexible enhancements for your product.
 
-Supported boards are Arduino Uno, Spresense Ast. Below functions were implemented.
+Supported boards are Arduino Uno, Spresense Ast, ESP32. Below functions were implemented.
 
 - 2020/01/09
   - All boards
@@ -37,6 +37,13 @@ Supported boards are Arduino Uno, Spresense Ast. Below functions were implemente
     - MQTT      [add] mqttBegin, mqttConnect, mqttPoll, mqttPublish, mqttSubscribe
     - RTC       [add] date
     - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
+
+- 2020/12/28
+  - ESP32, Type 'help Esp32' to show usage.
+    - File      [add] >, >>, cat, format, ll, mkdir, pwd, rm, rmdir, touch
+    - LowPower  [add] dmesg, reboot, sleep
+    - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
+    - WiFi.     [add] ifconfig, iwlist, wifiBegin, wifiEnd
 
 ## Operation example on Spresense Ast
 
