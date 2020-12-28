@@ -24,6 +24,9 @@ uint32_t watchdogSecond = 0;
 uint32_t watchdogMills = 0;
 /* WiFi */
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
+WiFiClient wifiClient;
+WiFiClientSecure wifiClientSecure;
 
 /** Flash root path */
 #define _FLASH_ "/mnt/spif"
@@ -78,6 +81,10 @@ namespace AoiEsp
             { "dmesg", &Esp32::dmesg },
             { "reboot", &Esp32::restart },
             { "sleep", &Esp32::sleep },
+            /* HTTP */
+            { "httpBegin", &Esp32::httpBegin },
+            { "httpGet", &AoiUtil::Http::httpGet },
+            { "httpPost", &Esp32::httpPost },
             /* Watchdog */
             { "watchdogBegin", &Esp32::watchdogBegin },
             { "watchdogKick", &Esp32::watchdogKick },
@@ -473,6 +480,114 @@ namespace AoiEsp
                 break;
             default:
                 s = usage( "rmdir path" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::httpBegin( StringList *args )
+     *
+     * Initalize https certs.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Esp32::httpBegin( StringList *args )
+    {
+        String s;
+        File rc, cc, pk;
+
+        switch( count(args) )
+        {
+            case 0:
+                http = &wifiClient;
+                break;
+            case 3:
+                http = &wifiClientSecure;
+            // RootCA
+                rc = EspStorage->open( appendRootPath(_a(0)), FILE_READ );
+                wifiClientSecure.setCACert( rc.readString().c_str() );
+                rc.close();
+            // Client certificate
+                cc = EspStorage->open( appendRootPath(_a(1)), FILE_READ );
+                wifiClientSecure.setCertificate( cc.readString().c_str() );
+                cc.close();
+            // Client private key
+                pk = EspStorage->open( appendRootPath(_a(2)), FILE_READ );
+                wifiClientSecure.setPrivateKey( pk.readString().c_str() );
+                pk.close();
+                break;
+            default:
+                s = usage( "httpBegin CACert Certificate PrivateKey" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::httpPost( StringList *args )
+     *
+     * Send HTTP POST to server.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Recieved content.
+     */
+    String Esp32::httpPost( StringList *args )
+    {
+        String s, t, header, footer;
+        File f;
+        int size = 0;
+        String host;
+        int port = 80;
+        int timeout = 30 * 1000;
+        uint8_t *buf = 0;
+
+        switch( count(args) )
+        {
+            case 5:
+                timeout = _atoi( 4 ) * 1000;
+            case 4:
+                port = _atoi( 3 );
+            case 3:
+                t = appendRootPath( _a(2) );
+                if( !EspStorage->exists(t) )
+                    return AoiUtil::Http::httpPost( args );
+            // Request body
+                header = requestBodyHeaderInPut( STR_BOUNDARY, STR_AOIDUINO, t,
+                                                 &size );
+                footer = requestBodyFooterInPut( STR_BOUNDARY );
+                size += header.length() + footer.length();
+            // POST
+                host = _a( 0 );
+                if( !http->connect(host.c_str(),port) )
+                    return httpPost( 0 );
+                http->println( "POST "+_a(1)+" HTTP/1.0" );
+                http->println( "Host: " + host );
+                http->println( "User-Agent: " + String(STR_USER_AGENT) );
+                http->print( "Content-Type: multipart/form-data; " );
+                http->println( "boundary=\""+String(STR_BOUNDARY)+"\"" );
+                http->println( "Content-Length: "+String(size) );
+                http->println( "Connection: close" );
+                http->println();
+                http->print( header );
+              // Upload file
+                f = EspStorage->open( t, FILE_READ );
+                buf = new uint8_t[ _AOIUTIL_HTTP_BUFFER_SIZE_ ];
+                while( f.available() )
+                {
+                    size = f.read( buf, _AOIUTIL_HTTP_BUFFER_SIZE_ );
+                    http->write( buf, size );
+                }
+                delete [] buf;
+                f.close();
+                http->print( footer );
+            // Response
+                s = response( timeout );
+                s = prettyPrintTo( "value", s );
+                break;
+            default:
+                s = usage( "httpPost host path (file|text) (port timeout)?" );
                 break;
         }
 
@@ -951,6 +1066,40 @@ namespace AoiEsp
             default :
                 s = "No mean";
                 break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::requestBodyHeaderInPut( const String &value )
+     *
+     * Return request body header in HTTP PUT.
+     *
+     * @param[in] boundary Boundary string.
+     * @param[in] name Content-Disposition: name attribute string.
+     * @param[in] value Putted value.
+     * @param[in/out] size Putted value size. If value is file, File size is used.
+     * @return Request body header string in HTTP PUT.
+     */
+    String Esp32::requestBodyHeaderInPut( const String &boundary, const String &name, const String &value, int *size )
+    {
+        String s;
+        String t = appendRootPath( value );
+
+    // If file is exitst, use file size
+        if( !EspStorage->exists(t) )
+            s = AoiUtil::Http::requestBodyHeaderInPut( boundary, name, value, size );
+        else
+        {
+            s += "--" + boundary + "\r\n";
+            s += "Content-Disposition: form-data; name=\"" + name + "\";";
+            s += " filename=\"" + value + "\"\r\n";
+            s += "Content-Type: application/octet-stream\r\n";
+            s += "Content-Transfer-Encoding: binary\r\n";
+            File f = EspStorage->open( t, FILE_READ );
+            *size = f.size();
+            f.close();
+            s += "\r\n";
         }
 
         return s;

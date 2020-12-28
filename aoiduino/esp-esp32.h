@@ -11,6 +11,7 @@
 #pragma once
 
 #include "base-arduino.h"
+#include "util-http.h"
 // External libraries
 #include <rom/rtc.h>
 /**
@@ -28,7 +29,8 @@ namespace AoiEsp
      * This class provides ESP32 function.
      */
     class Esp32 :
-        public AoiBase::Arduino
+        public AoiBase::Arduino,
+        public AoiUtil::Http
     {
     // members
     public:
@@ -58,6 +60,9 @@ namespace AoiEsp
         static String remove( StringList *args );
         static String rmdir( StringList *args );
         static String touch( StringList *args );
+        /* HTTP */
+        static String httpBegin( StringList *args );
+        static String httpPost( StringList *args );
         /* LowPower */
         static String dmesg( StringList *args );
         static String restart( StringList *args );
@@ -78,6 +83,7 @@ namespace AoiEsp
         static String appendRootPath( const String &path );
         static void reboot();
         static String resetReason( RESET_REASON reason );
+        static String requestBodyHeaderInPut( const String &boundary, const String &name, const String &value, int *size );
     // static variables
     private:
         /** Holds function table. */
