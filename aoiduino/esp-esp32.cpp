@@ -102,7 +102,10 @@ namespace AoiEsp
         uint8_t c = sizeof(ftl) / sizeof(AoiBase::FunctionTable);
         m_functionTable = Arduino::functionTable( ftl, c );
     // Initalize library
+        /* File */
         SPIFFS.begin();
+        /* HTTP */
+        http = &wifiClient;
     }
     /**
      * @fn Esp32::~Esp32( void )

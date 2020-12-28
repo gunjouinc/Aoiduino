@@ -147,6 +147,8 @@ namespace AoiSpresense
         /* LowPower */
         LowPower.begin();
         RTC.begin();
+        /* LTE */
+        http = &LteClient;
         /* Watchdog */
         Watchdog.begin();
     }
