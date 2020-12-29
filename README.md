@@ -41,10 +41,15 @@ Supported boards are Arduino Uno, Spresense Ast, ESP32. Below functions were imp
 - 2020/12/28
   - ESP32, Type 'help Esp32' to show usage.
     - File      [add] >, >>, cat, format, ll, mkdir, pwd, rm, rmdir, touch
-    - HTTP.     [add] httpBegin, httpGet, httpPost
+    - HTTP      [add] httpBegin, httpGet, httpPost
     - LowPower  [add] deepSleep, dmesg, reboot
     - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
-    - WiFi.     [add] ifconfig, iwlist, wifiBegin, wifiEnd
+    - WiFi      [add] ifconfig, iwlist, wifiBegin, wifiEnd
+
+- 2020/12/29
+  - ESP32, Type 'help Esp32' to show usage.
+    - RTC       [add] date
+    - WiFi      [add] wifiRtc
 
 ## Operation example on Spresense Ast
 

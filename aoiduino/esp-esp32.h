@@ -72,10 +72,13 @@ namespace AoiEsp
         static String watchdogEnd( StringList *args );
         static String watchdogKick( StringList *args );
         static String watchdogTimeleft( StringList *args );
+        /* RTC */
+        static String date( StringList *args );
         /* WiFi */
         static String ifConfig( StringList *args );
         static String wifiBegin( StringList *args );
         static String wifiEnd( StringList *args );
+        static String wifiRtc( StringList *args );
         static String wifiScanNetworks( StringList *args );
         // $ Please set your function to use.
     // static members

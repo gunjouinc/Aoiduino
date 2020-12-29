@@ -85,6 +85,8 @@ namespace AoiEsp
             { "httpBegin", &Esp32::httpBegin },
             { "httpGet", &AoiUtil::Http::httpGet },
             { "httpPost", &Esp32::httpPost },
+            /* RTC */
+            { "date", &Esp32::date },
             /* Watchdog */
             { "watchdogBegin", &Esp32::watchdogBegin },
             { "watchdogKick", &Esp32::watchdogKick },
@@ -95,6 +97,7 @@ namespace AoiEsp
             { "iwlist", &Esp32::wifiScanNetworks },
             { "wifiBegin", &Esp32::wifiBegin },
             { "wifiEnd", &Esp32::wifiEnd },
+            { "wifiRtc", &Esp32::wifiRtc },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -713,6 +716,45 @@ namespace AoiEsp
         return s;
     }
     /**
+     * @fn String Esp32::date( StringList *args )
+     *
+     * Print date.
+     *
+     * @param[in] args Reference to arguments.
+     * @return date string.
+     */
+    String Esp32::date( StringList *args )
+    {
+        String s;
+        uint8_t size = 20;
+        char *buf = NULL;
+        struct tm rtc;
+        struct timeval tv;
+
+        switch( count(args) )
+        {
+            case 0:
+                getLocalTime( &rtc );
+                buf = new char[ size ];
+                snprintf( buf, size,
+                          "%04d-%02d-%02dT%02d:%02d:%02d",
+                          rtc.tm_year+1900, rtc.tm_mon+1, rtc.tm_mday,
+                          rtc.tm_hour, rtc.tm_min, rtc.tm_sec );
+                s = prettyPrintTo( "value", buf );
+                delete [] buf;
+                break;
+            case 1:
+                tv.tv_sec = _atoul( 0 );
+                settimeofday( &tv, NULL );
+                break;
+            default:
+                s = usage( "date (unixtime)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Esp32::watchdogBegin( StringList *args )
      *
      * Initialize the Watchdog and start to check timer(mesc).
@@ -977,6 +1019,39 @@ namespace AoiEsp
                 break;
             default:
                 s = usage( "wifiEnd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::wifiRtc( StringList *args )
+     *
+     * Get rtc from the WiFi network.
+     *
+     * @param[in] args Reference to arguments.
+     * @return unixtime string.
+     */
+    String Esp32::wifiRtc( StringList *args )
+    {
+        String s;
+        time_t now;
+
+        switch( count(args) )
+        {
+            case 0:
+                if( WiFi.status()!=WL_CONNECTED )
+                    s = wifiRtc( 0 );
+                else
+                {
+                    configTzTime( "JST-9", "ntp.nict.jp", "time.google.com", "ntp.jst.mfeed.ad.jp" );
+                    time( &now );
+                    s = String( now );
+                    s = prettyPrintTo( "value", s );
+                }
+                break;
+            default:
+                s = usage( "wifiRtc" );
                 break;
         }
 
