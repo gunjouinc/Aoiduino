@@ -113,6 +113,7 @@ namespace AoiEsp
     // Initalize library
         /* File */
         SPIFFS.begin();
+        SD.begin( _TFCARD_CS_PIN_, SPI, 40000000 );
         /* HTTP */
         http = &wifiClient;
     }
@@ -245,10 +246,7 @@ namespace AoiEsp
                 if( (path==_FLASH_) || (path=="/") )
                     EspStorage = &SPIFFS;
                 else if( path==_SD_ )
-                {
-                    SD.begin( _TFCARD_CS_PIN_, SPI, 40000000 );
                     EspStorage = &SD;
-                }
                 else
                     s = cd( 0 );
                 break;
