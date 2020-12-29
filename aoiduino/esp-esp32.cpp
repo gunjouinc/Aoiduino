@@ -15,6 +15,7 @@
 /* Flash */
 #include <FS.h>
 #include <SPIFFS.h>
+#include <SD.h>
 FS *EspStorage = &SPIFFS;
 /* Ticker */
 #include <Ticker.h>
@@ -30,6 +31,10 @@ WiFiClientSecure wifiClientSecure;
 
 /** Flash root path */
 #define _FLASH_ "/mnt/spif"
+/** SD CS pin, Please change to your enviroment (checked M5Stack) */
+#define _TFCARD_CS_PIN_ 4
+/** SD root path */
+#define _SD_ "/mnt/sd0"
 
 /**
  * @namespace AoiEsp
@@ -70,6 +75,7 @@ namespace AoiEsp
             { ">", &Esp32::create },
             { ">>", &Esp32::append },
             { "cat", &Esp32::read },
+            { "cd", &Esp32::cd },
             { "format", &Esp32::format },
             { "ll", &Esp32::ll },
             { "mkdir", &Esp32::mkdir },
@@ -238,11 +244,17 @@ namespace AoiEsp
                 path = _a( 0 );
                 if( (path==_FLASH_) || (path=="/") )
                     EspStorage = &SPIFFS;
+                else if( path==_SD_ )
+                {
+                    SD.begin( _TFCARD_CS_PIN_, SPI, 40000000 );
+                    EspStorage = &SD;
+                }
                 else
                     s = cd( 0 );
                 break;
             default:
-                s = usage( "cd ("+String(_FLASH_)+")" );
+                s = usage( "cd ("+String(_FLASH_)
+                             +"|"+String(_SD_)+")" );
                 break;
         }
 
