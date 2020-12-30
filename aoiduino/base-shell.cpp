@@ -323,9 +323,11 @@ namespace AoiBase
                     ::yield;
                     i++;
                     if( i==j )
+                    {
+                    // Set loop index
                         i = 0;
-                // Set loop index
-                    shell.m_loopCurrent += shell.m_loopStep;
+                        shell.m_loopCurrent += shell.m_loopStep;
+                    }
                     if( shell.m_loopEnd<shell.m_loopCurrent )
                         break;
                 }
