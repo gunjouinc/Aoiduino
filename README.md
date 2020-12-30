@@ -51,6 +51,10 @@ Supported boards are Arduino Uno, Spresense Ast, ESP32. Below functions were imp
     - RTC       [add] date
     - WiFi      [add] wifiRtc
 
+- 2020/12/30
+  - M5Stack, Type 'help M5Stack' to show usage.
+    - LCD       [add] clear, print, printcr, println, setBrightness, setFontSize
+
 ## Operation example on Spresense Ast
 
 ### Low Power

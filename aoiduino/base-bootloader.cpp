@@ -14,6 +14,7 @@
  */
  #include "avr-uno.h"
  #include "esp-esp32.h"
+ #include "esp-m5stack.h"
  #include "spresense-ast.h"
 /**
  * @namespace AoiBase
@@ -110,6 +111,9 @@ namespace AoiBase
 // Esp32
 #ifdef ESP32
             new AoiEsp::Esp32(),
+#endif
+#ifdef ARDUINO_M5Stack_Core_ESP32
+            new AoiEsp::M5Stack(),
 #endif
 // Spresense
 #ifdef ARDUINO_spresense_ast
