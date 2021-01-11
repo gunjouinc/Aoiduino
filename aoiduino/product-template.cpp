@@ -40,7 +40,9 @@ namespace AoiProduct
      */
     String Template::setup( void )
     {
-        return "";
+        String s = "product-template";
+
+        return STR_LOADED + s;
     }
     /**
      * @fn String Template::loop( void )

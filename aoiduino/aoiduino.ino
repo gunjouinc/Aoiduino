@@ -97,6 +97,6 @@ void afterSetup( void )
     shell.rc();
     loader.end();
 // Sets product template.
-    product->setup();
+    debug( product->setup() );
     shell.setTemplate( product );
 }
