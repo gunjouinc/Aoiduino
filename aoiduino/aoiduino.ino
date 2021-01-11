@@ -11,6 +11,10 @@
 #include "core-util.h"
 using namespace AoiCore;
 /*
+ * Please comment out below line to use custom product template.
+ */
+#define _PRODUCT_TEMPLATE_
+/*
  * Local functions
  */
 void afterAuthentication( void );
@@ -85,8 +89,13 @@ void beforeSetup( void )
 /*
  * Product template, Please set your product below this line.
  */
-#include "product-template.h"
-AoiProduct::Template *product = new AoiProduct::Template;
+#ifdef _PRODUCT_TEMPLATE_
+    #include "product-template.h"
+    AoiProduct::Template *product = new AoiProduct::Template;
+#else
+    #include "product-main.h"
+    AoiProduct::Template *product = new AoiProduct::Main;
+#endif
 /**
  * @fn void afterSetup( void )
  *
