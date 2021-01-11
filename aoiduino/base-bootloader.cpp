@@ -13,6 +13,7 @@
  * Base class tables, Please set your classes below this line.
  */
  #include "avr-uno.h"
+ #include "esp-esp8266.h"
  #include "esp-esp32.h"
  #include "esp-m5stack.h"
  #include "spresense-ast.h"
@@ -107,6 +108,9 @@ namespace AoiBase
 // Uno
 #ifdef ARDUINO_AVR_UNO
             new AoiAvr::Uno(),
+#endif
+#ifdef ESP8266
+            new AoiEsp::Esp8266(),
 #endif
 // Esp32
 #ifdef ESP32

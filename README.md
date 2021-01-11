@@ -1,7 +1,7 @@
 # Aoiduino
 Aoi enviroment for Arduino. Provides command line interface and flexible enhancements for your product.
 
-Supported boards are Arduino Uno, Spresense Ast, ESP32. Below functions were implemented.
+Supported boards are Arduino Uno, Spresense Ast, ESP32 and ESP8266. Below functions were implemented.
 
 - 2020/01/09
   - All boards
@@ -40,9 +40,9 @@ Supported boards are Arduino Uno, Spresense Ast, ESP32. Below functions were imp
 
 - 2020/12/28
   - ESP32, Type 'help Esp32' to show usage.
-    - File      [add] >, >>, cat, format, ll, mkdir, pwd, rm, rmdir, touch
-    - HTTP      [add] httpBegin, httpGet, httpPost
+    - File      [add] >, >>, cat, cd, format, ll, mkdir, pwd, rm, rmdir, touch
     - LowPower  [add] deepSleep, dmesg, reboot
+    - HTTP      [add] httpBegin, httpGet, httpPost
     - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
     - WiFi      [add] ifconfig, iwlist, wifiBegin, wifiEnd
 
@@ -54,6 +54,15 @@ Supported boards are Arduino Uno, Spresense Ast, ESP32. Below functions were imp
 - 2020/12/30
   - M5Stack, Type 'help M5Stack' to show usage.
     - LCD       [add] clear, print, printcr, println, setBrightness, setFontSize
+
+- 2021/01/11
+  - ESP8266, Type 'help Esp8266' to show usage.
+    - File      [add] >, >>, cat, cd, format, ll, mkdir, pwd, rm, rmdir, touch
+    - LowPower  [add] deepSleep, dmesg, reboot
+    - HTTP      [add] httpBegin, httpGet, httpPost
+    - RTC       [add] date
+    - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
+    - WiFi      [add] ifconfig, iwlist, wifiBegin, wifiEnd, wifiRtc
 
 ## Operation example on Spresense Ast
 
@@ -76,7 +85,7 @@ password : italy
   "current": -4,
   "voltage": 4021
 }
-# 
+#
 ```
 
 ### Camera
@@ -132,7 +141,7 @@ password : italy
 {
   "value": "3"
 }
-# 
+#
 ```
 
 ### GNSS
@@ -222,7 +231,7 @@ password : italy
     "signalLevel": 30.38
   }
 ]
-# 
+#
 ```
 
 ### LTE
@@ -307,7 +316,7 @@ ERROR: nw_stat : 0
 {
   "value": "++ NTT DOCOMO ++"
 }
-# 
+#
 ```
 
 ### Command separator, enclosed string and eval
@@ -324,7 +333,7 @@ ERROR: nw_stat : 0
 {
   "value": "This sentense is evaluated by eval"
 }
-# 
+#
 ```
 
 ### Loop

@@ -7,13 +7,13 @@
 ** https://github.com/gunjouinc/Aoiduino/blob/master/LICENSE
 **
 ******************************************************************************/
-#ifdef ESP32
+#ifdef ESP8266
 #pragma once
 
 #include "base-arduino.h"
 #include "util-http.h"
 // External libraries
-#include <rom/rtc.h>
+#include <user_interface.h>
 /**
  * @namespace AoiEsp
  * @brief Aoi esp classes.
@@ -22,20 +22,20 @@ namespace AoiEsp
 {
     using namespace AoiCore;
     /**
-     * @class Esp32
-     * @brief Provides ESP32 functions.
-     * @see https://github.com/espressif/arduino-esp32
+     * @class Esp8266
+     * @brief Provides ESP8266 functions.
+     * @see https://github.com/esp8266/Arduino
      *
-     * This class provides ESP32 function.
+     * This class provides ESP8266 function.
      */
-    class Esp32 :
+    class Esp8266 :
         public AoiBase::Arduino,
         public AoiUtil::Http
     {
     // members
     public:
-        explicit Esp32( void );
-        virtual ~Esp32( void );
+        explicit Esp8266( void );
+        virtual ~Esp8266( void );
     // members
     public:
         virtual String className( void );
@@ -85,7 +85,6 @@ namespace AoiEsp
     protected:
         static String appendRootPath( const String &path );
         static void reboot();
-        static String resetReason( RESET_REASON reason );
         static String requestBodyHeaderInPut( const String &boundary, const String &name, const String &value, int *size );
     // static variables
     private:
