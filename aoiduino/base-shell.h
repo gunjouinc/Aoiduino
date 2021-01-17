@@ -35,7 +35,7 @@ namespace AoiBase
     public:
         virtual int bash( const String &prompt );
         virtual void rc( void );
-        virtual void rc( const String &args );
+        virtual void rc( const String &args, bool measure = true );
     // members
     public:
         virtual String className( void );
@@ -49,6 +49,7 @@ namespace AoiBase
         static String doEnd( StringList *args );
         static String eval( StringList *args );
         static String help( StringList *args );
+        static String sh( StringList *args );
         // $ Please set your function to use.
     // members
     protected:

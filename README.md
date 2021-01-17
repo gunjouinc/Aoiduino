@@ -64,6 +64,10 @@ Supported boards are Arduino Uno, Spresense Ast, ESP32 and ESP8266. Below functi
     - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
     - WiFi      [add] ifconfig, iwlist, wifiBegin, wifiEnd, wifiRtc
 
+- 2021/01/17
+  - All boards
+    - [add] sh
+
 ## Operation example on Spresense Ast
 
 ### Low Power

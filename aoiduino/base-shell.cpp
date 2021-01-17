@@ -42,6 +42,7 @@ namespace AoiBase
             { "done", &Shell::doEnd },
             { "eval", &Shell::eval },
             { "help", &Shell::help },
+            { "sh", &Shell::sh },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -154,25 +155,33 @@ namespace AoiBase
         }
     }
     /**
-      * @fn void Shell::rc( const String &args )
+      * @fn void Shell::rc( const String &args, bool debug = true )
       *
       * Practices rc scripts.
       *
       * param[in] args script.
+      * param[in] measure Set true if measure mode, Otherwise set false.
       */
-    void Shell::rc( const String &args )
+    void Shell::rc( const String &args, bool measure )
     {
         String s;
 
         if( !args.length() || !args.indexOf(STR_SHELL_COMMENT) )
             return;
 
-        debug( args );
-        s = shell.practice( args );
-        if( 0<s.length() )
-            debug( s );
+        if( measure )
+            debug( args );
+        else
+            app << args + _n;
 
-        return;
+        s = shell.practice( args );
+        if( !s.length() )
+            return;
+
+        if( measure )
+            debug( s );
+        else
+            app << s + _n;
     }
     /**
      * @fn String Shell::className( void )
@@ -399,6 +408,35 @@ namespace AoiBase
             default:
                 s = usage( "help (classname|*)" );
                 break;
+        }
+
+        return s;
+    }
+    /**
+      * @fn void Shell::sh( StringList *args )
+      *
+      * Practice sh script.
+      */
+    String Shell::sh( StringList *args )
+    {
+        String s;
+        int c = count( args );
+
+        if( c!=1 )
+            s = usage( "sh script" );
+        else
+        {
+            ClassTable *ct = loader.classTable();
+        // Practice script every boards
+            while( ct->pointer )
+            {
+            // sl is splitted by LF
+                StringList *sl = ct->pointer->rcScript( _a(0) );
+                for( int i=0; i<count(sl); i++ )
+                    shell.rc( (sl+i)->value, false );
+                delete [] sl;
+                ct++;
+            }
         }
 
         return s;
