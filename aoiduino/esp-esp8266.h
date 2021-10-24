@@ -10,6 +10,8 @@
 #ifdef ESP8266
 #pragma once
 
+class Servo;
+
 #include "base-arduino.h"
 #include "util-http.h"
 // External libraries
@@ -69,6 +71,11 @@ namespace AoiEsp
         static String restart( StringList *args );
         /* RTC */
         static String date( StringList *args );
+        /* Servo */
+        static String servoAttach( StringList *args );
+        static String servoBegin( StringList *args );
+        static String servoEnd( StringList *args );
+        static String servoWriteMicroseconds( StringList *args );
         /* Watchdog */
         static String watchdogBegin( StringList *args );
         static String watchdogEnd( StringList *args );
@@ -90,6 +97,10 @@ namespace AoiEsp
     private:
         /** Holds function table. */
         static AoiBase::FunctionTable *m_functionTable;
+        /** Holds Servo */
+        static Servo *m_servo;
+        /** Holds Servo count */
+        static int m_servoCount;
     };
 }
 #endif
