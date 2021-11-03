@@ -17,8 +17,6 @@
 FS *EspStorage = &SPIFFS;
 /* RTC */
 #include <time.h>
-/* Servo */
-#include <Servo.h>
 /* Ticker */
 #include <Ticker.h>
 Ticker ticker;
@@ -49,8 +47,6 @@ namespace AoiEsp
 {
 // Static variables.
     AoiBase::FunctionTable *Esp8266::m_functionTable = 0;
-    Servo *Esp8266::m_servo = 0;
-    int Esp8266::m_servoCount = 0;
     /**
      * @fn Esp8266::Esp8266( void )
      *
@@ -106,10 +102,10 @@ namespace AoiEsp
             /* RTC */
             { "date", &Esp8266::date },
             /* Servo */
-            { "servoAttach", &Esp8266::servoAttach },
-            { "servoBegin", &Esp8266::servoBegin },
-            { "servoEnd", &Esp8266::servoEnd },
-            { "servoWriteMicroseconds", &Esp8266::servoWriteMicroseconds },
+            { "servoAttach", &AoiUtil::Servo_::servoAttach },
+            { "servoBegin", &AoiUtil::Servo_::servoBegin },
+            { "servoEnd", &AoiUtil::Servo_::servoEnd },
+            { "servoWriteMicroseconds", &AoiUtil::Servo_::servoWriteMicroseconds },
             /* Watchdog */
             { "watchdogBegin", &Esp8266::watchdogBegin },
             { "watchdogEnd", &Esp8266::watchdogEnd },
@@ -782,118 +778,6 @@ namespace AoiEsp
                 break;
             default:
                 s = usage( "date (unixtime)?" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Esp8266::servoAttach( StringList *args )
-     *
-     * Attach the Servo variable to a pin.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty string.
-     */
-    String Esp8266::servoAttach( StringList *args )
-    {
-        String s;
-
-        switch( count(args) )
-        {
-            case 1:
-                ( m_servo+0 )->attach( _atoi(0) );
-                break;
-            case 2:
-                ( m_servo+_atoi(1) )->attach( _atoi(0) );
-                break;
-            default:
-                s = usage( "servoAttach pin ([0-(count-1)])" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Esp8266::servoBegin( StringList *args )
-     *
-     * Initialize the servo using count.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty string.
-     */
-    String Esp8266::servoBegin( StringList *args )
-    {
-        String s;
-        StringList sl;
-
-        switch( count(args) )
-        {
-            case 1:
-                servoEnd( &sl );
-                m_servoCount = _atoi( 0 );
-                m_servo = new Servo[ m_servoCount ];
-                break;
-            default:
-                s = usage( "servoBegin count" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Esp8266::servoEnd( StringList *args )
-     *
-     * Detach the all Servo variable from its pin.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty string.
-     */
-    String Esp8266::servoEnd( StringList *args )
-    {
-        String s;
-
-        switch( count(args) )
-        {
-            case 0:
-                if( m_servo )
-                {
-                    for( int i=0; i<m_servoCount; i++ )
-                        (m_servo+i)->detach();
-                    delete [] m_servo;
-                }
-                m_servo = 0;
-                m_servoCount = 0;
-                break;
-            default:
-                s = usage( "servoEnd" );
-                break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Esp8266::servoWriteMicroseconds( StringList *args )
-     *
-     * Set microseconds to servo using pin number.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty string.
-     */
-    String Esp8266::servoWriteMicroseconds( StringList *args )
-    {
-        String s;
-
-        switch( count(args) )
-        {
-            case 1:
-                ( m_servo+0 )->writeMicroseconds( _atoi(0) );
-                break;
-            case 2:
-                ( m_servo+_atoi(1) )->writeMicroseconds( _atoi(0) );
-                break;
-            default:
-                s = usage( "servoWriteMicroseconds micros ([0-(count-1)])" );
                 break;
         }
 
