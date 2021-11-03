@@ -7,9 +7,10 @@
 ** https://github.com/gunjouinc/Aoiduino/blob/master/LICENSE
 **
 ******************************************************************************/
-#include <IRutils.h>
 #include "base-arduinojson.h"
 #include "util-irremote.h"
+
+#include <IRutils.h>
 
 /**
 * @namespace AoiUtil
