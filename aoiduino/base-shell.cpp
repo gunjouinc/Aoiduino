@@ -40,9 +40,11 @@ namespace AoiBase
         // ^ Please set your function to use.
             { "do", &Shell::doBegin },
             { "done", &Shell::doEnd },
+            { "equal", &Shell::equal },
             { "eval", &Shell::eval },
             { "help", &Shell::help },
             { "sh", &Shell::sh },
+            { "substring", &Shell::substring },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -352,6 +354,33 @@ namespace AoiBase
         return s;
     }
     /**
+     * @fn String Shell::equal( StringList *args )
+     *
+     * Check if valu1 and value2 are equal
+     *
+     * @param[in] args Reference to arguments.
+     * @return Result string if equal, Otherwise !result string.
+     */
+    String Shell::equal( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 4:
+                if( _a(2)==_a(3) )
+                    s = prettyPrintTo( "value", _a(0) );
+                else
+                    s = prettyPrintTo( "value", _a(1) );
+                break;
+            default:
+                s = usage( "equal result !result value1 value2" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Shell::eval( StringList *args )
      *
      * Evaluate string to shell.
@@ -437,6 +466,33 @@ namespace AoiBase
                 delete [] sl;
                 ct++;
             }
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::substring( StringList *args )
+     *
+     * Get a substring of a String.
+     *
+     * @param[in] args Reference to arguments.
+     * @return The substring.
+     */
+    String Shell::substring( StringList *args )
+    {
+        String s, t;
+        int i = 0;
+
+        switch( count(args) )
+        {
+            case 3:
+                i = _atoi( 0 );
+                t = _a( 2 ).substring( i, i+_atoi(1) );
+                s = prettyPrintTo( "value", t );
+                break;
+            default:
+                s = usage( "substring index byte value" );
+                break;
         }
 
         return s;

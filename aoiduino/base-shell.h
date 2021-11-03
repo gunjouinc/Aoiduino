@@ -47,9 +47,11 @@ namespace AoiBase
         // ^ Please set your function to use.
         static String doBegin( StringList *args );
         static String doEnd( StringList *args );
+        static String equal( StringList *args );
         static String eval( StringList *args );
         static String help( StringList *args );
         static String sh( StringList *args );
+        static String substring( StringList *args );
         // $ Please set your function to use.
     // members
     protected:
