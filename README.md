@@ -72,6 +72,10 @@ Supported boards are Arduino Uno, Spresense Ast, ESP32 and ESP8266. Below functi
   - ESP8266, Type 'help Esp8266' to show usage.
     - Servo     [add] servoAttach, servoBegin, servoEnd, servoWriteMicroseconds
 
+- 2021/11/03
+  - ESP8266, Type 'help Esp8266' to show usage.
+    - IR        [add] irReceiveBegin, irReceiveRaw, irSendBegin, irSendRaw
+
 ## Operation example on Spresense Ast
 
 ### Low Power

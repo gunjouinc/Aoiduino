@@ -14,6 +14,7 @@ class Servo;
 
 #include "base-arduino.h"
 #include "util-http.h"
+#include "util-irremote.h"
 // External libraries
 #include <user_interface.h>
 /**
@@ -32,7 +33,8 @@ namespace AoiEsp
      */
     class Esp8266 :
         public AoiBase::Arduino,
-        public AoiUtil::Http
+        public AoiUtil::Http,
+        public AoiUtil::IRRemote
     {
     // members
     public:

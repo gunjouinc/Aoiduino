@@ -98,6 +98,11 @@ namespace AoiEsp
             { "httpBegin", &Esp8266::httpBegin },
             { "httpGet", &AoiUtil::Http::httpGet },
             { "httpPost", &Esp8266::httpPost },
+            /* IR */
+            { "irReceiveBegin", &AoiUtil::IRRemote::irReceiveBegin },
+            { "irReceiveRaw", &AoiUtil::IRRemote::irReceiveRaw },
+            { "irSendBegin", &AoiUtil::IRRemote::irSendBegin },
+            { "irSendRaw", &AoiUtil::IRRemote::irSendRaw },
             /* RTC */
             { "date", &Esp8266::date },
             /* Servo */
