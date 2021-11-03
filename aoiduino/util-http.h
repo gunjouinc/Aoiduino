@@ -12,8 +12,8 @@
 #include "core-abstractcore.h"
 class Client;
 
-/** HTTP buffer size */
-#define _AOIUTIL_HTTP_BUFFER_SIZE_ 1024
+/** HTTP buffer size, include header */
+#define _AOIUTIL_HTTP_BUFFER_SIZE_ (1024 * 2)
 
 /**
  * @namespace AoiUtil
