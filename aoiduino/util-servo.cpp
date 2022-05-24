@@ -9,7 +9,13 @@
 ******************************************************************************/
 #include "util-servo.h"
 
+// Esp32
+#ifdef ESP32
+#include <ESP32Servo.h>
+// Others
+#else
 #include <Servo.h>
+#endif
 
 /**
 * @namespace AoiUtil
