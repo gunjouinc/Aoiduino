@@ -51,6 +51,8 @@ namespace AoiEsp
         { "println", &M5Stack::println },
         { "setBrightness", &M5Stack::setBrightness },
         { "setFontSize", &M5Stack::setFontSize },
+        { "sleep", &M5Stack::sleep },
+        { "wakeup", &M5Stack::wakeup },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -285,6 +287,54 @@ namespace AoiEsp
                 break;
             default:
                 s = usage( "setFontSize (1|2|4)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String M5Stack::sleep( StringList *args )
+     *
+     * Set LCD mode to sleep.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String M5Stack::sleep( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                M5.Lcd.sleep();
+                break;
+            default:
+                s = usage( "sleep" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String M5Stack::wakeup( StringList *args )
+     *
+     * Set LCD mode to wakeup.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String M5Stack::wakeup( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                M5.Lcd.wakeup();
+                break;
+            default:
+                s = usage( "wakeup" );
                 break;
         }
 
