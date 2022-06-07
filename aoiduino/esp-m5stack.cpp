@@ -109,6 +109,19 @@ namespace AoiEsp
         return Arduino::usages( m_functionTable );
     }
     /**
+     * @fn StringList* M5Stack::rcScript( const String &index )
+     *
+     * @see StringList* AbstractBase::rcScript( const String &index )
+     */
+    StringList* M5Stack::rcScript( const String &index )
+    {
+        StringList *sl = 0;
+
+        // Nothing to do
+
+        return sl;
+    }
+    /**
      * @fn String M5Stack::clear( StringList *args )
      *
      * Clear LCD and move to first position.
