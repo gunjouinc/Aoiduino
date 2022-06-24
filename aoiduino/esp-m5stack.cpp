@@ -347,22 +347,17 @@ namespace AoiEsp
      */
     void M5Stack::scrollLine( void )
     {
-        bool scroll = false;
         uint16_t h = lineHeight();
 
         m_leftCoordinate = 0;
         m_topCoordinate += h;
    // The value must wrap around as the screen memory is a circular buffer.
         if( _BOTTOM_MAX_<=m_topCoordinate )
-        {
             m_topCoordinate = 0;
-            scroll = true;
-        }
    // Scroll the display, Vertical scrolling pointer
         uint16_t address = m_topCoordinate + h;
         M5.Lcd.writecommand( ILI9341_VSCRSADD );
-        if( scroll )
-            M5.Lcd.writedata( address>>8 );
+        M5.Lcd.writedata( address>>8 );
         M5.Lcd.writedata( address );
    // Erase buffer.
         M5.Lcd.fillRect( 0, m_topCoordinate, 320, h, TFT_BLACK );
