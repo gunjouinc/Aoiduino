@@ -1,7 +1,7 @@
 # Aoiduino
 Aoi enviroment for Arduino. Provides command line interface and flexible enhancements for your product.
 
-Supported boards are Arduino Uno, Spresense Ast, ESP32 and ESP8266. Below functions were implemented.
+Supported boards are Arduino Uno, Spresense Ast, ESP32, M5Stack, M5Core2 and ESP8266. Below functions were implemented.
 
 - 2020/01/09
   - All boards
@@ -77,6 +77,10 @@ Supported boards are Arduino Uno, Spresense Ast, ESP32 and ESP8266. Below functi
     - IR        [add] irReceiveBegin, irReceiveRaw, irSendBegin, irSendRaw
   - All boards
     - [add] equal, substring
+
+- 2022/06/24
+  - M5Core2, Type 'help M5Core2' to show usage.
+    - LCD       [add] clear, print, printcr, println, setBrightness, setFontSize, sleep, wakeup
 
 ## Operation example on Spresense Ast
 

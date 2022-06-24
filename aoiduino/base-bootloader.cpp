@@ -16,6 +16,7 @@
  #include "esp-esp8266.h"
  #include "esp-esp32.h"
  #include "esp-m5stack.h"
+ #include "esp-m5core2.h"
  #include "spresense-ast.h"
 /**
  * @namespace AoiBase
@@ -118,6 +119,9 @@ namespace AoiBase
 #endif
 #ifdef ARDUINO_M5Stack_Core_ESP32
             new AoiEsp::M5Stack(),
+#endif
+#ifdef ARDUINO_M5STACK_Core2
+            new AoiEsp::M5Core2(),
 #endif
 // Spresense
 #ifdef ARDUINO_spresense_ast
