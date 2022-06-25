@@ -52,6 +52,7 @@ namespace AoiEsp
         static String setBrightness( StringList *args );
         static String setFontSize( StringList *args );
         static String sleep( StringList *args );
+        static String vibrate( StringList *args );
         static String wakeup( StringList *args );
         // $ Please set your function to use.
     // static members

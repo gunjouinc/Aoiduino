@@ -52,6 +52,7 @@ namespace AoiEsp
         { "setBrightness", &M5Core2::setBrightness },
         { "setFontSize", &M5Core2::setFontSize },
         { "sleep", &M5Core2::sleep },
+        { "vibrate", &M5Core2::vibrate },
         { "wakeup", &M5Core2::wakeup },
         // $ Please set your function to use.
             { "", 0 }
@@ -322,6 +323,34 @@ namespace AoiEsp
                 break;
             default:
                 s = usage( "sleep" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String M5Core2::vibrate( StringList *args )
+     *
+     * Vibrate specified time.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String M5Core2::vibrate( StringList *args )
+    {
+        String s;
+        unsigned long l = 0;
+
+        switch( count(args) )
+        {
+            case 1:
+                l = _atoul( 0 );
+                M5.Axp.SetLDOEnable( 3, true );
+                ::delay( l );
+                M5.Axp.SetLDOEnable( 3, false );
+                break;
+            default:
+                s = usage( "vibrate 0-4294967295" );
                 break;
         }
 
