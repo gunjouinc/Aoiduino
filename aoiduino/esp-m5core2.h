@@ -10,6 +10,8 @@
 #ifdef ARDUINO_M5STACK_Core2
 #pragma once
 
+class CRGB;
+
 #include "esp-esp32.h"
 /**
  * @namespace AoiEsp
@@ -54,6 +56,13 @@ namespace AoiEsp
         static String sleep( StringList *args );
         static String vibrate( StringList *args );
         static String wakeup( StringList *args );
+        /* Fast LED for M5GO_BOTTOM2 */
+        static String fastLedAttach( StringList *args );
+        static String fastLedBegin( StringList *args );
+        static String fastLedClear( StringList *args );
+        static String fastLedEnd( StringList *args );
+        static String fastLedSetBrightness( StringList *args );
+        static String fastLedShow( StringList *args );
         // $ Please set your function to use.
     // static members
     private:
@@ -70,6 +79,10 @@ namespace AoiEsp
         static uint16_t m_leftCoordinate;
         /** Keep track of the drawing top coordinate */
         static uint16_t m_topCoordinate;
+        /** Holds fast led table. */
+        static CRGB *m_leds;
+        /** Holds fast led count */
+        static int m_ledCount;
     };
 }
 #endif

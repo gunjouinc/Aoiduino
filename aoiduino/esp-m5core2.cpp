@@ -19,6 +19,8 @@
 #define _BOTOM_FIXED_AREA_ 0
 // Bottom of screen area
 #define _BOTTOM_MAX_ 240
+/* FAST LED for M5GO_BOTTOM2 */
+#include <FastLED.h>
 
 /**
  * @namespace AoiEsp
@@ -31,6 +33,8 @@ namespace AoiEsp
     uint16_t M5Core2::m_leftCoordinate = 0;
     uint16_t M5Core2::m_topCoordinate = 0;
     uint8_t M5Core2::m_fontSize = 2;
+    CRGB *M5Core2::m_leds = 0;
+    int M5Core2::m_ledCount = 0;
     /**
      * @fn M5Core2::M5Core2( void )
      *
@@ -54,8 +58,15 @@ namespace AoiEsp
         { "sleep", &M5Core2::sleep },
         { "vibrate", &M5Core2::vibrate },
         { "wakeup", &M5Core2::wakeup },
+        /* Fast LED */
+        { "fastLedAttach", &M5Core2::fastLedAttach },
+        { "fastLedBegin", &M5Core2::fastLedBegin },
+        { "fastLedClear", &M5Core2::fastLedClear },
+        { "fastLedEnd", &M5Core2::fastLedEnd },
+        { "fastLedSetBrightness", &M5Core2::fastLedSetBrightness },
+        { "fastLedShow", &M5Core2::fastLedShow },
         // $ Please set your function to use.
-            { "", 0 }
+        { "", 0 }
         };
     // Creates function table.
         uint8_t c = sizeof(ftl) / sizeof(AoiBase::FunctionTable);
@@ -375,6 +386,162 @@ namespace AoiEsp
                 break;
             default:
                 s = usage( "wakeup" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String M5Core2::fastLedAttach( StringList *args )
+     *
+     * Attach hex color to index.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String M5Core2::fastLedAttach( StringList *args )
+    {
+        String s;
+        int i = 0;
+
+        switch( count(args) )
+        {
+            case 2:
+                i = _atoi( 0 );
+                if( m_ledCount<=i )
+                    s = fastLedAttach( 0 );
+                else
+                    *(m_leds+i) = _atolh( 1 );
+                break;
+            default:
+                s = usage( "fastLedAttach index hexColor" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String M5Core2::fastLedBegin( StringList *args )
+     *
+     * Initialize the Fast led using count.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String M5Core2::fastLedBegin( StringList *args )
+    {
+        String s;
+        StringList sl;
+
+        switch( count(args) )
+        {
+            case 1:
+                fastLedEnd( &sl );
+                m_ledCount = _atoi( 0 );
+                m_leds = new CRGB[ m_ledCount ];
+                memset( m_leds, 0, sizeof(CRGB)*m_ledCount );
+                FastLED.addLeds<NEOPIXEL, 25>( m_leds, m_ledCount );
+                break;
+            default:
+                s = usage( "fastLedBegin count" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String M5Core2::fastLedClear( StringList *args )
+     *
+     * Clear all LEDs.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String M5Core2::fastLedClear( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                FastLED.clear( true );
+                break;
+            default:
+                s = usage( "fastLedClear" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String M5Core2::fastLedEnd( StringList *args )
+     *
+     * Clear all LEDs and buffer.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String M5Core2::fastLedEnd( StringList *args )
+    {
+        String s;
+        StringList sl;
+
+        switch( count(args) )
+        {
+            case 0:
+                fastLedClear( &sl );
+                delete [] m_leds;
+                break;
+            default:
+                s = usage( "fastLedEnd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String M5Core2::fastLedSetBrightness( StringList *args )
+     *
+     * Set Fast LED brightness.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String M5Core2::fastLedSetBrightness( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                FastLED.setBrightness( _atoi(0) );
+                break;
+            default:
+                s = usage( "fastLedSetBrightness 0-255" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String M5Core2::fastLedShow( StringList *args )
+     *
+     * Show LED.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String M5Core2::fastLedShow( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                FastLED.show();
+                break;
+            default:
+                s = usage( "fastLedShow" );
                 break;
         }
 
