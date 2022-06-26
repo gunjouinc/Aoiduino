@@ -22,6 +22,9 @@ namespace AoiProduct
 namespace AoiCore
 {
     class AbstractSerial;
+#ifdef ARDUINO_M5STACK_Core2
+    class AbstractBluetoothSerial;
+#endif
 }
 /**
  * @namespace AoiBase
@@ -110,6 +113,10 @@ namespace AoiBase
     protected:
         /** Holds AbstructSerial. */
         static AbstractSerial *m_abstractSerial;
+#ifdef ARDUINO_M5STACK_Core2
+        /** Holds AbstructBluetoothSerial. */
+        static AbstractBluetoothSerial *m_abstractBluetoothSerial;
+#endif
     // variables
     protected:
         /** Holds key code. */

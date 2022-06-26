@@ -69,6 +69,8 @@ namespace AoiEsp
         static String restart( StringList *args );
         /* RTC */
         static String date( StringList *args );
+        /* Serial */
+        static String serial( StringList *args );
         /* Watchdog */
         static String watchdogBegin( StringList *args );
         static String watchdogEnd( StringList *args );

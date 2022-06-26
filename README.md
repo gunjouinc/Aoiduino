@@ -86,6 +86,10 @@ Supported boards are Arduino Uno, Spresense Ast, ESP32, M5Stack, M5Core2 and ESP
   - M5Core2 (only M5GO_BOTTOM2), Type 'help M5Core2' to show usage.
     - LED       [add] fastLedAttach, fastLedBegin, fastLedClear, fastLedEnd, fastLedSetBrightness, fastLedShow
 
+- 2022/06/26
+  - M5Core2, Type 'help M5Core2' to show usage.
+    - Serial    [add] serial
+
 ## Operation example on Spresense Ast
 
 ### Low Power

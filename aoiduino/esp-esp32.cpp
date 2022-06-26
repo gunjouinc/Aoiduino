@@ -12,6 +12,9 @@
 #define ESP_WIFI_TIMEOUT 30000
 
 #include "esp-esp32.h"
+/** Holds boot loader. */
+#include "base-bootloader.h"
+extern AoiBase::BootLoader loader;
 /* Flash */
 #include <FS.h>
 #include <SPIFFS.h>
@@ -93,6 +96,8 @@ namespace AoiEsp
             { "httpPost", &Esp32::httpPost },
             /* RTC */
             { "date", &Esp32::date },
+            /* Serial */
+            { "serial", &Esp32::serial },
             /* Watchdog */
             { "watchdogBegin", &Esp32::watchdogBegin },
             { "watchdogEnd", &Esp32::watchdogEnd },
@@ -759,6 +764,40 @@ namespace AoiEsp
                 break;
             default:
                 s = usage( "date (unixtime)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Esp32::serial( StringList *args )
+     *
+     * Change serial mode.
+     *
+     * param example
+     * esp32-hal-uart.h SERIAL_8N1 0x800001c
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Esp32::serial( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                loader.end();
+                loader.begin( args, AoiCore::_BluetoothSerial );
+                break;
+            case 2:
+                loader.end();
+              // convert hex to dec
+                _a( 1 ) = String( _atouih(1) );
+                loader.begin( args, AoiCore::_Serial );
+                break;
+            default:
+                s = usage( "serial (localName|speed param)" );
                 break;
         }
 

@@ -97,8 +97,12 @@ namespace AoiBase
             {
                 t = "";
                 m_historyIndex = m_history;
-                if( interfaceType()==AoiCore::_Serial )
+                switch( interfaceType() )
+                {
+                    case AoiCore::_Serial:
+                    case AoiCore::_BluetoothSerial:
                     app <= "";
+                }
                 if( s.length() )
                 {
                     if( s=="exit" )

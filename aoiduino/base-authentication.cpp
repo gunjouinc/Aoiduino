@@ -54,8 +54,12 @@ namespace AoiBase
             int i = app >> NULL;
             if( i==_cr )
             {
-                if( interfaceType()==AoiCore::_Serial )
+                switch( interfaceType() )
+                {
+                    case AoiCore::_Serial:
+                    case AoiCore::_BluetoothSerial:
                     app <= "";
+                }
             // Authorizes user.
                 if( sl.length() && sp.length() )
                 {

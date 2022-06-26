@@ -8,6 +8,7 @@
 **
 ******************************************************************************/
 #include "core-abstractserial.h"
+#include "core-abstractbluetoothserial.h"
 #include "base-shell.h"
 #include "product-template.h"
 #include "base-abstractbase.h"
@@ -20,6 +21,9 @@ namespace AoiBase
 {
 // Static variables.
     AbstractSerial *AbstractBase::m_abstractSerial = 0;
+#ifdef ARDUINO_M5STACK_Core2
+    AbstractBluetoothSerial *AbstractBase::m_abstractBluetoothSerial = 0;
+#endif
     AoiProduct::Template *AbstractBase::m_template = 0;
     InterfaceType AbstractBase::m_interfaceType = AoiCore::_Serial;
     /**
@@ -31,6 +35,10 @@ namespace AoiBase
     {
         if( !m_abstractSerial )
             m_abstractSerial = new AbstractSerial;
+#ifdef ARDUINO_M5STACK_Core2
+        if( !m_abstractBluetoothSerial )
+            m_abstractBluetoothSerial = new AbstractBluetoothSerial;
+#endif
     }
     /**
      * @fn AbstractBase::~AbstractBase( void )
@@ -59,6 +67,11 @@ namespace AoiBase
             case AoiCore::_Serial:
                 b = m_abstractSerial->begin( args );
                 break;
+#ifdef ARDUINO_M5STACK_Core2
+            case AoiCore::_BluetoothSerial:
+                b = m_abstractBluetoothSerial->begin( args );
+                break;
+#endif
             default:
                 break;
         }
@@ -79,6 +92,11 @@ namespace AoiBase
             case AoiCore::_Serial:
                 i = m_abstractSerial->bytesAvailable();
                 break;
+#ifdef ARDUINO_M5STACK_Core2
+            case AoiCore::_BluetoothSerial:
+                i = m_abstractBluetoothSerial->bytesAvailable();
+                break;
+#endif
             default:
                 break;
         }
@@ -98,6 +116,11 @@ namespace AoiBase
             case AoiCore::_Serial:
                 m_abstractSerial->end();
                 break;
+#ifdef ARDUINO_M5STACK_Core2
+            case AoiCore::_BluetoothSerial:
+                m_abstractBluetoothSerial->end();
+                break;
+#endif
             default:
                 break;
         }
@@ -115,6 +138,11 @@ namespace AoiBase
             case AoiCore::_Serial:
                 m_abstractSerial->flush();
                 break;
+#ifdef ARDUINO_M5STACK_Core2
+            case AoiCore::_BluetoothSerial:
+                m_abstractBluetoothSerial->flush();
+                break;
+#endif
             default:
                 break;
         }
@@ -144,6 +172,11 @@ namespace AoiBase
             case AoiCore::_Serial:
                 b = m_abstractSerial->isBegan();
                 break;
+#ifdef ARDUINO_M5STACK_Core2
+            case AoiCore::_BluetoothSerial:
+                b = m_abstractBluetoothSerial->isBegan();
+                break;
+#endif
             default:
                 break;
         }
@@ -176,6 +209,11 @@ namespace AoiBase
             case AoiCore::_Serial:
                 s = m_abstractSerial->read();
                 break;
+#ifdef ARDUINO_M5STACK_Core2
+            case AoiCore::_BluetoothSerial:
+                s = m_abstractBluetoothSerial->read();
+                break;
+#endif
             default:
                 break;
         }
@@ -207,6 +245,11 @@ namespace AoiBase
             case AoiCore::_Serial:
                 i = m_abstractSerial->write( data );
                 break;
+#ifdef ARDUINO_M5STACK_Core2
+            case AoiCore::_BluetoothSerial:
+                i = m_abstractBluetoothSerial->write( data );
+                break;
+#endif
             default:
                 break;
         }
@@ -343,6 +386,11 @@ namespace AoiBase
             case AoiCore::_Serial:
                 i = m_abstractSerial->readByte();
                 break;
+#ifdef ARDUINO_M5STACK_Core2
+            case AoiCore::_BluetoothSerial:
+                i = m_abstractBluetoothSerial->readByte();
+                break;
+#endif
             default:
                 break;
         }
