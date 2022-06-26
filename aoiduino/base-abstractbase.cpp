@@ -268,8 +268,12 @@ namespace AoiBase
         String s = String( char(input) );
         String *bf = buffer;
     // Writes to interface only serial. Because some network don't use echo mode.
-        if( interfaceType()==AoiCore::_Serial )
+        switch( interfaceType() )
+        {
+            case AoiCore::_Serial:
+            case AoiCore::_BluetoothSerial:
             app << s;
+        }
 
         switch( input )
         {
