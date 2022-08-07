@@ -1,6 +1,11 @@
 # Aoiduino
 Aoi enviroment for Arduino. Provides command line interface and flexible enhancements for your product.
 
+Dependent libraries
+- ArduinoMqttClient
+- ESP32Servo
+- IRremoteESP8266
+
 Supported boards are Arduino Uno, Spresense Ast, ESP32, M5Stack, M5Core2 and ESP8266. Below functions were implemented.
 
 - 2020/01/09
