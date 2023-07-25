@@ -1390,6 +1390,9 @@ namespace AoiSpresense
             case 0:
                 http = &LteClient;
                 break;
+/*
+ * Feature removed due to underlying issue.
+ *
             case 3:
                 http = &LteTlsClient;
             // RootCA
@@ -1407,6 +1410,9 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "httpBegin CACert Certificate PrivateKey" );
+*/
+            default:
+                s = usage( "httpBegin" );
                 break;
         }
 
@@ -1428,6 +1434,7 @@ namespace AoiSpresense
         String host;
         int port = 80;
         int timeout = 30 * 1000;
+        uint8_t *buf = 0;
 
         switch( count(args) )
         {
@@ -1459,7 +1466,7 @@ namespace AoiSpresense
                 http->print( header );
               // Upload file
                 f = AstStorage->open( t, FILE_READ );
-                uint8_t *buf = new uint8_t[ _AOIUTIL_HTTP_BUFFER_SIZE_ ];
+                buf = new uint8_t[ _AOIUTIL_HTTP_BUFFER_SIZE_ ];
                 while( f.available() )
                 {
                     size = f.read( buf, _AOIUTIL_HTTP_BUFFER_SIZE_ );

@@ -528,6 +528,9 @@ namespace AoiEsp
             case 0:
                 http = &wifiClient;
                 break;
+/*
+ * Feature removed due to underlying issue.
+ *
             case 3:
                 http = &wifiClientSecure;
             // RootCA
@@ -548,6 +551,9 @@ namespace AoiEsp
                 break;
             default:
                 s = usage( "httpBegin CACert Certificate PrivateKey" );
+*/
+            default:
+                s = usage( "httpBegin" );
                 break;
         }
 
