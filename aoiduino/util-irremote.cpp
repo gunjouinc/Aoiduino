@@ -10,7 +10,9 @@
 #include "base-arduinojson.h"
 #include "util-irremote.h"
 
+#if defined(ESP8266) || defined(ESP32)
 #include <IRutils.h>
+#endif
 
 /**
 * @namespace AoiUtil
@@ -51,6 +53,7 @@ namespace AoiUtil
 
         switch( count(args) )
         {
+#if defined(ESP8266) || defined(ESP32)
             case 3:
                 if( irReceive )
                     delete irReceive;
@@ -58,6 +61,7 @@ namespace AoiUtil
                 irReceive->setTolerance();
                 irReceive->enableIRIn();
                 break;
+#endif
             default:
                 s = usage( "irReceiveBegin pin size timeout" );
                 break;
@@ -77,10 +81,13 @@ namespace AoiUtil
     {
         String s;
         uint16_t c = count( args );
+#if defined(ESP8266) || defined(ESP32)
         decode_results result;
+#endif
 
         if( c<1 || !irReceive )
             s = usage( "irReceiveRaw timeout" );
+#if defined(ESP8266) || defined(ESP32)
         else
         {
             int msec = _atoui( 0 );
@@ -119,6 +126,7 @@ namespace AoiUtil
                 r.prettyPrintTo( s );
             }
         }
+#endif
 
         return s;
     }
@@ -136,12 +144,14 @@ namespace AoiUtil
 
         switch( count(args) )
         {
+#if defined(ESP8266) || defined(ESP32)
             case 1:
                 if( irSend )
                     delete irSend;
                 irSend = new IRsend( _atoui(0) );
                 irSend->begin();
                 break;
+#endif
             default:
                 s = usage( "irSendBegin pin" );
                 break;
@@ -165,6 +175,7 @@ namespace AoiUtil
 
         if( c<1 || !irSend )
             s = usage( "irSendRow [rawdata]+" );
+#if defined(ESP8266) || defined(ESP32)
         else
         {
             data = new uint16_t[ c ];
@@ -177,6 +188,7 @@ namespace AoiUtil
             delete [] data;
             s = prettyPrintTo( "value" , c );
         }
+#endif
 
         return s;
     }
