@@ -10,6 +10,11 @@
 #ifdef ESP32
 /** Esp WiFi timeout */
 #define ESP_WIFI_TIMEOUT 30000
+/* From SPIFFS_Test.ino
+   You only need to format SPIFFS the first time you run a
+   test or else use the SPIFFS plugin to create a partition
+   https://github.com/me-no-dev/arduino-esp32fs-plugin */
+#define FORMAT_SPIFFS_IF_FAILED true
 
 #include "esp-esp32.h"
 /** Holds boot loader. */
@@ -117,7 +122,7 @@ namespace AoiEsp
         m_functionTable = Arduino::functionTable( ftl, c );
     // Initalize library
         /* File */
-        SPIFFS.begin();
+        SPIFFS.begin( FORMAT_SPIFFS_IF_FAILED );
         SD.begin( _TFCARD_CS_PIN_, SPI, 40000000 );
         /* HTTP */
         http = &wifiClient;
