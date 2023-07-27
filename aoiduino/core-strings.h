@@ -56,8 +56,10 @@
 #define STR_SHELL_APPEND ">>"
 /** Shell boot message */
 #define STR_SHELL_BOOT_1 "*** Welcome to aoiduino, aoi environment for arduino. ***"
-#define STR_SHELL_BOOT_2 "help * : Show all usages."
-#define STR_SHELL_BOOT_3 "exit   : Back to login."
+#define STR_SHELL_BOOT_2 "class     : Show all class names."
+#define STR_SHELL_BOOT_3 "help name : Show usages using class name."
+#define STR_SHELL_BOOT_4 "help *    : Show all usages (very long)."
+#define STR_SHELL_BOOT_5 "exit      : Back to login."
 /** Shell bracket */
 #define STR_SHELL_BRACKET "'"
 /** Shell comment */

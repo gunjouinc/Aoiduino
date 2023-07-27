@@ -38,6 +38,7 @@ namespace AoiBase
         FunctionTable ftl[] =
         {
         // ^ Please set your function to use.
+            { "class", &Shell::classes },
             { "do", &Shell::doBegin },
             { "done", &Shell::doEnd },
             { "equal", &Shell::equal },
@@ -267,6 +268,39 @@ namespace AoiBase
             ft++;
         }
         r.prettyPrintTo( s );
+
+        return s;
+    }
+    /**
+     * @fn String Shell::classes( StringList *args )
+     *
+     * Class list.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Class list.
+     */
+    String Shell::classes( StringList *args )
+    {
+        String s;
+        ClassTable *ct = 0;
+        DynamicJsonBuffer json;
+        JsonArray &r = json.createArray();
+
+        switch( count(args) )
+        {
+            case 0:
+                ct = loader.classTable();
+                while( ct->pointer )
+                {
+                    r.add( ct->pointer->className() );
+                    ct++;
+                }
+                r.prettyPrintTo( s );
+                break;
+            default:
+                s = usage( "class" );
+                break;
+        }
 
         return s;
     }

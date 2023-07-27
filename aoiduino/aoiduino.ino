@@ -57,6 +57,8 @@ void setup()
     debug( STR_SHELL_BOOT_1 );
     debug( STR_SHELL_BOOT_2 );
     debug( STR_SHELL_BOOT_3 );
+    debug( STR_SHELL_BOOT_4 );
+    debug( STR_SHELL_BOOT_5 );
 }
 /**
  * @fn void loop( void )
