@@ -53,15 +53,15 @@ namespace AoiUtil
 
         switch( count(args) )
         {
-#if defined(ESP8266) || defined(ESP32)
             case 3:
+#if defined(ESP8266) || defined(ESP32)
                 if( irReceive )
                     delete irReceive;
                 irReceive = new IRrecv( _atoui(0), _atoui(1), _atoui(2), true );
                 irReceive->setTolerance();
                 irReceive->enableIRIn();
-                break;
 #endif
+                break;
             default:
                 s = usage( "irReceiveBegin pin size timeout" );
                 break;
@@ -87,9 +87,9 @@ namespace AoiUtil
 
         if( c<1 || !irReceive )
             s = usage( "irReceiveRaw timeout" );
-#if defined(ESP8266) || defined(ESP32)
         else
         {
+#if defined(ESP8266) || defined(ESP32)
             int msec = _atoui( 0 );
             int i = 0;
 
@@ -125,8 +125,8 @@ namespace AoiUtil
                 r[ "value" ] = s;
                 r.prettyPrintTo( s );
             }
-        }
 #endif
+        }
 
         return s;
     }
@@ -144,14 +144,14 @@ namespace AoiUtil
 
         switch( count(args) )
         {
-#if defined(ESP8266) || defined(ESP32)
             case 1:
+#if defined(ESP8266) || defined(ESP32)
                 if( irSend )
                     delete irSend;
                 irSend = new IRsend( _atoui(0) );
                 irSend->begin();
-                break;
 #endif
+                break;
             default:
                 s = usage( "irSendBegin pin" );
                 break;
@@ -175,9 +175,9 @@ namespace AoiUtil
 
         if( c<1 || !irSend )
             s = usage( "irSendRow [rawdata]+" );
-#if defined(ESP8266) || defined(ESP32)
         else
         {
+#if defined(ESP8266) || defined(ESP32)
             data = new uint16_t[ c ];
 
             for( uint16_t i=0; i<c; i++ )
@@ -187,8 +187,8 @@ namespace AoiUtil
 
             delete [] data;
             s = prettyPrintTo( "value" , c );
-        }
 #endif
+        }
 
         return s;
     }
