@@ -11,6 +11,7 @@
 #pragma once
 
 #include "base-arduino.h"
+#include "util-alexa.h"
 #include "util-http.h"
 // External libraries
 #include <rom/rtc.h>
@@ -30,6 +31,7 @@ namespace AoiEsp
      */
     class Esp32 :
         public AoiBase::Arduino,
+        public AoiUtil::Alexa,
         public AoiUtil::Http
     {
     // members

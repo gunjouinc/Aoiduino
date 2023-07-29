@@ -79,6 +79,11 @@ namespace AoiEsp
             { "pinMode", &Arduino::pinMode },
             { "tone", &Arduino::tone },
             { "yield", &Arduino::yield },
+            /* Alexa */
+            { "alexaAddDevice", &AoiUtil::Alexa::alexaAddDevice },
+            { "alexaBegin", &AoiUtil::Alexa::alexaBegin },
+            { "alexaGetValue", &AoiUtil::Alexa::alexaGetValue },
+            { "alexaLoop", &AoiUtil::Alexa::alexaLoop },
             /* File */
             { ">", &Esp32::create },
             { ">>", &Esp32::append },
