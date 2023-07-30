@@ -9,12 +9,12 @@
 ******************************************************************************/
 #pragma once
 
-#include "core-abstractcore.h"
-class Client;
-
 /** HTTP buffer size, include header */
 #define _AOIUTIL_HTTP_BUFFER_SIZE_ (1024 * 2)
 
+class Client;
+
+#include "core-abstractcore.h"
 /**
  * @namespace AoiUtil
  * @brief Aoi utility classes.

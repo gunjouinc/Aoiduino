@@ -11,6 +11,9 @@
 #include "util-irremote.h"
 
 #if defined(ESP8266) || defined(ESP32)
+#include <IRremoteESP8266.h>
+#include <IRrecv.h>
+#include <IRsend.h>
 #include <IRutils.h>
 #endif
 

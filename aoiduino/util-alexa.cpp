@@ -7,8 +7,11 @@
 ** https://github.com/gunjouinc/Aoiduino/blob/master/LICENSE
 **
 ******************************************************************************/
-#include "base-arduinojson.h"
 #include "util-alexa.h"
+
+#if defined(ESP8266) || defined(ESP32)
+#include <Espalexa.h>
+#endif
 
 /**
 * @namespace AoiUtil

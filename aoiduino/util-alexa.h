@@ -9,13 +9,9 @@
 ******************************************************************************/
 #pragma once
 
-#include "core-abstractcore.h"
-#if defined(ESP8266) || defined(ESP32)
-#include <Espalexa.h>
-#else
 class Espalexa;
-class EspalexaDevice;
-#endif
+
+#include "core-abstractcore.h"
 /**
  * @namespace AoiUtil
  * @brief Aoi utility classes.
