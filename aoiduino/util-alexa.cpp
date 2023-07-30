@@ -11,6 +11,8 @@
 
 #if defined(ESP8266) || defined(ESP32)
 #include <Espalexa.h>
+#else
+class EspalexaDevice;
 #endif
 
 /**
