@@ -11,6 +11,7 @@
 #pragma once
 
 #include "base-arduino.h"
+#include "util-alexa.h"
 #include "util-http.h"
 #include "util-irremote.h"
 #include "util-servo.h"
@@ -32,6 +33,7 @@ namespace AoiEsp
      */
     class Esp8266 :
         public AoiBase::Arduino,
+        public AoiUtil::Alexa,
         public AoiUtil::Http,
         public AoiUtil::IRRemote,
         public AoiUtil::Servo_
