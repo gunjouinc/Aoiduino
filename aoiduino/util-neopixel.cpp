@@ -115,6 +115,32 @@ namespace AoiUtil
         return s;
     }
     /**
+     * @fn String NeoPixel::neoPixelFill( StringList *args )
+     *
+     * Set all pixel's color using a 32-bit 'packed' RGB or RGBW value.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String NeoPixel::neoPixelFill( StringList *args )
+    {
+        String s;
+        uint16_t i = 0;
+
+        switch( count(args) )
+        {
+            case 1:
+                for( i=0; i<m_neoPixel->numPixels(); i++ )
+                    m_neoPixel->setPixelColor( i, _atolh(0) );
+                break;
+            default:
+                s = usage( "neoPixelFill hexColor" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String NeoPixel::neoPixelSetBrightness( StringList *args )
      *
      * Set LED brightness.

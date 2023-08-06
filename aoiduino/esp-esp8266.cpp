@@ -109,6 +109,7 @@ namespace AoiEsp
             { "neoPixelBegin", &AoiUtil::NeoPixel::neoPixelBegin },
             { "neoPixelClear", &AoiUtil::NeoPixel::neoPixelClear },
             { "neoPixelEnd", &AoiUtil::NeoPixel::neoPixelEnd },
+            { "neoPixelFill", &AoiUtil::NeoPixel::neoPixelFill },
             { "neoPixelSetBrightness", &AoiUtil::NeoPixel::neoPixelSetBrightness },
             { "neoPixelSetPixelColor", &AoiUtil::NeoPixel::neoPixelSetPixelColor },
             { "neoPixelShow", &AoiUtil::NeoPixel::neoPixelShow },

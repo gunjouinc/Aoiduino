@@ -38,6 +38,7 @@ namespace AoiUtil
         static String neoPixelBegin( StringList *args );
         static String neoPixelClear( StringList *args );
         static String neoPixelEnd( StringList *args );
+        static String neoPixelFill( StringList *args );
         static String neoPixelSetBrightness( StringList *args );
         static String neoPixelSetPixelColor( StringList *args );
         static String neoPixelShow( StringList *args );
