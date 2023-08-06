@@ -2,6 +2,7 @@
 Aoi enviroment for Arduino. Provides command line interface and flexible enhancements for your product.
 
 Dependent libraries
+- Adafruit_NeoPixel
 - ArduinoMqttClient
 - ESP32Servo
 - IRremoteESP8266

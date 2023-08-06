@@ -14,6 +14,7 @@
 #include "util-alexa.h"
 #include "util-http.h"
 #include "util-irremote.h"
+#include "util-neopixel.h"
 #include "util-servo.h"
 // External libraries
 #include <user_interface.h>
@@ -35,6 +36,7 @@ namespace AoiEsp
         public AoiBase::Arduino,
         public AoiUtil::Alexa,
         public AoiUtil::Http,
+        public AoiUtil::NeoPixel,
         public AoiUtil::IRRemote,
         public AoiUtil::Servo_
     {

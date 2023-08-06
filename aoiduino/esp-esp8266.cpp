@@ -104,6 +104,13 @@ namespace AoiEsp
             { "irReceiveRaw", &AoiUtil::IRRemote::irReceiveRaw },
             { "irSendBegin", &AoiUtil::IRRemote::irSendBegin },
             { "irSendRaw", &AoiUtil::IRRemote::irSendRaw },
+            /* NeoPixel */
+            { "neoPixelBegin", &AoiUtil::NeoPixel::neoPixelBegin },
+            { "neoPixelClear", &AoiUtil::NeoPixel::neoPixelClear },
+            { "neoPixelEnd", &AoiUtil::NeoPixel::neoPixelEnd },
+            { "neoPixelSetBrightness", &AoiUtil::NeoPixel::neoPixelSetBrightness },
+            { "neoPixelSetPixelColor", &AoiUtil::NeoPixel::neoPixelSetPixelColor },
+            { "neoPixelShow", &AoiUtil::NeoPixel::neoPixelShow },
             /* RTC */
             { "date", &Esp8266::date },
             /* Servo */
