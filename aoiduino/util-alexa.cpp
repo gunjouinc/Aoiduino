@@ -67,7 +67,7 @@ namespace AoiUtil
                     d = espalexa->getDevice( i );
                     if( !d )
                     {
-                        d = new EspalexaDevice( _a(0), (BrightnessCallbackFunction)(0) );
+                        d = new EspalexaDevice( _a(0), (ColorCallbackFunction)(0) );
                         espalexa->addDevice( d );
                         s = prettyPrintTo( "value", d->getName() );
                         break;
@@ -109,7 +109,47 @@ namespace AoiUtil
 
         return s;
     }
-    /**
+     /**
+     * @fn String Alexa::alexaGetRGB( StringList *args )
+     *
+     * Get RGB value usging name.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Current value.
+     */
+    String Alexa::alexaGetRGB( StringList *args )
+    {
+        String s;
+        EspalexaDevice *d = 0;
+        uint8_t size = 6;
+        char hex[ size ];
+
+        memset( hex, 0, size );
+
+        switch( count(args) )
+        {
+            case 1:
+#if defined(ESP8266) || defined(ESP32)
+                for( int i=0; i<ESPALEXA_MAXDEVICES; i++ )
+                {
+                    d = espalexa->getDevice( i );
+                    if( d && (d->getName()==_a(0)) )
+                    {
+                        sprintf( hex, "%06X", d->getRGB() );
+                        s = prettyPrintTo( "value", hex );
+                        break;
+                    }
+                }
+#endif
+                break;
+            default:
+                s = usage( "alexaGetRGB name" );
+                break;
+        }
+
+        return s;
+    }
+   /**
      * @fn String Alexa::alexaGetValue( StringList *args )
      *
      * Get value usging name.

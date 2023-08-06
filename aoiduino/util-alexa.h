@@ -37,6 +37,7 @@ namespace AoiUtil
         // ^ Please set your function to use.
         static String alexaAddDevice( StringList *args );
         static String alexaBegin( StringList *args );
+        static String alexaGetRGB( StringList *args );
         static String alexaGetValue( StringList *args );
         static String alexaLoop( StringList *args );
         // $ Please set your function to use.

@@ -82,6 +82,7 @@ namespace AoiEsp
             /* Alexa */
             { "alexaAddDevice", &AoiUtil::Alexa::alexaAddDevice },
             { "alexaBegin", &AoiUtil::Alexa::alexaBegin },
+            { "alexaGetRGB", &AoiUtil::Alexa::alexaGetRGB },
             { "alexaGetValue", &AoiUtil::Alexa::alexaGetValue },
             { "alexaLoop", &AoiUtil::Alexa::alexaLoop },
             /* File */
