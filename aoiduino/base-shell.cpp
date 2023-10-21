@@ -377,7 +377,9 @@ namespace AoiBase
                         i = 0;
                         shell.m_loopCurrent += shell.m_loopStep;
                     }
-                    if( shell.m_loopEnd<shell.m_loopCurrent )
+                    if( 0<shell.m_loopStep && shell.m_loopEnd<shell.m_loopCurrent )
+                        break;
+                    if( 0>shell.m_loopStep && shell.m_loopEnd>shell.m_loopCurrent )
                         break;
                 }
                 delete [] shell.m_loop;
