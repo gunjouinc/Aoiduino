@@ -46,6 +46,8 @@ namespace AoiBase
             { "help", &Shell::help },
             { "sh", &Shell::sh },
             { "substring", &Shell::substring },
+            { "over", &Shell::over },
+            { "under", &Shell::under },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -511,6 +513,33 @@ namespace AoiBase
         return s;
     }
     /**
+     * @fn String Shell::over( StringList *args )
+     *
+     * Check if valu1 < value2 (over)
+     *
+     * @param[in] args Reference to arguments.
+     * @return Result string if over, Otherwise !result string.
+     */
+    String Shell::over( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 4:
+                if( _a(2)<_a(3) )
+                    s = prettyPrintTo( "value", _a(0) );
+                else
+                    s = prettyPrintTo( "value", _a(1) );
+                break;
+            default:
+                s = usage( "over result !result value1 value2" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Shell::substring( StringList *args )
      *
      * Get a substring of a String.
@@ -532,6 +561,33 @@ namespace AoiBase
                 break;
             default:
                 s = usage( "substring index byte value" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::under( StringList *args )
+     *
+     * Check if valu1 > value2 (over)
+     *
+     * @param[in] args Reference to arguments.
+     * @return Result string if under, Otherwise !result string.
+     */
+    String Shell::under( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 4:
+                if( _a(2)>_a(3) )
+                    s = prettyPrintTo( "value", _a(0) );
+                else
+                    s = prettyPrintTo( "value", _a(1) );
+                break;
+            default:
+                s = usage( "under result !result value1 value2" );
                 break;
         }
 

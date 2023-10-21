@@ -52,7 +52,9 @@ namespace AoiBase
         static String eval( StringList *args );
         static String help( StringList *args );
         static String sh( StringList *args );
+        static String over( StringList *args );
         static String substring( StringList *args );
+        static String under( StringList *args );
         // $ Please set your function to use.
     // members
     protected:
