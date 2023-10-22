@@ -50,9 +50,11 @@ namespace AoiBase
         static String doEnd( StringList *args );
         static String equal( StringList *args );
         static String eval( StringList *args );
+        static String get( StringList *args );
         static String help( StringList *args );
         static String sh( StringList *args );
         static String over( StringList *args );
+        static String set( StringList *args );
         static String substring( StringList *args );
         static String under( StringList *args );
         // $ Please set your function to use.
@@ -75,6 +77,8 @@ namespace AoiBase
         StringList *m_loop;
         /** Hold loop started. */
         bool m_loopStarted;
+        /** Hold variables to json string. */
+        String m_variables;
     // variables - loop index
     private:
         /** Hold loop current index. */

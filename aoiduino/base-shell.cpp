@@ -43,7 +43,9 @@ namespace AoiBase
             { "done", &Shell::doEnd },
             { "equal", &Shell::equal },
             { "eval", &Shell::eval },
+            { "get", &Shell::get },
             { "help", &Shell::help },
+            { "set", &Shell::set },
             { "sh", &Shell::sh },
             { "substring", &Shell::substring },
             { "over", &Shell::over },
@@ -66,6 +68,7 @@ namespace AoiBase
         m_historyIndex = m_history;
         m_loop = new StringList[ LOOP_SIZE ];
         m_loopStarted = false;
+        m_variables = "{}";
     }
     /**
      * @fn Shell::~Shell( void )
@@ -445,6 +448,36 @@ namespace AoiBase
         return s;
     }
     /**
+     * @fn String Shell::get( StringList *args )
+     *
+     * Get variable value from json.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Variable value from json.
+     */
+    String Shell::get( StringList *args )
+    {
+        String s;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.parseObject( shell.m_variables );
+
+        switch( count(args) )
+        {
+            case 0:
+                // all variables
+                r.prettyPrintTo( s );
+                break;
+            case 1:
+                s = prettyPrintTo( "value", static_cast<const char*>(r[_a(0)]) );
+                break;
+            default:
+                s = usage( "get (name)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Shell::help( StringList *args )
      *
      * Shows help message.
@@ -534,6 +567,35 @@ namespace AoiBase
                 break;
             default:
                 s = usage( "over result !result value1 value2" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::set( StringList *args )
+     *
+     * Set variable value to json.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Set variable value.
+     */
+    String Shell::set( StringList *args )
+    {
+        String s;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.parseObject( shell.m_variables );
+
+        switch( count(args) )
+        {
+            case 2:
+                r[ _a(0) ] = _a( 1 );
+                shell.m_variables = "";
+                r.prettyPrintTo( shell.m_variables );
+                s = prettyPrintTo( "value", static_cast<const char*>(r[_a(0)]) );
+                break;
+            default:
+                s = usage( "set name value" );
                 break;
         }
 
