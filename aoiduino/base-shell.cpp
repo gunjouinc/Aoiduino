@@ -471,7 +471,7 @@ namespace AoiBase
                 s = prettyPrintTo( "value", static_cast<const char*>(r[_a(0)]) );
                 break;
             default:
-                s = usage( "get (name)" );
+                s = usage( "get (name)*" );
                 break;
         }
 
