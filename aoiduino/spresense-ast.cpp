@@ -1212,11 +1212,14 @@ namespace AoiSpresense
 
         switch( count(args) )
         {
+            case 0:
+                s = prettyPrintTo( "value", LowPower.getClockMode() );
+                break;
             case 1:
                 LowPower.clockMode( static_cast<clockmode_e>(_atoi(0)) );
                 break;
             default:
-                s = usage( "clockMode [0-2]" );
+                s = usage( "clockMode [0-2]*" );
                 break;
         }
 
