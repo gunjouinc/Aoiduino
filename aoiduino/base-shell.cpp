@@ -68,7 +68,6 @@ namespace AoiBase
         m_historyIndex = m_history;
         m_loop = new StringList[ LOOP_SIZE ];
         m_loopStarted = false;
-        m_variables = "{}";
     }
     /**
      * @fn Shell::~Shell( void )

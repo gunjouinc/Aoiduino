@@ -78,7 +78,7 @@ namespace AoiBase
         /** Hold loop started. */
         bool m_loopStarted;
         /** Hold variables to json string. */
-        String m_variables;
+        String m_variables = "{}";
     // variables - loop index
     private:
         /** Hold loop current index. */
