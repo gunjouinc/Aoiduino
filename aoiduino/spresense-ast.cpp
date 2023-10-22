@@ -111,10 +111,12 @@ namespace AoiSpresense
             /* LowPower */
             { "clockMode", &Ast::clockMode },
             { "coldSleep", &Ast::coldSleep },
+            { "current", &Ast::current },
             { "deepSleep", &Ast::deepSleep },
             { "dmesg", &Ast::dmesg },
             { "reboot", &Ast::reboot },
             { "sleep", &Ast::sleep },
+            { "voltage", &Ast::voltage },
             /* HTTP */
             { "httpBegin", &Ast::httpBegin },
             { "httpGet", &AoiUtil::Http::httpGet },
@@ -1253,6 +1255,30 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn String Ast::current( StringList *args )
+     *
+     * Get the sensed battery current on CXD5247.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Sensed battery current.
+     */
+    String Ast::current( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                s = prettyPrintTo( "value", LowPower.getCurrent() );
+                break;
+            default:
+                s = usage( "current" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Ast::deepSleep( StringList *args )
      *
      * Enter the deep sleep state.
@@ -1370,6 +1396,30 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "sleep [0-9]+" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::voltage( StringList *args )
+     *
+     * Get the sensed battery voltage on CXD5247.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Sensed battery voltage.
+     */
+    String Ast::voltage( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                s = prettyPrintTo( "value", LowPower.getVoltage() );
+                break;
+            default:
+                s = usage( "voltage" );
                 break;
         }
 

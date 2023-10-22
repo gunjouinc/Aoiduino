@@ -84,10 +84,12 @@ namespace AoiSpresense
         /* LowPower */
         static String clockMode( StringList *args );
         static String coldSleep( StringList *args );
+        static String current( StringList *args );
         static String deepSleep( StringList *args );
         static String dmesg( StringList *args );
         static String reboot( StringList *args );
         static String sleep( StringList *args );
+        static String voltage( StringList *args );
         /* HTTP */
         static String httpBegin( StringList *args );
         static String httpPost( StringList *args );
