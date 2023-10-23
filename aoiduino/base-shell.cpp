@@ -39,16 +39,18 @@ namespace AoiBase
         {
         // ^ Please set your function to use.
             { "class", &Shell::classes },
+            { "echo", &Shell::echo },
             { "do", &Shell::doBegin },
             { "done", &Shell::doEnd },
             { "equal", &Shell::equal },
             { "eval", &Shell::eval },
             { "get", &Shell::get },
             { "help", &Shell::help },
+            { "over", &Shell::over },
+            { "sed", &Shell::sed },
             { "set", &Shell::set },
             { "sh", &Shell::sh },
             { "substring", &Shell::substring },
-            { "over", &Shell::over },
             { "under", &Shell::under },
         // $ Please set your function to use.
             { "", 0 }
@@ -304,6 +306,28 @@ namespace AoiBase
             default:
                 s = usage( "class" );
                 break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::echo( StringList *args )
+     *
+     * Echos message.
+     *
+     * @return Message string.
+     */
+    String Shell::echo( StringList *args )
+    {
+        String s;
+        int c = count( args );
+
+        if( c<1 )
+            s = usage( "echo .+" );
+        else
+        {
+            String t = join( args, STR_SPACE );
+            s = prettyPrintTo( "value" , t );
         }
 
         return s;
@@ -567,6 +591,46 @@ namespace AoiBase
             default:
                 s = usage( "over result !result value1 value2" );
                 break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::sed( StringList *args )
+     *
+     * Replace content and output.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Replaced string.
+     */
+    String Shell::sed( StringList *args )
+    {
+        String s;
+        StringList *sl;
+        int c = count( args );
+
+        if( c<2 )
+            s = usage( "sed before/after target" );
+        else
+        {
+            sl = split( _a(0), "/" );
+            if( count(sl)!=2 )
+            {
+                delete [] sl;
+                return sed( 0 );
+            }
+        // restore argument after replacement pattern
+            String t;
+            for( int i=1; i<c; i++ )
+            {
+                if( 1<i )
+                    t += STR_SPACE;
+                t += _a( i );
+            }
+        // Replace before to after
+            t.replace( (sl+0)->value, (sl+1)->value );
+            s = prettyPrintTo( "value" , t );
+            delete [] sl;
         }
 
         return s;

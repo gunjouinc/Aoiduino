@@ -48,12 +48,14 @@ namespace AoiBase
         static String classes( StringList *args );
         static String doBegin( StringList *args );
         static String doEnd( StringList *args );
+        static String echo( StringList *args );
         static String equal( StringList *args );
         static String eval( StringList *args );
         static String get( StringList *args );
         static String help( StringList *args );
         static String sh( StringList *args );
         static String over( StringList *args );
+        static String sed( StringList *args );
         static String set( StringList *args );
         static String substring( StringList *args );
         static String under( StringList *args );

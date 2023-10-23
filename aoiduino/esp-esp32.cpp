@@ -72,7 +72,6 @@ namespace AoiEsp
             { "delayMicroseconds", &Arduino::delayMicroseconds },
             { "digitalRead", &Arduino::digitalRead },
             { "digitalWrite", &Arduino::digitalWrite },
-            { "echo", &Arduino::echo },
             { "micros", &Arduino::micros },
             { "millis", &Arduino::millis },
             { "noTone", &Arduino::noTone },

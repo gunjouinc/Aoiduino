@@ -96,6 +96,14 @@ Supported boards are Arduino Uno, Spresense Ast, ESP32, M5Stack, M5Core2 and ESP
   - M5Core2, Type 'help M5Core2' to show usage.
     - Serial    [add] serial
 
+- 2023/10/22
+  - All boards
+    - [add] get, set
+
+- 2023/10/23
+  - Ast, Type 'help Ast' to show usage.
+    - LowPower  [add] current, voltage
+
 ## Operation example on Spresense Ast
 
 ### Low Power
@@ -353,15 +361,15 @@ ERROR: nw_stat : 0
 
 ### Command separator, enclosed string and eval
 ```
-# echo "This sentense contains | pattern." ; echo =>
+# echo 'This sentense contains | pattern.' ; echo =>
 {
   "value": "=>"
 }
-# echo "This sentense contains | pattern." | echo =>
+# echo 'This sentense contains | pattern.' | echo =>
 {
   "value": "=> This sentense contains | pattern."
 }
-# echo "echo This sentense is evaluated by eval" | eval
+# echo 'echo This sentense is evaluated by eval' | eval
 {
   "value": "This sentense is evaluated by eval"
 }

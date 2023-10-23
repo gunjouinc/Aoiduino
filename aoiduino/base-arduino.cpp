@@ -37,12 +37,10 @@ namespace AoiBase
             { "delayMicroseconds", &Arduino::delayMicroseconds },
             { "digitalRead", &Arduino::digitalRead },
             { "digitalWrite", &Arduino::digitalWrite },
-            { "echo", &Arduino::echo },
             { "micros", &Arduino::micros },
             { "millis", &Arduino::millis },
             { "noTone", &Arduino::noTone },
             { "pinMode", &Arduino::pinMode },
-            { "sed", &Arduino::sed },
             { "tone", &Arduino::tone },
             { "yield", &Arduino::yield },
         // $ Please set your function to use.
@@ -359,28 +357,6 @@ namespace AoiBase
         return s;
     }
     /**
-     * @fn String Arduino::echo( StringList *args )
-     *
-     * Echos message.
-     *
-     * @return Message string.
-     */
-    String Arduino::echo( StringList *args )
-    {
-        String s;
-        int c = count( args );
-
-        if( c<1 )
-            s = usage( "echo .+" );
-        else
-        {
-            String t = join( args, STR_SPACE );
-            s = prettyPrintTo( "value" , t );
-        }
-
-        return s;
-    }
-    /**
      * @fn String Arduino::micros( StringList *args )
      *
      * Returns the number of microseconds since the Arduino board began running the
@@ -496,46 +472,6 @@ namespace AoiBase
             default:
                 s = usage( "pinMode pin (INPUT|OUTPUT|INPUT_PULLUP)" );
                 break;
-        }
-
-        return s;
-    }
-    /**
-     * @fn String Arduino::sed( StringList *args )
-     *
-     * Replace content and output.
-     *
-     * @param[in] args Reference to arguments.
-     * @return Replaced string.
-     */
-    String Arduino::sed( StringList *args )
-    {
-        String s;
-        StringList *sl;
-        int c = count( args );
-
-        if( c<2 )
-            s = usage( "sed before/after target" );
-        else
-        {
-            sl = split( _a(0), "/" );
-            if( count(sl)!=2 )
-            {
-                delete [] sl;
-                return sed( 0 );
-            }
-        // restore argument after replacement pattern
-            String t;
-            for( int i=1; i<c; i++ )
-            {
-                if( 1<i )
-                    t += STR_SPACE;
-                t += _a( i );
-            }
-        // Replace before to after
-            t.replace( (sl+0)->value, (sl+1)->value );
-            s = prettyPrintTo( "value" , t );
-            delete [] sl;
         }
 
         return s;
