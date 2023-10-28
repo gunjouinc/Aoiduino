@@ -48,8 +48,10 @@ namespace AoiBase
         // ^ Please set your function to use.
         static String analogRead( StringList *args );
         static String analogWrite( StringList *args );
+        static String attachInterrupt( StringList *args );
         static String delay( StringList *args );
         static String delayMicroseconds( StringList *args );
+        static String detachInterrupt( StringList *args );
         static String digitalRead( StringList *args );
         static String digitalWrite( StringList *args );
         static String micros( StringList *args );
@@ -61,6 +63,9 @@ namespace AoiBase
         static String append( StringList *args );
         static String create( StringList *args );
         // $ Please set your function to use.
+    // static members
+    private:
+        static void interrupt( void );
     // static variables
     private:
         /** Holds function table. */

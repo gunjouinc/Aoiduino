@@ -33,8 +33,10 @@ namespace AoiBase
             { ">>", &Arduino::append },
             { "analogRead", &Arduino::analogRead },
             { "analogWrite", &Arduino::analogWrite },
+            { "attachInterrupt", &Arduino::attachInterrupt },
             { "delay", &Arduino::delay },
             { "delayMicroseconds", &Arduino::delayMicroseconds },
+            { "detachInterrupt", &Arduino::detachInterrupt },
             { "digitalRead", &Arduino::digitalRead },
             { "digitalWrite", &Arduino::digitalWrite },
             { "micros", &Arduino::micros },
@@ -245,6 +247,50 @@ namespace AoiBase
         return s;
     }
     /**
+     * @fn String Arduino::attachInterrupt( StringList *args )
+     *
+     * Digital pins with interrupts.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Arduino::attachInterrupt( StringList *args )
+    {
+        String s;
+        String t;
+        uint8_t i = 0;
+
+        switch( count(args) )
+        {
+            case 2:
+                i = _atoi( 0 );
+                t = _a( 1 );
+                if( t=="LOW" )
+                    ::attachInterrupt(digitalPinToInterrupt(i),
+                                      &Arduino::interrupt, LOW );
+                else if( t=="HIGH" )
+                    ::attachInterrupt(digitalPinToInterrupt(i),
+                                      &Arduino::interrupt, HIGH );
+                else if( t=="CHANGE" )
+                    ::attachInterrupt(digitalPinToInterrupt(i),
+                                      &Arduino::interrupt, CHANGE );
+                else if( t=="RISING" )
+                    ::attachInterrupt(digitalPinToInterrupt(i),
+                                      &Arduino::interrupt, RISING );
+                else if( t=="FALLING" )
+                    ::attachInterrupt(digitalPinToInterrupt(i),
+                                      &Arduino::interrupt, FALLING );
+                else
+                    s = attachInterrupt( 0 );
+                break;
+            default:
+                s = usage( "attachInterrupt pin (LOW|HIGH|CHANGE|RISING|FALLING)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Arduino::delay( StringList *args )
      *
      * Pauses the program for the amount of time (in miliseconds) specified as
@@ -293,6 +339,30 @@ namespace AoiBase
                 break;
             default:
                 s = usage( "delayMicroseconds 0-4294967295" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Arduino::detachInterrupt( StringList *args )
+     *
+     * Turns off the given interrupt.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Arduino::detachInterrupt( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                ::detachInterrupt( digitalPinToInterrupt(_atoi(0)) );
+                break;
+            default:
+                s = usage( "detachInterrupt pin" );
                 break;
         }
 
@@ -575,5 +645,13 @@ namespace AoiBase
         }
 
         return s;
+    }
+    /**
+     * @fn void Arduino::interrupt( void )
+     *
+     * This method does nothing, it is for interrupt handling.
+     */
+    void Arduino::interrupt( void )
+    {
     }
 }

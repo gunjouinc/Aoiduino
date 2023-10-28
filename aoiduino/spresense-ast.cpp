@@ -68,8 +68,10 @@ namespace AoiSpresense
             /* Arduino Core */
             { "analogRead", &Ast::analogRead },
             { "analogWrite", &Arduino::analogWrite },
+            { "attachInterrupt", &Arduino::attachInterrupt },
             { "delay", &Arduino::delay },
             { "delayMicroseconds", &Arduino::delayMicroseconds },
+            { "detachInterrupt", &Arduino::detachInterrupt },
             { "digitalRead", &Arduino::digitalRead },
             { "digitalWrite", &Arduino::digitalWrite },
             { "led", &Ast::led },
