@@ -76,7 +76,7 @@ namespace AoiSpresense
             { "micros", &Arduino::micros },
             { "millis", &Arduino::millis },
             { "noTone", &Arduino::noTone },
-            { "pinMode", &Arduino::pinMode },
+            { "pinMode", &Ast::pinMode },
             { "tone", &Arduino::tone },
             { "yield", &Arduino::yield },
             /* Camera */
@@ -307,6 +307,34 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "led 0-3 (ON|OFF)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::pinMode( StringList *args )
+     *
+     * @see String Arduino::pinMode( StringList *args )
+     */
+    String Ast::pinMode( StringList *args )
+    {
+        String s;
+        String t;
+        uint8_t i = 0;
+
+        switch( count(args) )
+        {
+            case 2:
+                i = _atoi( 0 );
+                t = _a( 1 );
+                if( t=="INPUT_PULLDOWN" )
+                    ::pinMode( i, INPUT_PULLDOWN );
+                else
+                    s = Arduino::pinMode( args );
+                break;
+            default:
+                s = usage( "pinMode pin (INPUT|OUTPUT|INPUT_PULLUP|INPUT_PULLDOWN)" );
                 break;
         }
 

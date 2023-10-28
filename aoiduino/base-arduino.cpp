@@ -455,22 +455,16 @@ namespace AoiBase
                 i = _atoi( 0 );
                 t = _a( 1 );
                 if( t=="INPUT" )
-                {
                     ::pinMode( i, INPUT );
-                    break;
-                }
                 else if( t=="OUTPUT" )
-                {
                     ::pinMode( i, OUTPUT );
-                    break;
-                }
                 else if( t=="INPUT_PULLUP" )
-                {
                     ::pinMode( i, INPUT_PULLUP );
-                    break;
-                }
+                else
+                    s = pinMode( 0 );
+                break;
             default:
-                s = usage( "pinMode pin (INPUT|OUTPUT|INPUT_PULLUP)" );
+                s = usage( "pinMode pin (INPUT|OUTPUT|INPUT_PULLUP|INPUT_PULLDOWN)" );
                 break;
         }
 

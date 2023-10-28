@@ -54,6 +54,7 @@ namespace AoiSpresense
         /* Spresense Arduino Core, Other core functions are defined in base class. */
         static String analogRead( StringList *args );
         static String led( StringList *args );
+        static String pinMode( StringList *args );
         /* Camera */
         static String cameraBegin( StringList *args );
         static String cameraEnd( StringList *args );
