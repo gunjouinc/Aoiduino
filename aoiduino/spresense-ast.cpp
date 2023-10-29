@@ -22,6 +22,7 @@ SDClass AstSD;
 SpGnss Gnss;
 /* LowPower */
 #include <LowPower.h>
+#include <arch/board/board.h>
 #include <RTC.h>
 #include <Watchdog.h>
 /* LTE */
@@ -1247,6 +1248,7 @@ namespace AoiSpresense
                 break;
             case 1:
                 LowPower.clockMode( static_cast<clockmode_e>(_atoi(0)) );
+                board_xtal_power_control( static_cast<clockmode_e>(_atoi(0))!=CLOCK_MODE_8MHz );
                 break;
             default:
                 s = usage( "clockMode [0-2]*" );
