@@ -48,6 +48,7 @@ namespace AoiBase
             { "get", &Shell::get },
             { "help", &Shell::help },
             { "minus", &Shell::minus },
+            { "null", &Shell::null },
             { "over", &Shell::over },
             { "plus", &Shell::plus },
             { "sed", &Shell::sed },
@@ -607,6 +608,29 @@ namespace AoiBase
                 break;
             default:
                 s = usage( "minus name integer" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::null( StringList *args )
+     *
+     * Return empty stgring.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string
+     */
+    String Shell::null( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                break;
+            default:
+                s = usage( "null" );
                 break;
         }
 
