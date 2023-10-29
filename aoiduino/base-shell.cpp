@@ -47,6 +47,7 @@ namespace AoiBase
             { "eval", &Shell::eval },
             { "get", &Shell::get },
             { "help", &Shell::help },
+            { "minus", &Shell::minus },
             { "over", &Shell::over },
             { "plus", &Shell::plus },
             { "sed", &Shell::sed },
@@ -591,7 +592,7 @@ namespace AoiBase
             case 2:
                 t = r[ _a(0) ].as<String>();
                 if( !isDigit(t) || !isDigit(_a(1)) )
-                    s = plus( 0 );
+                    s = minus( 0 );
                 else
                 {
                     i = toInt( t );
