@@ -518,7 +518,11 @@ namespace AoiBase
                 r.prettyPrintTo( s );
                 break;
             case 1:
-                s = prettyPrintTo( "value", static_cast<const char*>(r[_a(0)]) );
+                s = r[ _a(0) ].as<String>();
+                if( isDigit(s) )
+                    s = prettyPrintTo( "value", r[_a(0)].as<int>() );
+                else
+                    s = prettyPrintTo( "value", r[_a(0)].as<String>() );
                 break;
             default:
                 s = usage( "get (name)*" );
@@ -673,16 +677,26 @@ namespace AoiBase
     String Shell::set( StringList *args )
     {
         String s;
+        String t;
         DynamicJsonBuffer json;
         JsonObject &r = json.parseObject( shell.m_variables );
 
         switch( count(args) )
         {
             case 2:
-                r[ _a(0) ] = _a( 1 );
+                t = _a( 0 );
+                if( isDigit(_a(1)) )
+                {
+                    r[ t ] = _atoi( 1 );
+                    s = prettyPrintTo( "value", r[t].as<int>() );
+                }
+                else
+                {
+                    r[ t ] = _a( 1 );
+                    s = prettyPrintTo( "value", r[t].as<String>() );
+                }
                 shell.m_variables = "";
                 r.prettyPrintTo( shell.m_variables );
-                s = prettyPrintTo( "value", static_cast<const char*>(r[_a(0)]) );
                 break;
             default:
                 s = usage( "set name value" );
