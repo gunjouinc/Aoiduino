@@ -38,6 +38,7 @@ namespace AoiBase
         FunctionTable ftl[] =
         {
         // ^ Please set your function to use.
+            { "break", &Shell::doBreak },
             { "class", &Shell::classes },
             { "echo", &Shell::echo },
             { "do", &Shell::doBegin },
@@ -368,6 +369,30 @@ namespace AoiBase
         return s;
     }
     /**
+ * @fn String Shell::doBreak( StringList *args )
+     *
+     * Break loop.
+     *
+     * @param[in] args Reference to arguments.
+     * @return {break} string.
+     */
+    String Shell::doBreak( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                s = prettyPrintTo( "value", "{break}" );
+                break;
+            default:
+                s = usage( "break" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Shell::doEnd( StringList *args )
      *
      * Stop loop and Practice loop.
@@ -389,13 +414,15 @@ namespace AoiBase
                 while( true )
                 {
                     t = (shell.m_loop+i)->value;
-                    if( t=="break" )
-                        break;
                     t.replace( rep, String(shell.m_loopCurrent) );
                     shell << t + _n;
                     s = shell.practice( t );
                     if( 0<s.length() )
+                    {
                         shell << s + _n;
+                        if( -1<s.indexOf(STR_SHELL_BREAK) )
+                            break;
+                    }
                 // Next index or first
                     ::yield;
                     i++;

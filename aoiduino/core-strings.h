@@ -64,6 +64,8 @@
 #define STR_SHELL_BRACKET "'"
 /** Shell comment */
 #define STR_SHELL_COMMENT "#"
+/** Shell break */
+#define STR_SHELL_BREAK "{break}"
 /** Shell create */
 #define STR_SHELL_CREATE ">"
 /** Shell pipe */

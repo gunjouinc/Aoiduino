@@ -47,6 +47,7 @@ namespace AoiBase
         // ^ Please set your function to use.
         static String classes( StringList *args );
         static String doBegin( StringList *args );
+        static String doBreak( StringList *args );
         static String doEnd( StringList *args );
         static String echo( StringList *args );
         static String equal( StringList *args );
