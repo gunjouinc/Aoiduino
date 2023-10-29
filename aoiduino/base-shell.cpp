@@ -48,6 +48,7 @@ namespace AoiBase
             { "get", &Shell::get },
             { "help", &Shell::help },
             { "over", &Shell::over },
+            { "plus", &Shell::plus },
             { "sed", &Shell::sed },
             { "set", &Shell::set },
             { "sh", &Shell::sh },
@@ -571,6 +572,46 @@ namespace AoiBase
         return s;
     }
     /**
+     * @fn String Shell::minus( StringList *args )
+     *
+     * Minus variable value to json.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Set variable value.
+     */
+    String Shell::minus( StringList *args )
+    {
+        String s, t;
+        int i, j;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.parseObject( shell.m_variables );
+
+        switch( count(args) )
+        {
+            case 2:
+                t = r[ _a(0) ].as<String>();
+                if( !isDigit(t) || !isDigit(_a(1)) )
+                    s = plus( 0 );
+                else
+                {
+                    i = toInt( t );
+                    j = _atoi( 1 );
+                    r[ _a(0) ] = i - j;
+                // update variable
+                    shell.m_variables = "";
+                    r.prettyPrintTo( shell.m_variables );
+                // result
+                    s = prettyPrintTo( "value", r[_a(0)].as<int>() );
+                }
+                break;
+            default:
+                s = usage( "minus name integer" );
+                break;
+        }
+
+        return s;
+    }
+    /**
       * @fn void Shell::sh( StringList *args )
       *
       * Practice sh script.
@@ -621,6 +662,46 @@ namespace AoiBase
                 break;
             default:
                 s = usage( "over result !result value1 value2" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::plus( StringList *args )
+     *
+     * Plus variable value to json.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Set variable value.
+     */
+    String Shell::plus( StringList *args )
+    {
+        String s, t;
+        int i, j;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.parseObject( shell.m_variables );
+
+        switch( count(args) )
+        {
+            case 2:
+                t = r[ _a(0) ].as<String>();
+                if( !isDigit(t) || !isDigit(_a(1)) )
+                    s = plus( 0 );
+                else
+                {
+                    i = toInt( t );
+                    j = _atoi( 1 );
+                    r[ _a(0) ] = i + j;
+                // update variable
+                    shell.m_variables = "";
+                    r.prettyPrintTo( shell.m_variables );
+                // result
+                    s = prettyPrintTo( "value", r[_a(0)].as<int>() );
+                }
+                break;
+            default:
+                s = usage( "plus name integer" );
                 break;
         }
 

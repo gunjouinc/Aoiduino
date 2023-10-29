@@ -54,8 +54,10 @@ namespace AoiBase
         static String eval( StringList *args );
         static String get( StringList *args );
         static String help( StringList *args );
+        static String minus( StringList *args );
         static String sh( StringList *args );
         static String over( StringList *args );
+        static String plus( StringList *args );
         static String sed( StringList *args );
         static String set( StringList *args );
         static String substring( StringList *args );

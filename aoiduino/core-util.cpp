@@ -218,7 +218,7 @@ namespace AoiCore
         return "\r\n";
     }
     /**
-     * @fn String prettyPrintTo( const String &key, unsigned int value )
+     * @fn String prettyPrintTo( const String &key, int value )
      *
      * Returns JSON string from key and value.
      *
@@ -226,7 +226,7 @@ namespace AoiCore
      * @param[in] value Value of JSON.
      * @return JSON string like { "key": value }.
      */
-    String prettyPrintTo( const String &key, unsigned int value )
+    String prettyPrintTo( const String &key, int value )
     {
         String s;
         DynamicJsonBuffer json;
