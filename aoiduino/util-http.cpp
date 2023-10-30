@@ -87,7 +87,7 @@ namespace AoiUtil
      */
     String Http::httpPost( StringList *args )
     {
-        String s, t, header, footer;
+        String s, t, type;
         int size = 0;
         String host;
         int port = 80;
@@ -102,10 +102,6 @@ namespace AoiUtil
             case 3:
             // Request body
                 t = _a( 2 );
-                header = requestBodyHeaderInPut( STR_BOUNDARY, STR_AOIDUINO, t,
-                                                 &size );
-                footer = requestBodyFooterInPut( STR_BOUNDARY );
-                size += header.length() + footer.length();
             // POST
                 host = _a( 0 );
                 if( !http->connect(host.c_str(),port) )
@@ -113,14 +109,18 @@ namespace AoiUtil
                 http->println( "POST "+_a(1)+" HTTP/1.0" );
                 http->println( "Host: " + host );
                 http->println( "User-Agent: " + String(STR_USER_AGENT) );
-                http->print( "Content-Type: multipart/form-data; " );
-                http->println( "boundary=\""+String(STR_BOUNDARY)+"\"" );
-                http->println( "Content-Length: "+String(size) );
+
+                // Add if necessary
+                if( (t.indexOf("{")==0) || (t.indexOf("[")==0) )
+                    type = "application/json";
+                else 
+                    type = "text/plain";
+
+                http->println( "Content-Type: "+type );
+                http->println( "Content-Length: "+String(t.length()) );
                 http->println( "Connection: close" );
                 http->println();
-                http->print( header );
-                http->print( t );
-                http->print( footer );
+                http->println( t );
             // Response
                 s = response( timeout );
                 s = prettyPrintTo( "value", s );
