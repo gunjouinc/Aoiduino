@@ -46,6 +46,7 @@ namespace AoiBase
     protected:
         // ^ Please set your function to use.
         static String classes( StringList *args );
+        static String diffTime( StringList *args );
         static String doBegin( StringList *args );
         static String doBreak( StringList *args );
         static String doEnd( StringList *args );

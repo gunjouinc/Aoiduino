@@ -40,9 +40,10 @@ namespace AoiBase
         // ^ Please set your function to use.
             { "break", &Shell::doBreak },
             { "class", &Shell::classes },
-            { "echo", &Shell::echo },
+            { "diffTime", &Shell::diffTime },
             { "do", &Shell::doBegin },
             { "done", &Shell::doEnd },
+            { "echo", &Shell::echo },
             { "equal", &Shell::equal },
             { "eval", &Shell::eval },
             { "get", &Shell::get },
@@ -315,23 +316,44 @@ namespace AoiBase
         return s;
     }
     /**
-     * @fn String Shell::echo( StringList *args )
+     * @fn String Shell::diffTime( StringList *args )
      *
-     * Echos message.
+     * Get time difference.
      *
-     * @return Message string.
+     * @param[in] args Reference to arguments.
+     * @return Time difference (sec).
      */
-    String Shell::echo( StringList *args )
+    String Shell::diffTime( StringList *args )
     {
         String s;
-        int c = count( args );
+        StringList *from, *to;
+        int i = 0, j = 0;
 
-        if( c<1 )
-            s = usage( "echo .+" );
-        else
+        switch( count(args) )
         {
-            String t = join( args, STR_SPACE );
-            s = prettyPrintTo( "value" , t );
+            case 2:
+                to = split( _a(0), ":" );
+                from = split( _a(1), ":" );
+
+                if( count(to)!=3 || count(from)!=3 )
+                    s = diffTime( 0 );
+                else
+                {
+                    i = toInt( (to+0)->value ) * 60 * 60
+                      + toInt( (to+1)->value ) * 60
+                      + toInt( (to+2)->value );
+                    j = toInt( (from+0)->value ) * 60 * 60
+                      + toInt( (from+1)->value ) * 60
+                      + toInt( (from+2)->value );
+                    s = prettyPrintTo( "value", i-j );
+                }
+
+                delete [] to;
+                delete [] from;
+                break;
+            default:
+                s = usage( "diffTime to from" );
+                break;
         }
 
         return s;
@@ -447,6 +469,28 @@ namespace AoiBase
             default:
                 s = usage( "done" );
                 break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::echo( StringList *args )
+     *
+     * Echos message.
+     *
+     * @return Message string.
+     */
+    String Shell::echo( StringList *args )
+    {
+        String s;
+        int c = count( args );
+
+        if( c<1 )
+            s = usage( "echo .+" );
+        else
+        {
+            String t = join( args, STR_SPACE );
+            s = prettyPrintTo( "value" , t );
         }
 
         return s;
