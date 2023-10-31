@@ -462,11 +462,17 @@ namespace AoiBase
     String Shell::equal( StringList *args )
     {
         String s;
+        bool b = false;
 
         switch( count(args) )
         {
             case 4:
-                if( _a(2)==_a(3) )
+                if( isDigit(_a(2)) && isDigit(_a(3)) )
+                    b = _atoi(2) == _atoi(3);
+                else
+                    b = _a(2) == _a(3);
+
+                if( b )
                     s = prettyPrintTo( "value", _a(0) );
                 else
                     s = prettyPrintTo( "value", _a(1) );
@@ -676,11 +682,17 @@ namespace AoiBase
     String Shell::over( StringList *args )
     {
         String s;
+        bool b = false;
 
         switch( count(args) )
         {
             case 4:
-                if( _a(2)<_a(3) )
+                if( isDigit(_a(2)) && isDigit(_a(3)) )
+                    b = _atoi(2) < _atoi(3);
+                else
+                    b = _a(2) < _a(3);
+
+                if( b )
                     s = prettyPrintTo( "value", _a(0) );
                 else
                     s = prettyPrintTo( "value", _a(1) );
@@ -849,11 +861,17 @@ namespace AoiBase
     String Shell::under( StringList *args )
     {
         String s;
+        bool b = false;
 
         switch( count(args) )
         {
             case 4:
-                if( _a(2)>_a(3) )
+                if( isDigit(_a(2)) && isDigit(_a(3)) )
+                    b = _atoi(2) > _atoi(3);
+                else
+                    b = _a(2) > _a(3);
+
+                if( b )
                     s = prettyPrintTo( "value", _a(0) );
                 else
                     s = prettyPrintTo( "value", _a(1) );
