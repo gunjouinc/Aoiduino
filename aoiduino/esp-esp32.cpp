@@ -702,6 +702,8 @@ namespace AoiEsp
         switch( count(args) )
         {
             case 0:
+                r[ "bootCause0" ] = static_cast<int>( rtc_get_reset_reason(0) );
+                r[ "bootCause1" ] = static_cast<int>( rtc_get_reset_reason(1) );
                 r[ "chipId" ] = String( (uint16_t)(ESP.getEfuseMac()>>32), HEX )
                               + String( (uint32_t)ESP.getEfuseMac(), HEX );
                 r[ "cpuFreqMHz" ] = ESP.getCpuFreqMHz();
