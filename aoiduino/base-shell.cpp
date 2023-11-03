@@ -1003,7 +1003,7 @@ namespace AoiBase
         {
         // Reserved word
         }
-        else if( m_loopStarted && c<LOOP_SIZE )
+        else if( m_loopStarted && c<LOOP_SIZE && args.length() )
         {
             (m_loop+c)->value = args;
             b = true;
