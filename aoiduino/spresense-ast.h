@@ -12,6 +12,8 @@
 
 /* Camera */
 #include <Camera.h>
+/* LowPower */
+#include <LowPower.h>
 
 #include "base-arduino.h"
 #include "util-http.h"
@@ -115,6 +117,7 @@ namespace AoiSpresense
         static bool formatFromString( const String &value, CAM_IMAGE_PIX_FMT *format );
         static bool fpsFromString( const String &value, CAM_VIDEO_FPS *fps );
         static bool whiteBalanceFromString( const String &value, CAM_WHITE_BALANCE *wb );
+        static String resetReason( bootcause_e bootcause );
         static bool sizeFromString( const String &value, int *width, int *height );
     // static members
     protected:

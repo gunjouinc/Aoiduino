@@ -21,7 +21,6 @@ SDClass AstSD;
 #include <GNSS.h>
 SpGnss Gnss;
 /* LowPower */
-#include <LowPower.h>
 #include <arch/board/board.h>
 #include <RTC.h>
 #include <Watchdog.h>
@@ -1360,6 +1359,7 @@ namespace AoiSpresense
                 r[ "memoryFree" ] = free;
                 r[ "memoryLargestFree" ] = largest;
                 r[ "memoryUsed" ] = used;
+                r[ "resetReason" ] = resetReason( LowPower.bootCause() );
                 r[ "voltage" ] = LowPower.getVoltage();
                 r.prettyPrintTo( s );
                 break;
@@ -2026,6 +2026,117 @@ namespace AoiSpresense
             b = false;
 
         return b;
+    }
+    /**
+     * @fn String Ast::resetReason( bootcause_e bootcause )
+     *
+     * Returns reset reason string.
+     *
+     * @return Reset reason string.
+     * @see https://developer.sony.com/spresense/spresense-api-references-arduino/group__lowpower.html
+     */
+    String Ast::resetReason( bootcause_e bootcause )
+    {
+        String s;
+
+        switch( bootcause )
+        {
+            case 0 :
+                s = "Power On Reset with Power Supplied";
+                break;
+            case 1 :
+                s = "System WDT expired or Self Reboot";
+                break;
+            case 2 :
+                s = "Chip WDT expired";
+                break;
+            case 3 :
+                s = "In DeepSleep state, Detected WKUPL signal";
+                break;
+            case 4 :
+                s = "In DeepSleep state, Detected WKUPS signal";
+                break;
+            case 5 :
+                s = "In DeepSleep state, RTC Alarm expired";
+                break;
+            case 6 :
+                s = "In DeepSleep state, USB Connected";
+                break;
+            case 7 :
+                s = "In DeepSleep state, Reserved others cause occurred";
+                break;
+            case 8 :
+                s = "In ColdSleep state, Detected SCU Interrupt";
+                break;
+            case 9 :
+                s = "In ColdSleep state, RTC Alarm0 expired";
+                break;
+            case 10 :
+                s = "In ColdSleep state, RTC Alarm1 expired";
+                break;
+            case 11 :
+                s = "In ColdSleep state, RTC Alarm2 expired";
+                break;
+            case 12 :
+                s = "In ColdSleep state, RTC Alarm Error occurred";
+                break;
+            case 16 :
+                s = "In ColdSleep state, Detected GPIO IRQ 36";
+                break;
+            case 17 :
+                s = "In ColdSleep state, Detected GPIO IRQ 37";
+                break;
+            case 18 :
+                s = "In ColdSleep state, Detected GPIO IRQ 38";
+                break;
+            case 19 :
+                s = "In ColdSleep state, Detected GPIO IRQ 39";
+                break;
+            case 20 :
+                s = "In ColdSleep state, Detected GPIO IRQ 40";
+                break;
+            case 21 :
+                s = "In ColdSleep state, Detected GPIO IRQ 41";
+                break;
+            case 22 :
+                s = "In ColdSleep state, Detected GPIO IRQ 42";
+                break;
+            case 23 :
+                s = "In ColdSleep state, Detected GPIO IRQ 43";
+                break;
+            case 24 :
+                s = "In ColdSleep state, Detected GPIO IRQ 44";
+                break;
+            case 25 :
+                s = "In ColdSleep state, Detected GPIO IRQ 45";
+                break;
+            case 26 :
+                s = "In ColdSleep state, Detected GPIO IRQ 46";
+                break;
+            case 27 :
+                s = "In ColdSleep state, Detected GPIO IRQ 47";
+                break;
+            case 28 :
+                s = "In ColdSleep state, Detected SEN_INT Interrupt";
+                break;
+            case 29 :
+                s = "In ColdSleep state, Detected PMIC Interrupt";
+                break;
+            case 30 :
+                s = "In ColdSleep state, USB Disconnected";
+                break;
+            case 31 :
+                s = "In ColdSleep state, USB Connected";
+                break;
+            case 32 :
+                s = "Power On Reset";
+                break;
+            default :
+                s = "No mean";
+                break;
+        }
+
+        return s;
     }
     /**
      * @fn bool Ast::sizeFromString( const String &value, int *width, int *height )
