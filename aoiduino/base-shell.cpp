@@ -48,6 +48,8 @@ namespace AoiBase
             { "eval", &Shell::eval },
             { "get", &Shell::get },
             { "help", &Shell::help },
+            { "if", &Shell::ifBegin },
+            { "fi", &Shell::ifEnd },
             { "minus", &Shell::minus },
             { "null", &Shell::null },
             { "over", &Shell::over },
@@ -624,6 +626,65 @@ namespace AoiBase
         return s;
     }
     /**
+     * @fn String Shell::ifBegin( StringList *args )
+     *
+     * Start if using do-done.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty String.
+     */
+    String Shell::ifBegin( StringList *args )
+    {
+        String s;
+        bool b = false;
+        StringList *sl;
+
+        switch( count(args) )
+        {
+            case 1:
+                if( isDigit(_a(0)) )
+                    b = (_atoi(0)!=0);
+                else
+                    b = (_a(0)=="true");
+            // practice 1 loop
+                sl = split( "0 0 1", " " );
+                s = doBegin( sl );
+                delete [] sl;
+                if( !b )
+                    shell.doAdd( "break" );
+                break;
+            default:
+                s = usage( "if false|true|[0-9]+" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::ifEnd( StringList *args )
+     *
+     * Stop if and Practice if.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty String.
+     */
+    String Shell::ifEnd( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                s = doEnd( args );
+                break;
+            default:
+                s = usage( "fi" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Shell::minus( StringList *args )
      *
      * Minus variable value to json.
@@ -999,7 +1060,7 @@ namespace AoiBase
         bool b = false;
         int c = count( m_loop );
 
-        if( args=="do" || args=="done" )
+        if( args=="do" || args=="done" || args=="if" || args=="fi" )
         {
         // Reserved word
         }

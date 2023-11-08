@@ -55,6 +55,8 @@ namespace AoiBase
         static String eval( StringList *args );
         static String get( StringList *args );
         static String help( StringList *args );
+        static String ifBegin( StringList *args );
+        static String ifEnd( StringList *args );
         static String minus( StringList *args );
         static String null( StringList *args );
         static String sh( StringList *args );
@@ -89,7 +91,7 @@ namespace AoiBase
     // variables - loop index
     private:
         /** Hold loop current index. */
-        int m_loopCurrent = 0;;
+        int m_loopCurrent = 0;
         /** Hold loop end index. */
         int m_loopEnd = 0;
         /** Hold loop start index. */
