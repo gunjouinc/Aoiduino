@@ -49,7 +49,6 @@ namespace AoiBase
             { "get", &Shell::get },
             { "help", &Shell::help },
             { "if", &Shell::ifBegin },
-            { "ifn", &Shell::ifNotBegin },
             { "fi", &Shell::ifEnd },
             { "minus", &Shell::minus },
             { "null", &Shell::null },
@@ -662,41 +661,6 @@ namespace AoiBase
         return s;
     }
     /**
-     * @fn String Shell::ifNotBegin( StringList *args )
-     *
-     * Start if using do-done (not mode).
-     *
-     * @param[in] args Reference to arguments.
-     * @return Empty String.
-     */
-    String Shell::ifNotBegin( StringList *args )
-    {
-        String s;
-        bool b = false;
-        StringList *sl;
-
-        switch( count(args) )
-        {
-            case 1:
-                if( isDigit(_a(0)) )
-                    b = (_atoi(0)==0);
-                else
-                    b = (_a(0)!="true");
-            // practice 1 loop
-                sl = split( "0 0 1", " " );
-                s = doBegin( sl );
-                delete [] sl;
-                if( !b )
-                    shell.doAdd( "break" );
-                break;
-            default:
-                s = usage( "ifn false|true|[0-9]+" );
-                break;
-        }
-
-        return s;
-    }
-    /**
      * @fn String Shell::ifEnd( StringList *args )
      *
      * Stop if and Practice if.
@@ -1096,7 +1060,7 @@ namespace AoiBase
         bool b = false;
         int c = count( m_loop );
 
-        if( args=="do" || args=="done" || args=="if" || args=="ifn" || args=="fi" )
+        if( args=="do" || args=="done" || args=="if" || args=="fi" )
         {
         // Reserved word
         }

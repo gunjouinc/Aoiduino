@@ -56,7 +56,6 @@ namespace AoiBase
         static String get( StringList *args );
         static String help( StringList *args );
         static String ifBegin( StringList *args );
-        static String ifNotBegin( StringList *args );
         static String ifEnd( StringList *args );
         static String minus( StringList *args );
         static String null( StringList *args );
