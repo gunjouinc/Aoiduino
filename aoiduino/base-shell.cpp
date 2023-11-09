@@ -438,7 +438,8 @@ namespace AoiBase
             case 0:
                 shell.m_loopStarted = false;
                 j = count( shell.m_loop );
-                while( true )
+                while( (0<=shell.m_loopStep && shell.m_loopCurrent<=shell.m_loopEnd) ||
+                       (0> shell.m_loopStep && shell.m_loopCurrent>=shell.m_loopEnd) )
                 {
                     t = (shell.m_loop+i)->value;
                     t.replace( rep, String(shell.m_loopCurrent) );
@@ -459,10 +460,6 @@ namespace AoiBase
                         i = 0;
                         shell.m_loopCurrent += shell.m_loopStep;
                     }
-                    if( 0<shell.m_loopStep && shell.m_loopEnd<shell.m_loopCurrent )
-                        break;
-                    if( 0>shell.m_loopStep && shell.m_loopEnd>shell.m_loopCurrent )
-                        break;
                 }
                 delete [] shell.m_loop;
                 shell.m_loop = new StringList[ LOOP_SIZE ];
@@ -646,12 +643,13 @@ namespace AoiBase
                     b = (_atoi(0)!=0);
                 else
                     b = (_a(0)=="true");
-            // practice 1 loop
-                sl = split( "0 0 1", " " );
+            // practice 1 loop or none
+                if( b )
+                    sl = split( "0 0 1", " " );
+                else
+                    sl = split( "1 0 1", " " );
                 s = doBegin( sl );
                 delete [] sl;
-                if( !b )
-                    shell.doAdd( "break" );
                 break;
             default:
                 s = usage( "if false|true|[0-9]+" );
