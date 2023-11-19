@@ -12,7 +12,7 @@
 #include "core-abstractcore.h"
 #include "base-arduinojson.h"
 /** Application instance. */
-#define app *this
+#define aoi *this
 /** Reference to product. */
 namespace AoiProduct
 {

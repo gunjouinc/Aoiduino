@@ -46,19 +46,19 @@ namespace AoiBase
         String sl, sp;
         String *s = &sl;
 
-       ~app;
-       app <= prompt + STR_SPACE;
+       ~aoi;
+       aoi <= prompt + STR_SPACE;
 
         while( true )
         {
-            int i = app >> NULL;
+            int i = aoi >> NULL;
             if( i==_cr )
             {
                 switch( interfaceType() )
                 {
                     case AoiCore::_Serial:
                     case AoiCore::_BluetoothSerial:
-                    app <= "";
+                    aoi <= "";
                 }
             // Authorizes user.
                 if( sl.length() && sp.length() )
@@ -66,18 +66,18 @@ namespace AoiBase
                     if( sl==user && sp==password )
                         b = true;
                     else
-                        app << STR_INCORRECT;
+                        aoi << STR_INCORRECT;
                     break;
                 }
             // Shows login prompt.
                 if( !sl.length() && !sp.length() )
                 {
-                    app << prompt + STR_SPACE;
+                    aoi << prompt + STR_SPACE;
                     s = &sl;
                 }
                 else if( sl.length() && !sp.length() )
                 {
-                    app << STR_PASSWORD;
+                    aoi << STR_PASSWORD;
                     s = &sp;
                 }
             }

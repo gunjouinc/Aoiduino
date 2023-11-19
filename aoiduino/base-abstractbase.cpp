@@ -272,19 +272,19 @@ namespace AoiBase
         {
             case AoiCore::_Serial:
             case AoiCore::_BluetoothSerial:
-            app << s;
+            aoi << s;
         }
 
         switch( input )
         {
             case 0x08: // BS
                 *bf = bf->substring( 0, bf->length()-1 );
-                app << STR_SPACE;
-                app << s;
+                aoi << STR_SPACE;
+                aoi << s;
                 break;
             case 0x7f: // DEL
                 *bf = bf->substring( 0, bf->length()-1 );
-                app << KEY_BS;
+                aoi << KEY_BS;
                 break;
             default:
                 *bf += s;
@@ -318,7 +318,7 @@ namespace AoiBase
                 break;
             case 0x1b5b:   // Esc + [ - Erase buffer.
                 for( int i=0; i<bf->length(); i++ )
-                    app << KEY_BS;
+                    aoi << KEY_BS;
                 *bf = STR_NULL;
                 break;
             case 0x1b5b41: // Up

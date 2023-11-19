@@ -101,12 +101,12 @@ namespace AoiBase
         String s, t;
         int i = 0;
 
-        ~app;
-        app <= prompt + STR_SPACE;
+        ~aoi;
+        aoi <= prompt + STR_SPACE;
 
         while( true )
         {
-            int j = app >> NULL;
+            int j = aoi >> NULL;
             if( j==_cr )
             {
                 t = "";
@@ -115,20 +115,20 @@ namespace AoiBase
                 {
                     case AoiCore::_Serial:
                     case AoiCore::_BluetoothSerial:
-                    app <= "";
+                    aoi <= "";
                 }
                 if( s.length() )
                 {
                     if( s=="exit" )
                     {
-                        app << STR_LOGOUT;
+                        aoi << STR_LOGOUT;
                         break;
                     }
                     else
                     {
                         t = practice( s );
                         if( 0<t.length() )
-                            app << t + _n;
+                            aoi << t + _n;
                     // Updates History. First and last history must be empty.
                         for( int k=HISTORY_SIZE-3; 0<k; k-- )
                             (m_history+k+1)->value = (m_history+k)->value;
@@ -136,7 +136,7 @@ namespace AoiBase
                         s = "";
                     }
                 }
-                app << prompt + STR_SPACE;
+                aoi << prompt + STR_SPACE;
             }
             else if( j==_lf )
             {
@@ -192,7 +192,7 @@ namespace AoiBase
         if( measure )
             debug( args );
         else
-            app << args + _n;
+            aoi << args + _n;
 
         s = shell.practice( args );
         if( !s.length() )
@@ -201,7 +201,7 @@ namespace AoiBase
         if( measure )
             debug( s );
         else
-            app << s + _n;
+            aoi << s + _n;
     }
     /**
      * @fn String Shell::className( void )
@@ -1018,20 +1018,20 @@ namespace AoiBase
                 break;
             case 0x1b5b:   // Esc + [ - Erase buffer.
                 for( int i=0; i<bf->length(); i++ )
-                    app << KEY_BS;
+                    aoi << KEY_BS;
                 *bf = "";
                 break;
             case 0x1b5b41: // Up - Order history.
                 *bf = (++m_historyIndex)->value;
                 if( !bf->length() )
                     *bf = (--m_historyIndex)->value;
-                app << *bf;
+                aoi << *bf;
                 break;
             case 0x1b5b42: // Down - Newer history.
                 if( m_historyIndex != m_history )
                     m_historyIndex--;
                 *bf = m_historyIndex->value;
-                app << *bf;
+                aoi << *bf;
                 break;
             case 0x1b5b43: // Right
             case 0x1b5b44: // Left
