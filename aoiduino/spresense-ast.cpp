@@ -17,6 +17,8 @@ StorageClass *AstStorage = &Flash;
 //eMMCClass eMMC;
 //FlashClass Flash;
 SDClass AstSD;
+/* Audio */
+#include <Audio.h>
 /* GNSS */
 #include <GNSS.h>
 SpGnss Gnss;
@@ -81,6 +83,10 @@ namespace AoiSpresense
             { "pinMode", &Ast::pinMode },
             { "tone", &Arduino::tone },
             { "yield", &Arduino::yield },
+            /* Audio */
+            { "audioBegin", &Ast::audioBegin },
+            { "audioEnd", &Ast::audioEnd },
+            { "audioSetBeep", &Ast::audioSetBeep },
             /* Camera */
             { "cameraBegin", &Ast::cameraBegin },
             { "cameraEnd", &Ast::cameraEnd },
@@ -337,6 +343,83 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "pinMode pin (INPUT|OUTPUT|INPUT_PULLUP|INPUT_PULLDOWN)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::audioBegin( StringList *args )
+     *
+     * Begin audio function.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioBegin( StringList *args )
+    {
+        String s;
+        AudioClass *audio = AudioClass::getInstance();
+
+        switch( count(args) )
+        {
+            case 0:
+                audio->begin();
+                audio->setPlayerMode( AS_SETPLAYER_OUTPUTDEVICE_SPHP, 0, 0 );
+                break;
+            default:
+                s = usage( "audioBegin" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::audioEnd( StringList *args )
+     *
+     * End audio function.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioEnd( StringList *args )
+    {
+        String s;
+        AudioClass *audio = AudioClass::getInstance();
+
+        switch( count(args) )
+        {
+            case 0:
+                audio->setReadyMode();
+                audio->end();
+                break;
+            default:
+                s = usage( "audioEnd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::audioSetBeep( StringList *args )
+     *
+     * Set Beep Sound.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioSetBeep( StringList *args )
+    {
+        String s;
+        AudioClass *audio = AudioClass::getInstance();
+
+        switch( count(args) )
+        {
+            case 3:
+                audio->setBeep( _atoi(0), _atoi(1), _atoi(2) );
+                break;
+            default:
+                s = usage( "audioSetBeep (0|1) -90~0 frequency" );
                 break;
         }
 

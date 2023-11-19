@@ -57,6 +57,10 @@ namespace AoiSpresense
         static String analogRead( StringList *args );
         static String led( StringList *args );
         static String pinMode( StringList *args );
+        /* Audio */
+        static String audioBegin( StringList *args );
+        static String audioEnd( StringList *args );
+        static String audioSetBeep( StringList *args );
         /* Camera */
         static String cameraBegin( StringList *args );
         static String cameraEnd( StringList *args );
