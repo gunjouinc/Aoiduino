@@ -70,6 +70,7 @@ namespace AoiEsp
         static String touch( StringList *args );
         /* HTTP */
         static String httpBegin( StringList *args );
+        static String httpGetRaw( StringList *args );
         static String httpPost( StringList *args );
         /* LowPower */
         static String deepSleep( StringList *args );
