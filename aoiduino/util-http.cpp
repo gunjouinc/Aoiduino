@@ -208,4 +208,29 @@ namespace AoiUtil
 
         return s;
     }
+    /**
+     * @fn String Http::responseRaw( chat *buf, unsigned int size )
+     *
+     * Get raw response index from HTTP server.
+     *
+     * @param[in] char buf Response buffer
+     * @param[in] unsigned int size Size of response buffer.
+     * @return Response buffer index. Return 0 if there is no index.
+     */
+    unsigned int Http::responseRaw( char *buf, unsigned int size )
+    {
+        unsigned int r = 0;
+
+        for( int i=3; i<size; i++ )
+        {
+            if( *(buf+i-3)==0x0d && *(buf+i-2)==0x0a &&
+                *(buf+i-1)==0x0d && *(buf+i-0)==0x0a )
+            {
+                r = i + 1;
+                break;
+            }
+        }
+
+        return r;
+    }
 }

@@ -45,6 +45,7 @@ namespace AoiUtil
         static String requestBodyFooterInPut( const String &boundary );
         static String requestBodyHeaderInPut( const String &boundary, const String &name, const String &value, int *size );
         static String response( int timeout = 30*1000 );
+        static unsigned int responseRaw( char *buf, unsigned int size );
     // static variables
     protected:
         /** Holds Client instance. */
