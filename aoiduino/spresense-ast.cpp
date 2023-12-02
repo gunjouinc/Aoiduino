@@ -126,6 +126,7 @@ namespace AoiSpresense
             /* HTTP */
             { "httpBegin", &Ast::httpBegin },
             { "httpGet", &AoiUtil::Http::httpGet },
+            { "httpGetRaw", &Ast::httpGetRaw },
             { "httpPost", &Ast::httpPost },
             /* LTE */
             { "lteBegin", &Ast::lteBegin },
@@ -1581,6 +1582,81 @@ namespace AoiSpresense
                 s = usage( "httpBegin" );
                 break;
         }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::httpGetRaw( StringList *args )
+     *
+     * Send HTTP GET to server and save raw data.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Recieved size.
+     */
+    String Ast::httpGetRaw( StringList *args )
+    {
+        String s;
+        String t;
+        String host;
+        int port = 80;
+        int timeout = 30 * 1000;
+        // response
+        File f;
+        int start = ::millis();
+        int size = 0;
+        int i = 0;
+        int j = 0;
+
+        char *buf = new char[ _AOIUTIL_HTTP_BUFFER_SIZE_+1 ];
+        switch( count(args) )
+        {
+            case 5:
+                timeout = _atoi( 4 ) * 1000;
+            case 4:
+                port = _atoi( 3 );
+            case 3:
+                host = _a( 0 );
+                if( !http->connect(host.c_str(),port) )
+                    return httpGetRaw( 0 );
+            // GET
+                http->println( "GET "+_a(1)+" HTTP/1.0" );
+                http->println( "Host: " + host );
+                http->println( "User-Agent: " + String(STR_USER_AGENT) );
+                http->println( "Connection: close" );
+                http->println();
+            // Response
+                t = _a( 2 ); 
+                if( AstStorage->exists(t) )
+                    AstStorage->remove( t );
+                f = AstStorage->open( t, FILE_WRITE );
+                while( true )
+                {
+                    if( i=http->available() )
+                    {
+                        i = http->read( (uint8_t*)buf, _AOIUTIL_HTTP_BUFFER_SIZE_ );
+                        j = 0;
+                        if( !size )
+                            j = responseRaw( buf, i );
+                        f.write( (uint8_t*)(buf+j), i-j );
+                        size += (i-j);
+                    }
+                    if( !http->available() && !http->connected() )
+                    {
+                        http->stop();
+                        break;
+                    }
+                // timeout
+                    if( timeout<(::millis()-start) )
+                        break;
+                }
+                f.close();
+                s = prettyPrintTo( "value", size );
+                break;
+            default:
+                s = usage( "httpGetRaw host path file (port timeout)?" );
+                break;
+        }
+        delete [] buf;
 
         return s;
     }

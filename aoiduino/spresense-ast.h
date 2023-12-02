@@ -99,6 +99,7 @@ namespace AoiSpresense
         static String voltage( StringList *args );
         /* HTTP */
         static String httpBegin( StringList *args );
+        static String httpGetRaw( StringList *args );
         static String httpPost( StringList *args );
         /* LTE */
         static String lteBegin( StringList *args );
