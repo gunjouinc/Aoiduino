@@ -88,9 +88,12 @@ namespace AoiSpresense
             { "audioBegin", &Ast::audioBegin },
             { "audioEnd", &Ast::audioEnd },
             { "audioInitPlayer", &Ast::audioInitPlayer },
+            { "audioInitRecorder", &Ast::audioInitRecorder },
             { "audioPlay", &Ast::audioPlay },
+            { "audioRecord", &Ast::audioRecord },
             { "audioSetBeep", &Ast::audioSetBeep },
             { "audioSetPlayerMode", &Ast::audioSetPlayerMode },
+            { "audioSetRecorderMode", &Ast::audioSetRecorderMode },
             { "audioSetVolume", &Ast::audioSetVolume },
             /* Camera */
             { "cameraBegin", &Ast::cameraBegin },
@@ -421,6 +424,46 @@ namespace AoiSpresense
         return s;
     }
     /**
+     * @fn String Ast::audioInitRecorder( StringList *args )
+     *
+     * Initializes and sets Recorder action. 
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioInitRecorder( StringList *args )
+    {
+        String s;
+        int i = 24;
+        char path[ i ];
+        uint8_t codec;
+        uint8_t channel;
+        err_t r;
+
+        switch( count(args) )
+        {
+            case 4:
+                if( !codecTypeFromString(_a(0),&codec) ||
+                    !channelFromString(_a(3),&channel) )
+                    s = audioInitRecorder( 0 );
+                else
+                {
+                    memset( path, 0, i );
+                    _a( 1 ).toCharArray( path, i );
+
+                    r = theAudio->initRecorder( codec, path, _atoi(2), channel );
+                    if( r!=AUDIOLIB_ECODE_OK )
+                        s = audioInitRecorder( 0 );
+                }
+                break;
+            default:
+                s = usage( "initRecorder (MP3|WAV) path sampling (MONO|STEREO)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
      * @fn String Ast::audioPlay( StringList *args )
      *
      * Play audio. 
@@ -466,6 +509,52 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "audioPlay (ID0|ID1) file" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::audioRecord( StringList *args )
+     *
+     * Record audio. 
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioRecord( StringList *args )
+    {
+        String s;
+        err_t r;
+        File f;
+        unsigned long msec = ::millis();
+
+        m_audioAttention = false;
+
+        switch( count(args) )
+        {
+            case 2:
+                if( AstStorage->exists(_a(0)) )
+                    AstStorage->remove( _a(0) );
+                f = AstStorage->open( _a(0), FILE_WRITE );
+                if( f )
+                {
+                    theAudio->startRecorder();
+                    while( !m_audioAttention && ((::millis()-msec)<_atoi(1)) )
+                    {
+                        r = theAudio->readFrames( f );
+                        if( r!=AUDIOLIB_ECODE_OK )
+                            break;
+                        // adjusted by the time to write the audio stream file
+                        usleep( 10000 );
+                    }
+                    theAudio->stopRecorder();
+                    theAudio->closeOutputFile( f );
+                    f.close();
+                }
+                break;
+            default:
+                s = usage( "audioRecord file duration" );
                 break;
         }
 
@@ -554,6 +643,40 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "audioSetPlayerMode (SPHP|I2C) (LINEOUT|1DRIVER|2DRIVER|4DRIVER) (buffer0)? (buffer1)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::audioSetRecorderMode( StringList *args )
+     *
+     * Set Audio Library Mode to Sound Recorder.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioSetRecorderMode( StringList *args )
+    {
+        String s;
+        AsSetRecorderStsInputDevice device;
+        int32_t gain = 200;
+        uint32_t buffer = 8192;
+
+        switch( count(args) )
+        {
+            case 3:
+                buffer = _atoi( 2 );
+            case 2:
+                gain = _atoui( 1 );
+            case 1:
+                if( !recorderInputDeviceFromString(_a(0),&device) )
+                    s = audioSetRecorderMode( 0 );
+                else
+                    theAudio->setRecorderMode( device, gain, buffer );
+                break;
+            default:
+                s = usage( "audioSetRecorderMode (MIC|I2S) (0-210) (buffer)?" );
                 break;
         }
 
@@ -2317,6 +2440,28 @@ namespace AoiSpresense
             *mode = AS_SP_DRV_MODE_2DRIVER;
         else if( value=="4DRIVER" )
             *mode = AS_SP_DRV_MODE_4DRIVER;
+        else
+            b = false;
+
+        return b;
+    }
+    /**
+     * @fn bool Ast::recorderInputDeviceFromString( const String &value, AsSetRecorderStsInputDevice *device )
+     *
+     * Return AsSetRecorderStsInputDevice from string.
+     *
+     * @param[in] value input device type string like "MIC".
+     * @param[in,out] device reference to AsSetRecorderStsInputDevice.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::recorderInputDeviceFromString( const String &value, AsSetRecorderStsInputDevice *device )
+    {
+        bool b = true;
+
+        if( value=="MIC" )
+            *device = AS_SETRECDR_STS_INPUTDEVICE_MIC;
+        else if( value=="I2S" )
+            *device = AS_SETRECDR_STS_INPUTDEVICE_I2S;
         else
             b = false;
 

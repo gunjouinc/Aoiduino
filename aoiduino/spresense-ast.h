@@ -63,9 +63,12 @@ namespace AoiSpresense
         static String audioBegin( StringList *args );
         static String audioEnd( StringList *args );
         static String audioInitPlayer( StringList *args );
+        static String audioInitRecorder( StringList *args );
         static String audioPlay( StringList *args );
+        static String audioRecord( StringList *args );
         static String audioSetBeep( StringList *args );
         static String audioSetPlayerMode( StringList *args );
+        static String audioSetRecorderMode( StringList *args );
         static String audioSetVolume( StringList *args );
         /* Camera */
         static String cameraBegin( StringList *args );
@@ -131,6 +134,7 @@ namespace AoiSpresense
         static bool playerIdFromString( const String &value, AudioClass::PlayerId *id );
         static bool playerOutputDeviceFromString( const String &value, AsSetPlayerOutputDevice *device );
         static bool playerSpeakerDriverModeFromString( const String &value, AsSpDrvMode *mode );
+        static bool recorderInputDeviceFromString( const String &value, AsSetRecorderStsInputDevice *device );
         /* Camera */
         static bool effectFromString( const String &value, CAM_COLOR_FX *effect );
         static bool formatFromString( const String &value, CAM_IMAGE_PIX_FMT *format );
