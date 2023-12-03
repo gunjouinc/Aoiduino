@@ -10,6 +10,8 @@
 #ifdef ARDUINO_spresense_ast
 #pragma once
 
+/* Audio */
+#include <Audio.h>
 /* Camera */
 #include <Camera.h>
 /* LowPower */
@@ -60,7 +62,11 @@ namespace AoiSpresense
         /* Audio */
         static String audioBegin( StringList *args );
         static String audioEnd( StringList *args );
+        static String audioInitPlayer( StringList *args );
+        static String audioPlay( StringList *args );
         static String audioSetBeep( StringList *args );
+        static String audioSetPlayerMode( StringList *args );
+        static String audioSetVolume( StringList *args );
         /* Camera */
         static String cameraBegin( StringList *args );
         static String cameraEnd( StringList *args );
@@ -118,6 +124,13 @@ namespace AoiSpresense
         // $ Please set your function to use.
     // static members
     protected:
+        /* Audio */
+        static void audioAttentionCallback( const ErrorAttentionParam *param );
+        static bool channelFromString( const String &value, uint8_t *channel );
+        static bool codecTypeFromString( const String &value, uint8_t *type );
+        static bool playerIdFromString( const String &value, AudioClass::PlayerId *id );
+        static bool playerOutputDeviceFromString( const String &value, AsSetPlayerOutputDevice *device );
+        static bool playerSpeakerDriverModeFromString( const String &value, AsSpDrvMode *mode );
         /* Camera */
         static bool effectFromString( const String &value, CAM_COLOR_FX *effect );
         static bool formatFromString( const String &value, CAM_IMAGE_PIX_FMT *format );
@@ -133,6 +146,8 @@ namespace AoiSpresense
     private:
         /** Holds function table. */
         static AoiBase::FunctionTable *m_functionTable;
+        /** Holds audio attention. */
+        static bool m_audioAttention;
     };
 }
 #endif

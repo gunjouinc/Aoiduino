@@ -9,6 +9,8 @@
 ******************************************************************************/
 #ifdef ARDUINO_spresense_ast
 #include "spresense-ast.h"
+/* Audio */
+AudioClass *theAudio = AudioClass::getInstance();
 /* Flash */
 #include <eMMC.h>
 #include <Flash.h>
@@ -17,8 +19,6 @@ StorageClass *AstStorage = &Flash;
 //eMMCClass eMMC;
 //FlashClass Flash;
 SDClass AstSD;
-/* Audio */
-#include <Audio.h>
 /* GNSS */
 #include <GNSS.h>
 SpGnss Gnss;
@@ -54,6 +54,7 @@ namespace AoiSpresense
 {
 // Static variables.
     AoiBase::FunctionTable *Ast::m_functionTable = 0;
+    bool Ast::m_audioAttention = false;
     /**
      * @fn Ast::Ast( void )
      *
@@ -86,7 +87,11 @@ namespace AoiSpresense
             /* Audio */
             { "audioBegin", &Ast::audioBegin },
             { "audioEnd", &Ast::audioEnd },
+            { "audioInitPlayer", &Ast::audioInitPlayer },
+            { "audioPlay", &Ast::audioPlay },
             { "audioSetBeep", &Ast::audioSetBeep },
+            { "audioSetPlayerMode", &Ast::audioSetPlayerMode },
+            { "audioSetVolume", &Ast::audioSetVolume },
             /* Camera */
             { "cameraBegin", &Ast::cameraBegin },
             { "cameraEnd", &Ast::cameraEnd },
@@ -360,16 +365,107 @@ namespace AoiSpresense
     String Ast::audioBegin( StringList *args )
     {
         String s;
-        AudioClass *audio = AudioClass::getInstance();
 
         switch( count(args) )
         {
             case 0:
-                audio->begin();
-                audio->setPlayerMode( AS_SETPLAYER_OUTPUTDEVICE_SPHP, 0, 0 );
+                theAudio->begin( &Ast::audioAttentionCallback );
                 break;
             default:
                 s = usage( "audioBegin" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::audioInitPlayer( StringList *args )
+     *
+     * Initializes and sets Player action. 
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioInitPlayer( StringList *args )
+    {
+        String s;
+        AudioClass::PlayerId id;
+        int i = 24;
+        char path[ i ];
+        uint8_t codec;
+        uint8_t channel;
+        err_t r;
+
+        switch( count(args) )
+        {
+            case 5:
+                if( !playerIdFromString(_a(0),&id) ||
+                    !codecTypeFromString(_a(1),&codec) ||
+                    !channelFromString(_a(4),&channel) )
+                    s = audioInitPlayer( 0 );
+                else
+                {
+                    memset( path, 0, i );
+                    _a( 2 ).toCharArray( path, i );
+
+                    r = theAudio->initPlayer( id, codec, path, _atoi(3), channel );
+                    if( r!=AUDIOLIB_ECODE_OK )
+                        s = audioInitPlayer( 0 );
+                }
+                break;
+            default:
+                s = usage( "initPlayer (ID0|ID1) (MP3|WAV) path sampling (MONO|STEREO)" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::audioPlay( StringList *args )
+     *
+     * Play audio. 
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioPlay( StringList *args )
+    {
+        String s;
+        AudioClass::PlayerId id;
+        err_t r;
+        File f;
+
+        m_audioAttention = false;
+
+        switch( count(args) )
+        {
+            case 2:
+                if( !playerIdFromString(_a(0),&id) ||
+                    !AstStorage->exists(_a(1)) )
+                    s = audioPlay( 0 );
+                else
+                {
+                    f = AstStorage->open( _a(1) );
+                    // send first frames to be decoded 
+                    r = theAudio->writeFrames( id, f );
+                    if( f && ((r==AUDIOLIB_ECODE_OK) || (r==AUDIOLIB_ECODE_FILEEND)) )
+                    {
+                        theAudio->startPlayer( id );
+                        while( !m_audioAttention )
+                        {
+                            r = theAudio->writeFrames( id, f );
+                            if( r!=AUDIOLIB_ECODE_OK )
+                                break;
+                            // adjusted by the time to read the audio stream file
+                            usleep( 40000 );
+                        }
+                        theAudio->stopPlayer( id );
+                        f.close();
+                    }
+                }
+                break;
+            default:
+                s = usage( "audioPlay (ID0|ID1) file" );
                 break;
         }
 
@@ -386,13 +482,12 @@ namespace AoiSpresense
     String Ast::audioEnd( StringList *args )
     {
         String s;
-        AudioClass *audio = AudioClass::getInstance();
 
         switch( count(args) )
         {
             case 0:
-                audio->setReadyMode();
-                audio->end();
+                theAudio->setReadyMode();
+                theAudio->end();
                 break;
             default:
                 s = usage( "audioEnd" );
@@ -412,15 +507,77 @@ namespace AoiSpresense
     String Ast::audioSetBeep( StringList *args )
     {
         String s;
-        AudioClass *audio = AudioClass::getInstance();
 
         switch( count(args) )
         {
             case 3:
-                audio->setBeep( _atoi(0), _atoi(1), _atoi(2) );
+                theAudio->setBeep( _atoi(0), _atoi(1), _atoi(2) );
                 break;
             default:
                 s = usage( "audioSetBeep (0|1) -90~0 frequency" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::audioSetPlayerMode( StringList *args )
+     *
+     * Set Audio Library Mode to Music Player.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioSetPlayerMode( StringList *args )
+    {
+        String s;
+        AsSetPlayerOutputDevice device;
+        AsSpDrvMode mode;
+        uint32_t buffer0 = 32768;
+        uint32_t buffer1 = 32768;
+
+        switch( count(args) )
+        {
+            case 4:
+                buffer1 = _atoi( 3 );
+            case 3:
+                buffer0 = _atoi( 2 );
+            case 2:
+                if( !playerOutputDeviceFromString(_a(0),&device) ||
+                    !playerSpeakerDriverModeFromString(_a(1),&mode) )
+                    s = audioSetPlayerMode( 0 );
+                else
+                    theAudio->setPlayerMode( device, mode, buffer0, buffer1 );
+                break;
+            case 0:
+                theAudio->setPlayerMode( AS_SETPLAYER_OUTPUTDEVICE_SPHP, 0, 0 );
+                break;
+            default:
+                s = usage( "audioSetPlayerMode (SPHP|I2C) (LINEOUT|1DRIVER|2DRIVER|4DRIVER) (buffer0)? (buffer1)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::audioSetVolume( StringList *args )
+     *
+     * Set sound volume.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioSetVolume( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 1:
+                theAudio->setVolume( _atoi(0) );
+                break;
+            default:
+                s = usage( "audioSetVolume -1020~-120" );
                 break;
         }
 
@@ -2039,6 +2196,131 @@ namespace AoiSpresense
         }
 
         return s;
+    }
+    /**
+     * @fn void Ast::audioAttentionCallback( const ErrorAttentionParam *param )
+     *
+     * This method is call when audio internal error occurs.
+     *
+     * @param[in] param ErrorAttentionParam
+     */
+    void Ast::audioAttentionCallback( const ErrorAttentionParam *param )
+    {
+        m_audioAttention = (AS_ATTENTION_CODE_WARNING<=param->error_code);
+    }
+    /**
+     * @fn bool Ast::channelFromString( const String &value, uint8_t *channel )
+     *
+     * Return channel from string.
+     *
+     * @param[in] value channel string like "MONO".
+     * @param[in,out] type reference to channel.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::channelFromString( const String &value, uint8_t *channel )
+    {
+        bool b = true;
+
+        if( value=="MONO" )
+            *channel = AS_CHANNEL_MONO;
+        else if( value=="STEREO" )
+            *channel = AS_CHANNEL_STEREO;
+        else
+            *channel = AoiCore::toInt( value );
+
+        return b;
+    }
+    /**
+     * @fn bool Ast::codecTypeFromString( const String &value, uint8_t *type )
+     *
+     * Return codec type from string.
+     *
+     * @param[in] value codec type string like "MP3".
+     * @param[in,out] type reference to codec type.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::codecTypeFromString( const String &value, uint8_t *type )
+    {
+        bool b = true;
+
+        if( value=="MP3" )
+            *type = AS_CODECTYPE_MP3;
+        else if( value=="WAV" )
+            *type = AS_CODECTYPE_WAV;
+        else
+            *type = AoiCore::toInt( value );
+
+        return b;
+    }
+    /**
+     * @fn bool Ast::playerIdFromString( const String &value, AudioClass::PlayerId *id )
+     *
+     * Return PlayerId from string.
+     *
+     * @param[in] value output device type string like "ID0".
+     * @param[in,out] id reference to PlayerId.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::playerIdFromString( const String &value, AudioClass::PlayerId *id )
+    {
+        bool b = true;
+
+        if( value=="ID0" )
+            *id = AudioClass::Player0;
+        else if( value=="ID1" )
+            *id = AudioClass::Player1;
+        else
+            b = false;
+
+        return b;
+    }
+    /**
+     * @fn bool Ast::playerOutputDeviceFromString( const String &value, AsSetPlayerOutputDevice *device )
+     *
+     * Return AsSetPlayerOutputDevice from string.
+     *
+     * @param[in] value output device type string like "SPHP".
+     * @param[in,out] device reference to AsSetPlayerOutputDevice.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::playerOutputDeviceFromString( const String &value, AsSetPlayerOutputDevice *device )
+    {
+        bool b = true;
+
+        if( value=="SPHP" )
+            *device = AS_SETPLAYER_OUTPUTDEVICE_SPHP;
+        else if( value=="I2S" )
+            *device = AS_SETPLAYER_OUTPUTDEVICE_I2SOUTPUT;
+        else
+            b = false;
+
+        return b;
+    }
+    /**
+     * @fn bool Ast::playerSpeakerDriverModeFromString( const String &value, AsSpDrvMode *mode )
+     *
+     * Return AsSpDrvMode from string.
+     *
+     * @param[in] value output device type string like "LINEOUT".
+     * @param[in,out] device reference to AsSpDrvMode.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::playerSpeakerDriverModeFromString( const String &value, AsSpDrvMode *mode )
+    {
+        bool b = true;
+
+        if( value=="LINEOUT" )
+            *mode = AS_SP_DRV_MODE_LINEOUT;
+        else if( value=="1DRIVER" )
+            *mode = AS_SP_DRV_MODE_1DRIVER;
+        else if( value=="2DRIVER" )
+            *mode = AS_SP_DRV_MODE_2DRIVER;
+        else if( value=="4DRIVER" )
+            *mode = AS_SP_DRV_MODE_4DRIVER;
+        else
+            b = false;
+
+        return b;
     }
     /**
      * @fn bool Ast::effectFromString( const String &value, CAM_COLOR_FX *effect )
