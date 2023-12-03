@@ -2155,6 +2155,39 @@ namespace AoiSpresense
         return b;
     }
     /**
+     * @fn bool Ast::sizeFromString( const String &value, int *width, int *height )
+     *
+     * Return size (width, height) from string.
+     *
+     * @param[in] value size type string like "QVGA".
+     * @param[in,out] width reference to width.
+     * @param[in,out] height reference to height.
+     * @return Return true if value is valid, Otherwise return false.
+     */
+    bool Ast::sizeFromString( const String &value, int *width, int *height )
+    {
+        bool b = true;
+
+        if( value=="QVGA" )
+            { *width = CAM_IMGSIZE_QVGA_H; *height = CAM_IMGSIZE_QVGA_V; }
+        else if( value=="VGA" )
+            { *width = CAM_IMGSIZE_VGA_H; *height = CAM_IMGSIZE_VGA_V; }
+        else if( value=="HD" )
+            { *width = CAM_IMGSIZE_HD_H; *height = CAM_IMGSIZE_HD_V; }
+        else if( value=="QUADVGA" )
+            { *width = CAM_IMGSIZE_QUADVGA_H; *height = CAM_IMGSIZE_QUADVGA_V; }
+        else if( value=="FULLHD" )
+            { *width = CAM_IMGSIZE_FULLHD_H; *height = CAM_IMGSIZE_FULLHD_V; }
+        else if( value=="5M" )
+            { *width = CAM_IMGSIZE_5M_H; *height = CAM_IMGSIZE_5M_V; }
+        else if( value=="3M" )
+            { *width = CAM_IMGSIZE_3M_H; *height = CAM_IMGSIZE_3M_V; }
+        else
+            b = false;
+
+        return b;
+    }
+    /**
      * @fn bool Ast::whiteBalanceFromString( const String &value, CAM_WHITE_BALANCE *wb )
      *
      * Return CAM_WHITE_BALANCE from string.
@@ -2296,39 +2329,6 @@ namespace AoiSpresense
         }
 
         return s;
-    }
-    /**
-     * @fn bool Ast::sizeFromString( const String &value, int *width, int *height )
-     *
-     * Return size (width, height) from string.
-     *
-     * @param[in] value size type string like "QVGA".
-     * @param[in,out] width reference to width.
-     * @param[in,out] height reference to height.
-     * @return Return true if value is valid, Otherwise return false.
-     */
-    bool Ast::sizeFromString( const String &value, int *width, int *height )
-    {
-        bool b = true;
-
-        if( value=="QVGA" )
-            { *width = CAM_IMGSIZE_QVGA_H; *height = CAM_IMGSIZE_QVGA_V; }
-        else if( value=="VGA" )
-            { *width = CAM_IMGSIZE_VGA_H; *height = CAM_IMGSIZE_VGA_V; }
-        else if( value=="HD" )
-            { *width = CAM_IMGSIZE_HD_H; *height = CAM_IMGSIZE_HD_V; }
-        else if( value=="QUADVGA" )
-            { *width = CAM_IMGSIZE_QUADVGA_H; *height = CAM_IMGSIZE_QUADVGA_V; }
-        else if( value=="FULLHD" )
-            { *width = CAM_IMGSIZE_FULLHD_H; *height = CAM_IMGSIZE_FULLHD_V; }
-        else if( value=="5M" )
-            { *width = CAM_IMGSIZE_5M_H; *height = CAM_IMGSIZE_5M_V; }
-        else if( value=="3M" )
-            { *width = CAM_IMGSIZE_3M_H; *height = CAM_IMGSIZE_3M_V; }
-        else
-            b = false;
-
-        return b;
     }
     /**
      * @fn String Ast::requestBodyHeaderInPut( const String &value )
