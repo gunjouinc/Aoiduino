@@ -313,6 +313,39 @@ echo hello 2
 }
 ```
 
+### Conditional
+```shellsession
+# if 0
+# echo hello 0
+# fi
+# echo hello 1
+{
+  "value": "hello 1"
+}
+# if 1
+# echo hello 0
+# fi
+echo hello 0
+{
+  "value": "hello 0"
+}
+# echo hello 1
+{
+  "value": "hello 1"
+}
+#
+# if false
+# echo hello 0
+# fi
+# if true
+# echo hello 0
+# fi
+echo hello 0
+{
+  "value": "hello 0"
+}
+```
+
 ## Change log
 
 - 2020/01/09
