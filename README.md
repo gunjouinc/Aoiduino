@@ -8,9 +8,21 @@ Dependent libraries
 - Espalexa
 - IRremoteESP8266
 
-Supported boards are Arduino Uno, Spresense Ast, ESP32, M5Stack, M5Core2 and ESP8266. Refer to the changelog for implemented features.
+Supported boards are Arduino Uno, Spresense Ast, ESP32, M5Stack, M5Core2 and ESP8266. Refer to example and the change log for implemented features.
 
-## Operation example on Spresense Ast
+(日本語)
+Arduino向けの「あおい」開発環境です。あなたの製品のため、コマンドラインを通じたインタフェースと柔軟な拡張性を提供します。
+
+以下のライブラリと依存関係があります。
+- Adafruit_NeoPixel
+- ArduinoMqttClient
+- ESP32Servo
+- Espalexa
+- IRremoteESP8266
+
+対象ボードは、Arduino Uno、Spresense、ESP32、M5Stack、M5Core2、ESP8266 になります。実装済みの機能は動作例と変更履歴を参照してください。
+
+## Operation example on Spresense Ast (SPRESENSEでの動作例)
 
 ### Low Power
 ```
