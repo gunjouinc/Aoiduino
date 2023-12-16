@@ -53,6 +53,7 @@ namespace AoiBase
             { "minus", &Shell::minus },
             { "null", &Shell::null },
             { "over", &Shell::over },
+            { "parse", &Shell::parse },
             { "plus", &Shell::plus },
             { "sed", &Shell::sed },
             { "set", &Shell::set },
@@ -843,6 +844,32 @@ namespace AoiBase
             default:
                 s = usage( "plus name integer" );
                 break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::parse( StringList *args )
+     *
+     * Parse value to json.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Json string.
+     */
+    String Shell::parse( StringList *args )
+    {
+        String s;
+        int c = count( args );
+
+        if( c<1 )
+            s = usage( "parse .+" );
+        else
+        {
+            DynamicJsonBuffer json;
+            String t = join( args, STR_SPACE );
+            JsonObject &r = json.parseObject( t );
+
+            r.prettyPrintTo( s );
         }
 
         return s;
