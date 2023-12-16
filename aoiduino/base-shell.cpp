@@ -53,6 +53,7 @@ namespace AoiBase
             { "minus", &Shell::minus },
             { "null", &Shell::null },
             { "over", &Shell::over },
+            { "parse", &Shell::parse },
             { "plus", &Shell::plus },
             { "sed", &Shell::sed },
             { "set", &Shell::set },

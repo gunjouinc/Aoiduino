@@ -61,6 +61,7 @@ namespace AoiBase
         static String null( StringList *args );
         static String sh( StringList *args );
         static String over( StringList *args );
+        static String parse( StringList *args );
         static String plus( StringList *args );
         static String sed( StringList *args );
         static String set( StringList *args );
