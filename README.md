@@ -25,7 +25,7 @@ Arduino向けの「あおい」開発環境です。あなたの製品のため�
 ## Operation example on Spresense Ast (SPRESENSEでの動作例)
 
 ### Low Power
-```
+```shellsession
 # reboot
 [    0:01.251] Loaded : Shell
 [    0:01.251] Loaded : Ast
@@ -47,7 +47,7 @@ password : italy
 ```
 
 ### Camera
-```
+```shellsession
 # cameraBegin 1 30 QVGA YUV422
 
 # cameraAutoWhiteBalanceMode AUTO
@@ -73,7 +73,7 @@ password : italy
 ```
 
 ### File
-```
+```shellsession
 # format /mnt/spif
 
 # mkdir 1
@@ -103,7 +103,7 @@ password : italy
 ```
 
 ### GNSS
-```
+```shellsession
 # gnssBegin 6
 
 # gnssConfig
@@ -193,7 +193,7 @@ password : italy
 ```
 
 ### LTE
-```
+```shellsession
 # lteBegin
 
 # lteConfig
@@ -220,7 +220,7 @@ ERROR: nw_stat : 0
 ```
 
 ### MQTT
-```
+```shellsession
 # cd /mnt/sd0
 # mqttBegin chain.pem cert.pem privkey.pem
 # mqttConnect mqtt.yours.com 8883
@@ -233,7 +233,7 @@ ERROR: nw_stat : 0
 ```
 
 ### RTC
-```
+```shellsession
 # date
 {
   "value": "1970-01-01T00:37:49"
@@ -241,7 +241,7 @@ ERROR: nw_stat : 0
 ```
 
 ### Watchdog
-```
+```shellsession
 # watchdogBegin 40000
 # watchdogTimeleft
 {
@@ -256,7 +256,7 @@ ERROR: nw_stat : 0
 ```
 
 ### Redirect, pipe, and variable
-```
+```shellsession
 # echo so-net.jp nuro nuro > nuro
 {
   "value": "so-net.jp nuro nuro"
@@ -278,7 +278,7 @@ ERROR: nw_stat : 0
 ```
 
 ### Command separator, enclosed string and eval
-```
+```shellsession
 # echo 'This sentense contains | pattern.' ; echo =>
 {
   "value": "=>"
@@ -295,7 +295,7 @@ ERROR: nw_stat : 0
 ```
 
 ### Loop
-```
+```shellsession
 # do 0 2 1
 # echo hello {$i}
 # done
