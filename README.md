@@ -318,20 +318,12 @@ echo hello 2
 # if 0
 # echo hello 0
 # fi
-# echo hello 1
-{
-  "value": "hello 1"
-}
 # if 1
 # echo hello 0
 # fi
 echo hello 0
 {
   "value": "hello 0"
-}
-# echo hello 1
-{
-  "value": "hello 1"
 }
 #
 # if false
