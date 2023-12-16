@@ -447,7 +447,7 @@ echo hello 0
   - All boards
     - [add] if, fi
 
-- 2020/11/19
+- 2023/11/19
   - Spresense Ast, Type 'help Ast' to show usage.
     - AUDIO     [add] audioBegin, audioEnd, audioSetBeep
 
@@ -455,7 +455,7 @@ echo hello 0
   - ESP8266, ESP32, Spresense Ast
     - HTTP      [add] httpGetRaw
 
-- 2020/12/03
+- 2023/12/03
   - Spresense Ast, Type 'help Ast' to show usage.
     - AUDIO     [add] audioInitPlayer, audioPlay, audioSetPlayerMode, audioSetVolume
     - AUDIO     [add] audioInitRecorder, audioRecord, audioSetRecorderMode
