@@ -5,104 +5,10 @@ Dependent libraries
 - Adafruit_NeoPixel
 - ArduinoMqttClient
 - ESP32Servo
+- Espalexa
 - IRremoteESP8266
 
-Supported boards are Arduino Uno, Spresense Ast, ESP32, M5Stack, M5Core2 and ESP8266. Below functions were implemented.
-
-- 2020/01/09
-  - All boards
-    - Baudrate is 115200.
-    - Command line result is json format for future release.
-    - Command line help (Type 'help *' to see all functions or Type 'help className' like 'help Uno').
-    - Command line history (Max 10 count), Press up or down key to view.
-
-- 2020/01/16
-  - Spresense Ast, Type 'help Ast' to show usage.
-    - File      [add] cat, cd, ll, format, mkdir, pwd, rm, rmdir, touch
-    - GNSS      [add] gnssBegin, gnssEnd, gnssConfig, gnssSattellites
-    - Low Power [add] clockMode, coldSleep, deepSleep, dmesg, reboot, sleep
-    - LTE       [add] lteBegin, lteConfig, lteEnd
-
-- 2020/02/02
-  - Spresense Ast, Type 'help Ast' to show usage.
-    - Camera    [add] cameraBegin, cameraEnd, cameraAutoWhiteBalanceMode, cameraColorEffect, cameraPictureFormat, cameraTakePicture
-    - File      [add] beginUsbMsc, endUsbMsc
-
-- 2020/09/08
-  - All boards
-    - [add] eval, do, done
-    - [add] command separator (;), enclosed string ("), use all result in pipe (||)
-
-  - Spresense Ast, Type 'help Ast' to show usage.
-    - LTE       [add] lteHttpGet
-
-- 2020/09/21
-  - All boards
-    - [add] {$key} variable for 1 line notation
-  - Spresense Ast, Type 'help Ast' to show usage.
-    - MQTT      [add] mqttBegin, mqttConnect, mqttPoll, mqttPublish, mqttSubscribe
-    - RTC       [add] date
-    - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
-
-- 2020/12/28
-  - ESP32, Type 'help Esp32' to show usage.
-    - File      [add] >, >>, cat, cd, format, ll, mkdir, pwd, rm, rmdir, touch
-    - LowPower  [add] deepSleep, dmesg, reboot
-    - HTTP      [add] httpBegin, httpGet, httpPost
-    - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
-    - WiFi      [add] ifconfig, iwlist, wifiBegin, wifiEnd
-
-- 2020/12/29
-  - ESP32, Type 'help Esp32' to show usage.
-    - RTC       [add] date
-    - WiFi      [add] wifiRtc
-
-- 2020/12/30
-  - M5Stack, Type 'help M5Stack' to show usage.
-    - LCD       [add] clear, print, printcr, println, setBrightness, setFontSize
-
-- 2021/01/11
-  - ESP8266, Type 'help Esp8266' to show usage.
-    - File      [add] >, >>, cat, cd, format, ll, mkdir, pwd, rm, rmdir, touch
-    - LowPower  [add] deepSleep, dmesg, reboot
-    - HTTP      [add] httpBegin, httpGet, httpPost
-    - RTC       [add] date
-    - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
-    - WiFi      [add] ifconfig, iwlist, wifiBegin, wifiEnd, wifiRtc
-
-- 2021/01/17
-  - All boards
-    - [add] sh
-
-- 2021/10/24
-  - ESP8266, Type 'help Esp8266' to show usage.
-    - Servo     [add] servoAttach, servoBegin, servoEnd, servoWriteMicroseconds
-
-- 2021/11/03
-  - ESP8266, Type 'help Esp8266' to show usage.
-    - IR        [add] irReceiveBegin, irReceiveRaw, irSendBegin, irSendRaw
-  - All boards
-    - [add] equal, substring
-
-- 2022/06/24
-  - M5Core2, Type 'help M5Core2' to show usage.
-    - LCD       [add] clear, print, printcr, println, setBrightness, setFontSize, sleep, wakeup
-
-- 2022/06/25
-  - M5Core2 (only M5GO_BOTTOM2), Type 'help M5Core2' to show usage.
-    - LED       [add] fastLedAttach, fastLedBegin, fastLedClear, fastLedEnd, fastLedSetBrightness, fastLedShow
-
-- 2022/06/26
-  - M5Core2, Type 'help M5Core2' to show usage.
-    - Serial    [add] serial
-
-- 2023/10/22
-  - All boards
-    - [add] get, set
-
-- 2023/10/23
-  - Ast, Type 'help Ast' to show usage.
-    - LowPower  [add] current, voltage
+Supported boards are Arduino Uno, Spresense Ast, ESP32, M5Stack, M5Core2 and ESP8266. Refer to the changelog for implemented features.
 
 ## Operation example on Spresense Ast
 
@@ -394,3 +300,129 @@ echo hello 2
   "value": "hello 2"
 }
 ```
+
+## Change log
+
+- 2020/01/09
+  - All boards
+    - Baudrate is 115200.
+    - Command line result is json format for future release.
+    - Command line help (Type 'help *' to see all functions or Type 'help className' like 'help Uno').
+    - Command line history (Max 10 count), Press up or down key to view.
+
+- 2020/01/16
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - File      [add] cat, cd, ll, format, mkdir, pwd, rm, rmdir, touch
+    - GNSS      [add] gnssBegin, gnssEnd, gnssConfig, gnssSattellites
+    - Low Power [add] clockMode, coldSleep, deepSleep, dmesg, reboot, sleep
+    - LTE       [add] lteBegin, lteConfig, lteEnd
+
+- 2020/02/02
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - Camera    [add] cameraBegin, cameraEnd, cameraAutoWhiteBalanceMode, cameraColorEffect, cameraPictureFormat, cameraTakePicture
+    - File      [add] beginUsbMsc, endUsbMsc
+
+- 2020/09/08
+  - All boards
+    - [add] eval, do, done
+    - [add] command separator (;), enclosed string ("), use all result in pipe (||)
+
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - LTE       [add] lteHttpGet
+
+- 2020/09/21
+  - All boards
+    - [add] {$key} variable for 1 line notation
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - MQTT      [add] mqttBegin, mqttConnect, mqttPoll, mqttPublish, mqttSubscribe
+    - RTC       [add] date
+    - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
+
+- 2020/12/28
+  - ESP32, Type 'help Esp32' to show usage.
+    - File      [add] >, >>, cat, cd, format, ll, mkdir, pwd, rm, rmdir, touch
+    - LowPower  [add] deepSleep, dmesg, reboot
+    - HTTP      [add] httpBegin, httpGet, httpPost
+    - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
+    - WiFi      [add] ifconfig, iwlist, wifiBegin, wifiEnd
+
+- 2020/12/29
+  - ESP32, Type 'help Esp32' to show usage.
+    - RTC       [add] date
+    - WiFi      [add] wifiRtc
+
+- 2020/12/30
+  - M5Stack, Type 'help M5Stack' to show usage.
+    - LCD       [add] clear, print, printcr, println, setBrightness, setFontSize
+
+- 2021/01/11
+  - ESP8266, Type 'help Esp8266' to show usage.
+    - File      [add] >, >>, cat, cd, format, ll, mkdir, pwd, rm, rmdir, touch
+    - LowPower  [add] deepSleep, dmesg, reboot
+    - HTTP      [add] httpBegin, httpGet, httpPost
+    - RTC       [add] date
+    - Watchdog  [add] watchdogBegin, watchdogEnd, watchdogKick, watchdogTimeleft
+    - WiFi      [add] ifconfig, iwlist, wifiBegin, wifiEnd, wifiRtc
+
+- 2021/01/17
+  - All boards
+    - [add] sh
+
+- 2021/10/24
+  - ESP8266, Type 'help Esp8266' to show usage.
+    - Servo     [add] servoAttach, servoBegin, servoEnd, servoWriteMicroseconds
+
+- 2021/11/03
+  - ESP8266, Type 'help Esp8266' to show usage.
+    - IR        [add] irReceiveBegin, irReceiveRaw, irSendBegin, irSendRaw
+  - All boards
+    - [add] equal, substring
+
+- 2022/06/24
+  - M5Core2, Type 'help M5Core2' to show usage.
+    - LCD       [add] clear, print, printcr, println, setBrightness, setFontSize, sleep, wakeup
+
+- 2022/06/25
+  - M5Core2 (only M5GO_BOTTOM2), Type 'help M5Core2' to show usage.
+    - LED       [add] fastLedAttach, fastLedBegin, fastLedClear, fastLedEnd, fastLedSetBrightness, fastLedShow
+
+- 2022/06/26
+  - M5Core2, Type 'help M5Core2' to show usage.
+    - Serial    [add] serial
+
+- 2023/10/22
+  - All boards
+    - [add] get, set
+
+- 2023/10/23
+  - Ast, Type 'help Ast' to show usage.
+    - LowPower  [add] current, voltage
+
+- 2023/10/29
+  - All boards
+    - [add] break, plus, minus, null
+
+- 2023/10/31
+  - All boards
+    - [add] diffTime, equal, over, under
+
+- 2023/11/08
+  - All boards
+    - [add] if, fi
+
+- 2020/11/19
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - AUDIO     [add] audioBegin, audioEnd, audioSetBeep
+
+- 2023/12/03
+  - ESP8266, ESP32, Spresense Ast
+    - HTTP      [add] httpGetRaw
+
+- 2020/12/03
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - AUDIO     [add] audioInitPlayer, audioPlay, audioSetPlayerMode, audioSetVolume
+    - AUDIO     [add] audioInitRecorder, audioRecord, audioSetRecorderMode
+
+- 2023/12/16
+  - All boards
+    - [add] parse
