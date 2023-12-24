@@ -124,6 +124,9 @@ namespace AoiSpresense
         static String watchdogEnd( StringList *args );
         static String watchdogKick( StringList *args );
         static String watchdogTimeleft( StringList *args );
+        /* WiFi */
+        static String wifiBegin( StringList *args );
+        static String wifiEnd( StringList *args );
         // $ Please set your function to use.
     // static members
     protected:

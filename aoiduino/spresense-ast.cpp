@@ -38,6 +38,9 @@ LTEModemVerification LteModem;
 /* MQTT */
 MqttClient mqttClient( LteClient );
 MqttClient mqttTlsClient( LteTlsClient );
+/* WiFi */
+#include "spresense-wifi.h"
+AoiSpresense::WiFiClient *wifiClient = 0;
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -154,6 +157,9 @@ namespace AoiSpresense
             { "watchdogKick", &Ast::watchdogKick },
             { "watchdogEnd", &Ast::watchdogEnd },
             { "watchdogTimeleft", &Ast::watchdogTimeleft },
+            /* WiFi */
+            { "wifiBegin", &Ast::wifiBegin },
+            { "wifiEnd", &Ast::wifiEnd },
         // $ Please set your function to use.
             { "", 0 }
         };
@@ -1835,7 +1841,10 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 0:
-                http = &LteClient;
+                if( wifiClient )
+                    http = wifiClient;
+                else
+                    http = &LteClient;
                 break;
 /*
  * Feature removed due to underlying issue.
@@ -2315,6 +2324,62 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "watchdogTimeleft" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::wifiBegin( StringList *args )
+     *
+     * Connect to wireless network.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Wireless ip address, Otherwise error string.
+     */
+    String Ast::wifiBegin( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 2:
+            // Start
+                if( wifiClient )
+                    delete wifiClient;
+                wifiClient = new AoiSpresense::WiFiClient();
+            // Result
+                if( !wifiClient->begin(_a(0),_a(1)) )
+                    s = STR_CANT_CONNECT_TO_WIRELESS_NETWORK;
+                break;
+            default:
+                s = usage( "wifiBegin ssid password" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::wifiEnd( StringList *args )
+     *
+     * Detach from wireless network.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::wifiEnd( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                if( wifiClient )
+                    delete wifiClient;
+                wifiClient = 0;            
+                break;
+            default:
+                s = usage( "wifiEnd" );
                 break;
         }
 
