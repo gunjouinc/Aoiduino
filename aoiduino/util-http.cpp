@@ -64,7 +64,7 @@ namespace AoiUtil
                 http->println( "GET "+_a(1)+" HTTP/1.0" );
                 http->println( "Host: " + host );
                 http->println( "User-Agent: " + String(STR_USER_AGENT) );
-                http->println( "Connection: close" );
+                http->println( "Connection: " + String("close") );
                 http->println();
             // Response
                 s = response( timeout );
