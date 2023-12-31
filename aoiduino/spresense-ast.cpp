@@ -159,6 +159,7 @@ namespace AoiSpresense
             { "watchdogTimeleft", &Ast::watchdogTimeleft },
             /* WiFi */
             { "wifiBegin", &Ast::wifiBegin },
+            { "wifiConfig", &Ast::wifiConfig },
             { "wifiEnd", &Ast::wifiEnd },
         // $ Please set your function to use.
             { "", 0 }
@@ -2351,9 +2352,48 @@ namespace AoiSpresense
             // Result
                 if( !wifiClient->begin(_a(0),_a(1)) )
                     s = STR_CANT_CONNECT_TO_WIRELESS_NETWORK;
+                else
+                {
+                    StringList sl;
+                    s = wifiConfig( &sl );
+                }
                 break;
             default:
                 s = usage( "wifiBegin ssid password" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::wifiConfig( StringList *args )
+     *
+     * Return WiFi network information.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Network information.
+     */
+    String Ast::wifiConfig( StringList *args )
+    {
+        String s;
+        NetworkStatus ns;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        switch( count(args) )
+        {
+            case 0:
+                ns = wifiClient->networkStatus();
+                r[ "ipAddress" ] = ns.localIP;
+                r[ "subnetMask" ] = ns.subnetMask;
+                r[ "gatewayIp" ] = ns.gatewayIP;
+                r[ "macAddress" ] = ns.macAddress;
+                r[ "dnsIP1" ] = ns.dnsIP1;
+                r[ "dnsIP2" ] = ns.dnsIP2;
+                r.prettyPrintTo( s );
+                break;
+            default:
+                s = usage( "wifiConfig" );
                 break;
         }
 

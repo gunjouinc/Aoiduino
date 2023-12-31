@@ -8,6 +8,7 @@
 **
 ******************************************************************************/
 #ifdef ARDUINO_spresense_ast
+//^ LTEClient.cpp
 #include <errno.h>
 
 #include <sys/socket.h>
@@ -23,12 +24,15 @@
 #endif
 
 #include <IPAddress.h>
-
+//$ LTEClient.cpp
 #include "spresense-wifi.h"
 
-/* WiFi */
-#include <TelitWiFi.h>
-TelitWiFi wifi;
+/* GS2200 */
+#include <GS2200AtCmd.h>
+#include <GS2200Hal.h>
+#define CMD_TIMEOUT 10000
+extern uint8_t ESCBuffer[];
+extern uint32_t ESCBufferCnt;
 
 /**
 * @namespace AoiSpresense
@@ -67,20 +71,62 @@ namespace AoiSpresense
      */
 	bool WiFiClient::begin( const String &ssid, const String &passphrase )
 	{
-		bool b = true;
-        TWIFI_Params params;
+		bool b = false;
 
 		AtCmd_Init();
 		Init_GS2200_SPI_type( iS110B_TypeC );
-		params.mode = ATCMD_MODE_STATION;
-		params.psave = ATCMD_PSAVE_DEFAULT;
 
-		if( wifi.begin(params) )
-			b = false;
-		else if( wifi.activate_station(ssid,passphrase) )
-			b = false;
-		
-		return b;
+    	uint32_t start = millis();
+
+        // Status
+        while( Get_GPIO37Status() )
+            AtCmd_RecvResponse();
+
+        // Mode
+        while( msDelta(start)<=CMD_TIMEOUT )
+        {
+		    if( ATCMD_RESP_OK!=AtCmd_AT() ) continue;
+
+    		// Disable echo
+            ATCMD_REGDOMAIN_E domain;
+		    if( ATCMD_RESP_OK!=AtCmd_ATE(0) ) continue;
+		    if( ATCMD_RESP_OK!=AtCmd_WREGDOMAIN_Q(&domain) ) continue;
+            if( ATCMD_REGDOMAIN_TELEC!=domain )
+            {
+    		    if( ATCMD_RESP_OK!=AtCmd_WREGDOMAIN(ATCMD_REGDOMAIN_TELEC) )
+                    continue;
+            }
+
+    		// Enable Power save mode
+		    if( ATCMD_RESP_OK!=AtCmd_WRXACTIVE(ATCMD_PSAVE_DEFAULT) ) continue;
+		    if( ATCMD_RESP_OK!=AtCmd_WRXPS(1) ) continue;
+
+    		// Set Wireless mode
+		    if( ATCMD_RESP_OK!=AtCmd_WM(ATCMD_MODE_STATION) ) continue;
+		    if( ATCMD_RESP_OK!=AtCmd_NDHCP(1) ) continue;
+
+    		// Bulk data mode
+		    if( ATCMD_RESP_OK!=AtCmd_BDATA(1) ) continue;
+
+            b = true;
+            break;
+        }
+        if( !b )
+            return b;
+
+        // Activate station
+        start = millis();
+        while( msDelta(start)<=(CMD_TIMEOUT*2) )
+        {
+		    if( ATCMD_RESP_OK!=AtCmd_WD() ) continue;
+		    if( ATCMD_RESP_OK!=AtCmd_WPAPSK(ssid.c_str(),passphrase.c_str()) ) continue;
+		    if( ATCMD_RESP_OK!=AtCmd_WA(ssid.c_str(),"",0) ) continue;
+
+            b = true;
+            break;
+        }
+
+        return b;
 	}
     /**
      * @fn int WiFiClient::connect( IPAddress ip, uint16_t port )
@@ -109,12 +155,15 @@ namespace AoiSpresense
      */
 	int WiFiClient::connect( const char *host, uint16_t port )
 	{
-		WiFi_InitESCBuffer();
 		int i = 1;
 
-		m_cid = wifi.connect( host, String(port) );
-		if( m_cid==ATCMD_INVALID_CID )
-			i = 0;
+		WiFi_InitESCBuffer();
+
+        m_cid = ATCMD_INVALID_CID;
+        if( ATCMD_RESP_OK!=AtCmd_NCTCP(host,String(port).c_str(),&m_cid) )
+            i = 0;
+        else if( m_cid==ATCMD_INVALID_CID )
+            i = 0;
 
 		return i;
 	}
@@ -131,7 +180,7 @@ namespace AoiSpresense
 		WiFi_InitESCBuffer();
 		size_t i = 0;
 
-		if( wifi.write(m_cid,val,1) )
+		if( ATCMD_RESP_OK==AtCmd_SendBulkData(m_cid,val,1) )
 			i = 1;
 		m_available = 1;
 
@@ -151,12 +200,9 @@ namespace AoiSpresense
 		WiFi_InitESCBuffer();
 		size_t i = 0;
 
-		for( int j=0; j<size; j++ )
-		{
-			if( !wifi.write(m_cid,buf+j,1) )
-				break;
-			i++;
-		}
+        if( ATCMD_RESP_OK==AtCmd_SendBulkData(m_cid,buf,size) )
+            i = size;
+
 		m_available = 1;
 
 		return i;
@@ -166,7 +212,7 @@ namespace AoiSpresense
      *
      * Returns the number of bytes available for reading.
      *
-     * @return Return 1 if succeeded, Otherwise return 0.
+     * @return Return bytes available if succeeded, Otherwise return 0.
      */
 	int WiFiClient::available( void )
 	{
@@ -182,10 +228,16 @@ namespace AoiSpresense
 	int WiFiClient::read( void )
 	{
 		WiFi_InitESCBuffer();
-		uint8_t i = 0;
+		uint8_t i = -1;
 
-		wifi.read( m_cid, &i, 1 );
-		m_available = 0;
+        ATCMD_RESP_E r = AtCmd_RecvResponse();
+
+        if( (ATCMD_RESP_BULK_DATA_RX==r) && Check_CID(m_cid) )
+			memcpy( i, (ESCBuffer+1), 1 );
+
+        m_available = ESCBufferCnt - 1;
+        if( m_available<=0 )
+    		m_available = 0;
 
 		return i;
 	}
@@ -202,9 +254,19 @@ namespace AoiSpresense
 	int WiFiClient::read( uint8_t *buf, size_t size )
 	{
 		WiFi_InitESCBuffer();
-		int i = wifi.read( m_cid, buf, size );
+		int i = -1;
+        
+        ATCMD_RESP_E r = AtCmd_RecvResponse();
 
-		m_available = 0;
+        if( (ATCMD_RESP_BULK_DATA_RX==r) && Check_CID(m_cid) )
+        {
+			memcpy( buf, (ESCBuffer+1), size );
+            i = size;
+        }
+
+        m_available = ESCBufferCnt - size;
+        if( m_available<=0 )
+    		m_available = 0;
 
 		return i;
 	}
@@ -236,7 +298,23 @@ namespace AoiSpresense
      */
 	void WiFiClient::stop( void )
 	{
-        wifi.stop( m_cid );
+        while( !Get_GPIO37Status() );
+
+        while( Get_GPIO37Status() )
+        {
+            switch( AtCmd_RecvResponse() )
+            {
+                case ATCMD_RESP_BULK_DATA_RX:
+                    WiFi_InitESCBuffer();
+                    break;
+                case ATCMD_RESP_DISCONNECT:
+                    AtCmd_NCLOSE( m_cid );
+                    AtCmd_NCLOSEALL();
+                    WiFi_InitESCBuffer();
+                    break;
+            }
+            delay( 10 );
+        }
 
 		m_available = 0;
 		m_cid = ATCMD_INVALID_CID;
@@ -269,5 +347,53 @@ namespace AoiSpresense
 		// impossible to implement
 		return 0;
 	}
+    /**
+     * @fn NetworkStatus WiFiClient::networkStatus( void )
+     *
+     * Return network status.
+     *
+     * @return Return network status.
+     */
+	NetworkStatus WiFiClient::networkStatus( void )
+	{
+    	ATCMD_NetworkStatus networkStatus;
+        NetworkStatus ns;
+
+        if( ATCMD_RESP_OK!=AtCmd_NSTAT(&networkStatus) )
+            return ns;
+
+        // NetworkStatus 
+        ns.macAddress = networkStatus.mac;
+        ns.localIP = ipv4ToString( networkStatus.addr.ipv4 );
+        ns.subnetMask = ipv4ToString( networkStatus.subnet.ipv4 );
+        ns.gatewayIP = ipv4ToString( networkStatus.gateway.ipv4 );
+        ns.dnsIP1 = ipv4ToString( networkStatus.dns1.ipv4 );
+        ns.dnsIP2 = ipv4ToString( networkStatus.dns2.ipv4 );
+
+		return ns;
+	}
+    /**
+     * @fn String WiFiClient::ipv4ToString( uint8_t *ipv4 )
+     *
+     * Return ipv4 to String format like 192.168.0.1.
+     *
+     * @return Return ipv4 String format.
+     */
+    String WiFiClient::ipv4ToString( uint8_t *ipv4 )
+    {
+        String s;
+        String t = "%d.%d.%d.%d";
+
+        int l = 16;
+    	char *c = new char[ l ];
+
+        memset( c, 0, l );
+        sprintf( c, t.c_str(), *(ipv4+0), *(ipv4+1), *(ipv4+2), *(ipv4+3) );
+        s = c;
+
+        delete [] c;
+
+        return s;
+    }
 }
 #endif

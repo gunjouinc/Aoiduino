@@ -19,6 +19,25 @@ class IPAddress;
  */
 namespace AoiSpresense
 {
+    /**
+     * @struct NetworkStatus.
+     */
+	struct NetworkStatus
+	{
+        /** Holds MAC address. */
+		String macAddress;
+        /** Holds local address. */
+		String localIP;
+        /** Holds Subnet mask. */
+		String subnetMask;
+        /** Holds Gateway IP. */
+		String gatewayIP;
+        /** Holds GDNS IP 1. */
+		String dnsIP1;
+        /** Holds GDNS IP 2. */
+		String dnsIP2;
+	};
+
 	class WiFiClient :
 		public Client
 	{
@@ -49,7 +68,14 @@ namespace AoiSpresense
 		 */
 		operator bool( void ){ return connected(); };
 		int setTimeout( uint32_t milliseconds );
+	// members
+	public:
+		NetworkStatus networkStatus( void );
+	// members
+	protected:
+		String ipv4ToString( uint8_t *ipv4 );
 	// variables
+	private:
         /** Holds available. */
 		int m_available;
         /** Holds connection id. */
