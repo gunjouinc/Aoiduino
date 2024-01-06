@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright 2009-2023 Gunjou Inc. All rights reserved.
+** Copyright 2009-2024 Gunjou Inc. All rights reserved.
 ** Contact: Gunjou Inc. (information@gunjou.co.jp)
 **
 ** This software is released under the MIT License.
