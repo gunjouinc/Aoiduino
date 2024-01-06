@@ -41,35 +41,56 @@ extern uint32_t ESCBufferCnt;
 namespace AoiSpresense
 {
     /**
-     * @fn WiFiClient::WiFiClient( void )
+     * @fn WiFiProvider::WiFi( void )
      *
      * Constructor. Member variables are initialized.
      */
-	WiFiClient::WiFiClient( void )
+	WiFi::WiFi( void )
 	{
-		m_available = 0;
-		m_cid = ATCMD_INVALID_CID;
 	}
     /**
-     * @fn Ast::~Ast( void )
+     * @fn WiFiProvider::~WiFi( void )
      *
      * Destructor. Member variables are deleted.
      */
-	WiFiClient::~WiFiClient( void )
+	WiFi::~WiFi( void )
 	{
-		if( connected() )
-			stop();
 	}
     /**
-     * @fn bool WiFiClient::begin( const String &ssid, const String &passphrase )
+     * @fn bool WiFi::attach( const String &ssid, const String &passphrase )
      *
-     * Initalize GS220 and activate station mode.
+     * Activate station mode.
      *
      * @param[in] ssid SSID to activate.
      * @param[in] passphrase Passphrase to SSID.
      * @return Return true if succeeded, Otherwise return false.
      */
-	bool WiFiClient::begin( const String &ssid, const String &passphrase )
+	bool WiFi::attach( const String &ssid, const String &passphrase )
+	{
+		bool b = false;
+    	uint32_t start = millis();
+
+        // Activate station
+        while( msDelta(start)<=(CMD_TIMEOUT*2) )
+        {
+		    if( ATCMD_RESP_OK!=AtCmd_WD() ) continue;
+		    if( ATCMD_RESP_OK!=AtCmd_WPAPSK(ssid.c_str(),passphrase.c_str()) ) continue;
+		    if( ATCMD_RESP_OK!=AtCmd_WA(ssid.c_str(),"",0) ) continue;
+
+            b = true;
+            break;
+        }
+
+        return b;
+	}
+    /**
+     * @fn bool WiFi::begin( const String &ssid, const String &passphrase )
+     *
+     * Initalize GS220.
+     *
+     * @return Return true if succeeded, Otherwise return false.
+     */
+	bool WiFi::begin( void )
 	{
 		bool b = false;
 
@@ -111,22 +132,92 @@ namespace AoiSpresense
             b = true;
             break;
         }
-        if( !b )
-            return b;
-
-        // Activate station
-        start = millis();
-        while( msDelta(start)<=(CMD_TIMEOUT*2) )
-        {
-		    if( ATCMD_RESP_OK!=AtCmd_WD() ) continue;
-		    if( ATCMD_RESP_OK!=AtCmd_WPAPSK(ssid.c_str(),passphrase.c_str()) ) continue;
-		    if( ATCMD_RESP_OK!=AtCmd_WA(ssid.c_str(),"",0) ) continue;
-
-            b = true;
-            break;
-        }
 
         return b;
+	}
+    /**
+     * @fn void WiFi::end( void )
+     *
+     * Finalize GS220.
+     */
+	void WiFi::end( void )
+    {
+        AtCmd_RESET();
+	}
+    /**
+     * @fn NetworkStatus WiFi::networkStatus( void )
+     *
+     * Return network status.
+     *
+     * @return Return network status.
+     */
+	NetworkStatus WiFi::networkStatus( void )
+	{
+    	ATCMD_NetworkStatus networkStatus;
+        NetworkStatus ns;
+
+        if( ATCMD_RESP_OK!=AtCmd_NSTAT(&networkStatus) )
+            return ns;
+
+        // NetworkStatus 
+        ns.macAddress = networkStatus.mac;
+        ns.localIP = ipv4ToString( networkStatus.addr.ipv4 );
+        ns.subnetMask = ipv4ToString( networkStatus.subnet.ipv4 );
+        ns.gatewayIP = ipv4ToString( networkStatus.gateway.ipv4 );
+        ns.dnsIP1 = ipv4ToString( networkStatus.dns1.ipv4 );
+        ns.dnsIP2 = ipv4ToString( networkStatus.dns2.ipv4 );
+
+		return ns;
+	}
+    /**
+     * @fn String WiFi::ipv4ToString( uint8_t *ipv4 )
+     *
+     * Return ipv4 to String format like 192.168.0.1.
+     *
+     * @return Return ipv4 String format.
+     */
+    String WiFi::ipv4ToString( uint8_t *ipv4 )
+    {
+        String s;
+        String t = "%d.%d.%d.%d";
+
+        int l = 16;
+    	char *c = new char[ l ];
+
+        memset( c, 0, l );
+        sprintf( c, t.c_str(), *(ipv4+0), *(ipv4+1), *(ipv4+2), *(ipv4+3) );
+        s = c;
+
+        delete [] c;
+
+        return s;
+    }
+}
+/**
+* @namespace AoiSpresense
+* @brief Aoi Spresense classes.
+ */
+namespace AoiSpresense
+{
+    /**
+     * @fn WiFiClient::WiFiClient( void )
+     *
+     * Constructor. Member variables are initialized.
+     */
+	WiFiClient::WiFiClient( void )
+	{
+		m_available = 0;
+		m_cid = ATCMD_INVALID_CID;
+	}
+    /**
+     * @fn WiFiClient::~WiFiClient( void )
+     *
+     * Destructor. Member variables are deleted.
+     */
+	WiFiClient::~WiFiClient( void )
+	{
+		if( connected() )
+			stop();
 	}
     /**
      * @fn int WiFiClient::connect( IPAddress ip, uint16_t port )
@@ -347,53 +438,5 @@ namespace AoiSpresense
 		// impossible to implement
 		return 0;
 	}
-    /**
-     * @fn NetworkStatus WiFiClient::networkStatus( void )
-     *
-     * Return network status.
-     *
-     * @return Return network status.
-     */
-	NetworkStatus WiFiClient::networkStatus( void )
-	{
-    	ATCMD_NetworkStatus networkStatus;
-        NetworkStatus ns;
-
-        if( ATCMD_RESP_OK!=AtCmd_NSTAT(&networkStatus) )
-            return ns;
-
-        // NetworkStatus 
-        ns.macAddress = networkStatus.mac;
-        ns.localIP = ipv4ToString( networkStatus.addr.ipv4 );
-        ns.subnetMask = ipv4ToString( networkStatus.subnet.ipv4 );
-        ns.gatewayIP = ipv4ToString( networkStatus.gateway.ipv4 );
-        ns.dnsIP1 = ipv4ToString( networkStatus.dns1.ipv4 );
-        ns.dnsIP2 = ipv4ToString( networkStatus.dns2.ipv4 );
-
-		return ns;
-	}
-    /**
-     * @fn String WiFiClient::ipv4ToString( uint8_t *ipv4 )
-     *
-     * Return ipv4 to String format like 192.168.0.1.
-     *
-     * @return Return ipv4 String format.
-     */
-    String WiFiClient::ipv4ToString( uint8_t *ipv4 )
-    {
-        String s;
-        String t = "%d.%d.%d.%d";
-
-        int l = 16;
-    	char *c = new char[ l ];
-
-        memset( c, 0, l );
-        sprintf( c, t.c_str(), *(ipv4+0), *(ipv4+1), *(ipv4+2), *(ipv4+3) );
-        s = c;
-
-        delete [] c;
-
-        return s;
-    }
 }
 #endif

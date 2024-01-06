@@ -40,7 +40,8 @@ MqttClient mqttClient( LteClient );
 MqttClient mqttTlsClient( LteTlsClient );
 /* WiFi */
 #include "spresense-wifi.h"
-AoiSpresense::WiFiClient *wifiClient = 0;
+AoiSpresense::WiFi Wifi;
+AoiSpresense::WiFiClient *WifiClient = 0;
 
 /** eMMC root path */
 #define _EMMC_ "/mnt/emmc"
@@ -1842,8 +1843,8 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 0:
-                if( wifiClient )
-                    http = wifiClient;
+                if( WifiClient )
+                    http = WifiClient;
                 else
                     http = &LteClient;
                 break;
@@ -2043,7 +2044,7 @@ namespace AoiSpresense
                 else
                 {
                     if( Lte.attach(_a(0).c_str(),_a(1).c_str(),_a(2).c_str())!=LTE_READY )
-                        s = lteBegin( 0 );
+                        s = STR_CANT_CONNECT_TO_WIRELESS_NETWORK;
                     else
                     {
                         StringList sl;
@@ -2342,22 +2343,27 @@ namespace AoiSpresense
     {
         String s;
 
+        if( WifiClient )
+            delete WifiClient;
+        WifiClient = 0;
+
         switch( count(args) )
         {
             case 2:
-            // Start
-                if( wifiClient )
-                    delete wifiClient;
-                wifiClient = new AoiSpresense::WiFiClient();
-            // Result
-                if( !wifiClient->begin(_a(0),_a(1)) )
-                    s = STR_CANT_CONNECT_TO_WIRELESS_NETWORK;
+                if( !Wifi.begin() )
+                    s = wifiBegin( 0 );
                 else
                 {
-                    StringList sl;
-                    s = wifiConfig( &sl );
+                    if( !Wifi.attach(_a(0),_a(1)) )
+                        s = STR_CANT_CONNECT_TO_WIRELESS_NETWORK;
+                    else
+                    {
+                        WifiClient = new AoiSpresense::WiFiClient();
+
+                        StringList sl;
+                        s = wifiConfig( &sl );
+                    }
                 }
-                break;
             default:
                 s = usage( "wifiBegin ssid password" );
                 break;
@@ -2383,7 +2389,7 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 0:
-                ns = wifiClient->networkStatus();
+                ns = Wifi.networkStatus();
                 r[ "ipAddress" ] = ns.localIP;
                 r[ "subnetMask" ] = ns.subnetMask;
                 r[ "gatewayIp" ] = ns.gatewayIP;
@@ -2414,9 +2420,10 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 0:
-                if( wifiClient )
-                    delete wifiClient;
-                wifiClient = 0;            
+                if( WifiClient )
+                    delete WifiClient;
+                WifiClient = 0;
+                Wifi.end();
                 break;
             default:
                 s = usage( "wifiEnd" );

@@ -37,7 +37,36 @@ namespace AoiSpresense
         /** Holds GDNS IP 2. */
 		String dnsIP2;
 	};
-
+    /**
+     * @class WiFi
+     * @brief The class to construct a path for communication WiFi network.
+     *
+     * The class to construct a path for communication WiFi network.
+     */
+	class WiFi
+	{
+	// members
+	public:
+		explicit WiFi();
+		virtual ~WiFi();
+	// members
+	public:
+		bool attach( const String &ssid, const String &passphrase );
+		bool begin( void );
+		void end( void );
+	// members
+	public:
+		NetworkStatus networkStatus( void );
+	// members
+	protected:
+		String ipv4ToString( uint8_t *ipv4 );
+	};
+    /**
+     * @class WiFiClient
+     * @brief Create a client that can connect to a specific Internet IP address and port.
+     *
+     * This class create a client that can connect to a specific Internet IP address and port.
+     */
 	class WiFiClient :
 		public Client
 	{
@@ -47,7 +76,6 @@ namespace AoiSpresense
 		virtual ~WiFiClient();
 	// members
 	public:
-		bool begin( const String &ssid, const String &passphrase );
 		int connect( IPAddress ip, uint16_t port );
 		int connect( const char *host, uint16_t port );
 		size_t write( uint8_t val );
@@ -68,12 +96,6 @@ namespace AoiSpresense
 		 */
 		operator bool( void ){ return connected(); };
 		int setTimeout( uint32_t milliseconds );
-	// members
-	public:
-		NetworkStatus networkStatus( void );
-	// members
-	protected:
-		String ipv4ToString( uint8_t *ipv4 );
 	// variables
 	private:
         /** Holds available. */
