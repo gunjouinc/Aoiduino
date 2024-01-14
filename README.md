@@ -463,3 +463,7 @@ echo hello 0
 - 2023/12/16
   - All boards
     - [add] parse
+
+- 2023/12/31
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - WiFi      [add] wifiBegin, wifiConfig, wifiEnd
