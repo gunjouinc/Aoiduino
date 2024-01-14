@@ -118,7 +118,7 @@ namespace AoiUtil
 
                 http->println( "Content-Type: "+type );
                 http->println( "Content-Length: "+String(t.length()) );
-                http->println( "Connection: close" );
+                http->println( "Connection: " + String("close") );
                 http->println();
                 http->println( t );
             // Response
