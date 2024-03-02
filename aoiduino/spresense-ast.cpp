@@ -2364,6 +2364,7 @@ namespace AoiSpresense
                         s = wifiConfig( &sl );
                     }
                 }
+                break;
             default:
                 s = usage( "wifiBegin ssid password" );
                 break;
