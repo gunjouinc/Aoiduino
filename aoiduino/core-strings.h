@@ -30,6 +30,8 @@
 #define STR_DATETIME_FORMAT "%04d-%02d-%02d %02d:%02d:%02d"
 /** Incorrect */
 #define STR_INCORRECT "incorrect"
+/** LF */
+#define STR_LF "\\n"
 /** Loaded */
 #define STR_LOADED "Loaded : "
 /** login */

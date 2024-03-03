@@ -1174,12 +1174,14 @@ namespace AoiBase
      */
     String Shell::practice( const String &args )
     {
+        String argl = args;
         String s, t, arg1, arg2;
 
-        if( doAdd(args) )
+        argl.replace( String(STR_LF), String(_lf) );
+        if( doAdd(argl) )
             return s;
 
-        StringList *sl = split( args, STR_SPACE );
+        StringList *sl = split( argl, STR_SPACE );
         StringList *sl2 = bracket( sl, STR_SHELL_BRACKET, STR_SHELL_BRACKET );
         delete [] sl;
         sl = sl2;
