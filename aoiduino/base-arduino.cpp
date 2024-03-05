@@ -16,6 +16,7 @@ namespace AoiBase
 {
 // Static variables.
     FunctionTable *Arduino::m_functionTable = 0;
+    bool Arduino::m_interrupt = false;
     /**
      * @fn Arduino::Arduino( void )
      *
@@ -263,6 +264,7 @@ namespace AoiBase
         switch( count(args) )
         {
             case 2:
+                m_interrupt = false;
                 i = _atoi( 0 );
                 t = _a( 1 );
                 if( t=="LOW" )
@@ -360,6 +362,7 @@ namespace AoiBase
         {
             case 1:
                 ::detachInterrupt( digitalPinToInterrupt(_atoi(0)) );
+                m_interrupt = false;
                 break;
             default:
                 s = usage( "detachInterrupt pin" );
@@ -647,11 +650,25 @@ namespace AoiBase
         return s;
     }
     /**
+     * @fn bool Arduino::isInterrupted( void )
+     *
+     * Returns whether an interrupt has occurred. 
+     * 
+     * Please call 'attachInterrupt' command for interrupts.
+     *
+     * @return Return true interrupt has occurred, Otherwise return false.
+     */
+    bool Arduino::isInterrupted( void )
+    {
+        return m_interrupt;
+    }
+    /**
      * @fn void Arduino::interrupt( void )
      *
      * This method does nothing, it is for interrupt handling.
      */
     void Arduino::interrupt( void )
     {
+        m_interrupt = true;
     }
 }

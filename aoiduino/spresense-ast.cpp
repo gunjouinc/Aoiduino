@@ -541,7 +541,29 @@ namespace AoiSpresense
 
         switch( count(args) )
         {
+            case 1:
+                // interrupt
+                if( AstStorage->exists(_a(0)) )
+                    AstStorage->remove( _a(0) );
+                f = AstStorage->open( _a(0), FILE_WRITE );
+                if( f )
+                {
+                    theAudio->startRecorder();
+                    while( !m_audioAttention && !Arduino::isInterrupted() )
+                    {
+                        r = theAudio->readFrames( f );
+                        if( r!=AUDIOLIB_ECODE_OK )
+                            break;
+                        // adjusted by the time to write the audio stream file
+                        usleep( 10000 );
+                    }
+                    theAudio->stopRecorder();
+                    theAudio->closeOutputFile( f );
+                    f.close();
+                }
+                break;
             case 2:
+                // timeout
                 if( AstStorage->exists(_a(0)) )
                     AstStorage->remove( _a(0) );
                 f = AstStorage->open( _a(0), FILE_WRITE );
@@ -562,7 +584,7 @@ namespace AoiSpresense
                 }
                 break;
             default:
-                s = usage( "audioRecord file duration" );
+                s = usage( "audioRecord file (duration)?" );
                 break;
         }
 

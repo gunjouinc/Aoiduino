@@ -64,11 +64,16 @@ namespace AoiBase
         static String create( StringList *args );
         // $ Please set your function to use.
     // static members
+    protected:
+        static bool isInterrupted( void );
+    // static members
     private:
         static void interrupt( void );
     // static variables
     private:
         /** Holds function table. */
         static FunctionTable *m_functionTable;
+        /** Holds interrupt state. */
+        static bool m_interrupt;
     };
 }
