@@ -450,22 +450,22 @@ namespace AoiSpresense
 
         switch( count(args) )
         {
-            case 4:
+            case 5:
                 if( !codecTypeFromString(_a(0),&codec) ||
-                    !channelFromString(_a(3),&channel) )
+                    !channelFromString(_a(4),&channel) )
                     s = audioInitRecorder( 0 );
                 else
                 {
                     memset( path, 0, i );
                     _a( 1 ).toCharArray( path, i );
 
-                    r = theAudio->initRecorder( codec, path, _atoi(2), channel );
+                    r = theAudio->initRecorder( codec, path, _atoi(2), _atoi(3), channel );
                     if( r!=AUDIOLIB_ECODE_OK )
                         s = audioInitRecorder( 0 );
                 }
                 break;
             default:
-                s = usage( "initRecorder (MP3|WAV) path sampling (MONO|STEREO)" );
+                s = usage( "initRecorder (MP3|WAV) path sampling bit (MONO|STEREO)" );
                 break;
         }
 
