@@ -97,6 +97,7 @@ namespace AoiSpresense
             { "audioRecord", &Ast::audioRecord },
             { "audioSetBeep", &Ast::audioSetBeep },
             { "audioSetPlayerMode", &Ast::audioSetPlayerMode },
+            { "audioSetReadyMode", &Ast::audioSetReadyMode },
             { "audioSetRecorderMode", &Ast::audioSetRecorderMode },
             { "audioSetVolume", &Ast::audioSetVolume },
             /* Camera */
@@ -673,6 +674,30 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "audioSetPlayerMode (SPHP|I2C) (LINEOUT|1DRIVER|2DRIVER|4DRIVER) (buffer0)? (buffer1)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::audioSetReadyMode( StringList *args )
+     *
+     * Set Audio Library Mode to Ready.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Empty string.
+     */
+    String Ast::audioSetReadyMode( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                theAudio->setReadyMode();
+                break;
+            default:
+                s = usage( "audioSetReadyMode" );
                 break;
         }
 

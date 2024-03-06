@@ -68,6 +68,7 @@ namespace AoiSpresense
         static String audioRecord( StringList *args );
         static String audioSetBeep( StringList *args );
         static String audioSetPlayerMode( StringList *args );
+        static String audioSetReadyMode( StringList *args );
         static String audioSetRecorderMode( StringList *args );
         static String audioSetVolume( StringList *args );
         /* Camera */
