@@ -409,23 +409,23 @@ namespace AoiSpresense
 
         switch( count(args) )
         {
-            case 5:
+            case 6:
                 if( !playerIdFromString(_a(0),&id) ||
                     !codecTypeFromString(_a(1),&codec) ||
-                    !channelFromString(_a(4),&channel) )
+                    !channelFromString(_a(5),&channel) )
                     s = audioInitPlayer( 0 );
                 else
                 {
                     memset( path, 0, i );
                     _a( 2 ).toCharArray( path, i );
 
-                    r = theAudio->initPlayer( id, codec, path, _atoi(3), channel );
+                    r = theAudio->initPlayer( id, codec, path, _atoi(3), _atoi(4), channel );
                     if( r!=AUDIOLIB_ECODE_OK )
                         s = audioInitPlayer( 0 );
                 }
                 break;
             default:
-                s = usage( "initPlayer (ID0|ID1) (MP3|WAV) path sampling (MONO|STEREO)" );
+                s = usage( "initPlayer (ID0|ID1) (MP3|WAV) path sampling bit (MONO|STEREO)" );
                 break;
         }
 
