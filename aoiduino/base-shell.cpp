@@ -12,7 +12,11 @@
 /** Communication history size. */
 #define HISTORY_SIZE 1+10+1
 /** Loop history size. */
-#define LOOP_SIZE 10+1
+#ifdef ARDUINO_AVR_UNO
+  #define LOOP_SIZE 10+1
+#else
+  #define LOOP_SIZE 50+1
+#endif
 /** Holds boot loader. */
 extern AoiBase::BootLoader loader;
 /** Holds shell. */
