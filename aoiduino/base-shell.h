@@ -49,6 +49,7 @@ namespace AoiBase
         static String diffTime( StringList *args );
         static String doBegin( StringList *args );
         static String doBreak( StringList *args );
+        static String doContinue( StringList *args );
         static String doEnd( StringList *args );
         static String echo( StringList *args );
         static String equal( StringList *args );

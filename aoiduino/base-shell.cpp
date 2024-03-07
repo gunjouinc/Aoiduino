@@ -44,6 +44,7 @@ namespace AoiBase
         // ^ Please set your function to use.
             { "break", &Shell::doBreak },
             { "class", &Shell::classes },
+            { "continue", &Shell::doContinue },
             { "diffTime", &Shell::diffTime },
             { "do", &Shell::doBegin },
             { "done", &Shell::doEnd },
@@ -401,7 +402,7 @@ namespace AoiBase
         return s;
     }
     /**
- * @fn String Shell::doBreak( StringList *args )
+     * @fn String Shell::doBreak( StringList *args )
      *
      * Break loop.
      *
@@ -415,10 +416,34 @@ namespace AoiBase
         switch( count(args) )
         {
             case 0:
-                s = prettyPrintTo( "value", "{break}" );
+                s = prettyPrintTo( "value", STR_SHELL_BREAK );
                 break;
             default:
                 s = usage( "break" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Shell::doContinue( StringList *args )
+     *
+     * Continue loop.
+     *
+     * @param[in] args Reference to arguments.
+     * @return {continue} string.
+     */
+    String Shell::doContinue( StringList *args )
+    {
+        String s;
+
+        switch( count(args) )
+        {
+            case 0:
+                s = prettyPrintTo( "value", STR_SHELL_CONTINUE );
+                break;
+            default:
+                s = usage( "continue" );
                 break;
         }
 
@@ -455,6 +480,8 @@ namespace AoiBase
                         shell << s + _n;
                         if( -1<s.indexOf(STR_SHELL_BREAK) )
                             break;
+                        else if( -1<s.indexOf(STR_SHELL_CONTINUE) )
+                            i = j - 1;
                     }
                 // Next index or first
                     ::yield;

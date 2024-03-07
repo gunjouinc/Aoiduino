@@ -68,6 +68,8 @@
 #define STR_SHELL_COMMENT "#"
 /** Shell break */
 #define STR_SHELL_BREAK "{break}"
+/** Shell continue */
+#define STR_SHELL_CONTINUE "{continue}"
 /** Shell create */
 #define STR_SHELL_CREATE ">"
 /** Shell pipe */
