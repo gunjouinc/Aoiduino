@@ -1225,8 +1225,15 @@ namespace AoiBase
             if( !isSpecialCharacter(t) )
             {
             // Reference previous result
-                JsonObject &v = json.parseObject( s );
-                for( JsonObject::iterator it=v.begin(); it!=v.end(); ++it )
+                JsonObject &pr = json.parseObject( s );
+                for( JsonObject::iterator it=pr.begin(); it!=pr.end(); ++it )
+                {
+                    String rep = String("{$") + it->key + "}";
+                    t.replace( rep, it->value.as<char*>() );
+                }
+            // Reference global variables
+                JsonObject &gv = json.parseObject( m_variables );
+                for( JsonObject::iterator it=gv.begin(); it!=gv.end(); ++it )
                 {
                     String rep = String("{$") + it->key + "}";
                     t.replace( rep, it->value.as<char*>() );
