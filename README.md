@@ -467,3 +467,11 @@ echo hello 0
 - 2023/12/31
   - Spresense Ast, Type 'help Ast' to show usage.
     - WiFi      [add] wifiBegin, wifiConfig, wifiEnd
+
+- 2024/03/06
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - AUDIO     [add] audioSetReadyMode
+
+- 2024/03/07
+  - All boards
+    - [add] continue
