@@ -2015,6 +2015,7 @@ namespace AoiSpresense
         int port = 80;
         int timeout = 30 * 1000;
         uint8_t *buf = 0;
+        int bufSize = _AOIUTIL_HTTP_BUFFER_SIZE_;
 
         switch( count(args) )
         {
@@ -2041,15 +2042,18 @@ namespace AoiSpresense
                 http->print( "Content-Type: multipart/form-data; " );
                 http->println( "boundary=\""+String(STR_BOUNDARY)+"\"" );
                 http->println( "Content-Length: "+String(size) );
-                http->println( "Connection: close" );
+                http->println( "Connection: " + String("close") );
                 http->println();
                 http->print( header );
+              // for SPI connection
+                if( WifiClient )
+                    bufSize /= 4;
               // Upload file
                 f = AstStorage->open( t, FILE_READ );
-                buf = new uint8_t[ _AOIUTIL_HTTP_BUFFER_SIZE_ ];
+                buf = new uint8_t[ bufSize ];
                 while( f.available() )
                 {
-                    size = f.read( buf, _AOIUTIL_HTTP_BUFFER_SIZE_ );
+                    size = f.read( buf, bufSize );
                     http->write( buf, size );
                 }
                 delete [] buf;

@@ -268,12 +268,10 @@ namespace AoiSpresense
      */
 	size_t WiFiClient::write( uint8_t val )
 	{
-		WiFi_InitESCBuffer();
 		size_t i = 0;
 
 		if( ATCMD_RESP_OK==AtCmd_SendBulkData(m_cid,val,1) )
 			i = 1;
-		m_available = 1;
 
 		return i;
 	}
@@ -288,13 +286,11 @@ namespace AoiSpresense
      */
 	size_t WiFiClient::write( const uint8_t *buf, size_t size )
 	{
-		WiFi_InitESCBuffer();
 		size_t i = 0;
 
         if( ATCMD_RESP_OK==AtCmd_SendBulkData(m_cid,buf,size) )
             i = size;
-
-		m_available = 1;
+        delay( 100 );
 
 		return i;
 	}
@@ -307,7 +303,23 @@ namespace AoiSpresense
      */
 	int WiFiClient::available( void )
 	{
-		return m_available;
+        int i = ::millis();
+        int t = 5000;
+
+        if( m_available )
+            m_available = Get_GPIO37Status();
+        else
+        {
+            while( !m_available )
+            {
+                m_available = Get_GPIO37Status();
+
+                if( t<::msDelta(i) )
+                    break;
+            }
+        }
+
+        return m_available;
 	}
     /**
      * @fn int WiFiClient::read( void )
@@ -318,17 +330,13 @@ namespace AoiSpresense
      */
 	int WiFiClient::read( void )
 	{
-		WiFi_InitESCBuffer();
+        WiFi_InitESCBuffer();
 		uint8_t i = -1;
 
         ATCMD_RESP_E r = AtCmd_RecvResponse();
 
         if( (ATCMD_RESP_BULK_DATA_RX==r) && Check_CID(m_cid) )
 			memcpy( i, (ESCBuffer+1), 1 );
-
-        m_available = ESCBufferCnt - 1;
-        if( m_available<=0 )
-    		m_available = 0;
 
 		return i;
 	}
@@ -344,20 +352,17 @@ namespace AoiSpresense
      */
 	int WiFiClient::read( uint8_t *buf, size_t size )
 	{
-		WiFi_InitESCBuffer();
+        WiFi_InitESCBuffer();
 		int i = -1;
         
         ATCMD_RESP_E r = AtCmd_RecvResponse();
 
         if( (ATCMD_RESP_BULK_DATA_RX==r) && Check_CID(m_cid) )
         {
-			memcpy( buf, (ESCBuffer+1), size );
-            i = size;
+			i = ESCBufferCnt - 1;
+            memset( buf, 0, size );
+			memcpy( buf, (ESCBuffer+1), i );
         }
-
-        m_available = ESCBufferCnt - size;
-        if( m_available<=0 )
-    		m_available = 0;
 
 		return i;
 	}
@@ -389,22 +394,16 @@ namespace AoiSpresense
      */
 	void WiFiClient::stop( void )
 	{
-        while( !Get_GPIO37Status() );
-
-        while( Get_GPIO37Status() )
+        switch( AtCmd_RecvResponse() )
         {
-            switch( AtCmd_RecvResponse() )
-            {
-                case ATCMD_RESP_BULK_DATA_RX:
-                    WiFi_InitESCBuffer();
-                    break;
-                case ATCMD_RESP_DISCONNECT:
-                    AtCmd_NCLOSE( m_cid );
-                    AtCmd_NCLOSEALL();
-                    WiFi_InitESCBuffer();
-                    break;
-            }
-            delay( 10 );
+            case ATCMD_RESP_BULK_DATA_RX:
+                WiFi_InitESCBuffer();
+                break;
+            case ATCMD_RESP_DISCONNECT:
+                AtCmd_NCLOSE( m_cid );
+                AtCmd_NCLOSEALL();
+                WiFi_InitESCBuffer();
+                break;
         }
 
 		m_available = 0;
@@ -419,12 +418,7 @@ namespace AoiSpresense
      */
 	uint8_t WiFiClient::connected( void )
 	{
-		uint8_t i = 0;
-
-        if( m_available )
-            i = 1;
-        
-        return i;
+        return m_available;
 	}
     /**
      * @fn int WiFiClient::setTimeout( uint32_t milliseconds )
