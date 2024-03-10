@@ -385,9 +385,9 @@ namespace AoiBase
         switch( count(args) )
         {
             case 3:
-                shell.m_loopStart = _atoi( 0 );
-                shell.m_loopEnd = _atoi( 1 );
-                shell.m_loopStep = _atoi( 2 );
+                shell.m_loopStart = AoiCore::toInt( shell.replaceGlobalVariable(_a(0)) );
+                shell.m_loopEnd = AoiCore::toInt( shell.replaceGlobalVariable(_a(1)) );
+                shell.m_loopStep = AoiCore::toInt( shell.replaceGlobalVariable(_a(2)) );
                 shell.m_loopCurrent = shell.m_loopStart;
             case 0:
                 delete [] shell.m_loop;
@@ -674,7 +674,10 @@ namespace AoiBase
                 if( isDigit(_a(0)) )
                     b = (_atoi(0)!=0);
                 else
-                    b = (_a(0)=="true");
+                {
+                    s = shell.replaceGlobalVariable( _a(0) );
+                    b = (s=="true");
+                }
             // practice 1 loop or none
                 if( b )
                     sl = split( "0 0 1", " " );
@@ -1232,12 +1235,7 @@ namespace AoiBase
                     t.replace( rep, it->value.as<char*>() );
                 }
             // Reference global variables
-                JsonObject &gv = json.parseObject( m_variables );
-                for( JsonObject::iterator it=gv.begin(); it!=gv.end(); ++it )
-                {
-                    String rep = String("{$") + it->key + "}";
-                    t.replace( rep, it->value.as<char*>() );
-                }
+                t = replaceGlobalVariable( t );
 
                 if( arg1.length() )
                     arg1 += STR_SPACE;
@@ -1289,6 +1287,28 @@ namespace AoiBase
             }
         }
         delete [] sl;
+
+        return s;
+    }
+    /**
+     * @fn String Shell::replaceGlobalVariable( const String &args )
+     *
+     * Replace {$string} to global variable value.
+     *
+     * @param[in] args Some argument.
+     * @return Replaced result.
+     */
+    String Shell::replaceGlobalVariable( const String &args )
+    {
+        String s = args;
+        DynamicJsonBuffer json;
+
+        JsonObject &v = json.parseObject( m_variables );
+        for( JsonObject::iterator it=v.begin(); it!=v.end(); ++it )
+        {
+            String rep = String("{$") + it->key + "}";
+            s.replace( rep, it->value.as<char*>() );
+        }
 
         return s;
     }

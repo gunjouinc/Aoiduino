@@ -78,6 +78,7 @@ namespace AoiBase
         virtual bool isMethodCharacter( const String &value );
         virtual bool isSpecialCharacter( const String &value );
         virtual String practice( const String &args );
+        virtual String replaceGlobalVariable( const String &args );
     // variables
     private:
         /** Communication history. */
