@@ -235,8 +235,6 @@ namespace AoiEsp
                 w.close();
             }
             File f = EspStorage->open( t, _FILE_APPEND_ );
-            if( 0<f.size() )
-                f.print( _lf );
             for( int i=1; i<c; i++ )
             {
                 if( 1<i )

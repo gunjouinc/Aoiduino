@@ -989,8 +989,6 @@ namespace AoiSpresense
         else
         {
             File f = AstStorage->open( _a(0), FILE_WRITE );
-            if( 0<f.size() )
-                f.print( _lf );
             for( int i=1; i<c; i++ )
             {
                 if( 1<i )
