@@ -1958,7 +1958,7 @@ namespace AoiSpresense
                 http->println( "GET "+_a(1)+" HTTP/1.0" );
                 http->println( "Host: " + host );
                 http->println( "User-Agent: " + String(STR_USER_AGENT) );
-                http->println( "Connection: close" );
+                http->println( "Connection: " + String("close") );
                 http->println();
             // Response
                 t = _a( 2 ); 
@@ -2037,7 +2037,7 @@ namespace AoiSpresense
                 http->println( "POST "+_a(1)+" HTTP/1.0" );
                 http->println( "Host: " + host );
                 http->println( "User-Agent: " + String(STR_USER_AGENT) );
-                http->print( "Content-Type: multipart/form-data; " );
+                http->print( "Content-Type: "+String("multipart/form-data")+"; " );
                 http->println( "boundary=\""+String(STR_BOUNDARY)+"\"" );
                 http->println( "Content-Length: "+String(size) );
                 http->println( "Connection: " + String("close") );
@@ -2045,7 +2045,7 @@ namespace AoiSpresense
                 http->print( header );
               // for SPI connection
                 if( WifiClient )
-                    bufSize /= 4;
+                    bufSize = 1500; // SPI_MAX_SIZE in GS2200AtCmd.cpp
               // Upload file
                 f = AstStorage->open( t, FILE_READ );
                 buf = new uint8_t[ bufSize ];

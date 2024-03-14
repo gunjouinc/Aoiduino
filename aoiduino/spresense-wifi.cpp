@@ -288,9 +288,10 @@ namespace AoiSpresense
 	{
 		size_t i = 0;
 
-        if( ATCMD_RESP_OK==AtCmd_SendBulkData(m_cid,buf,size) )
-            i = size;
-        delay( 100 );
+        while( ATCMD_RESP_OK!=AtCmd_SendBulkData(m_cid,buf,size) )
+            delay( 100 );
+
+        i = size;
 
 		return i;
 	}
