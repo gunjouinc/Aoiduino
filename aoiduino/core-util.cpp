@@ -132,10 +132,15 @@ namespace AoiCore
     bool isDigit( const String &data )
     {
         bool b = true;
+        char c;
 
         for( int i=0; i<data.length(); i++ )
         {
-            if( !isdigit(data[i]) )
+            c = data[ i ];
+
+            if( (i==0) && (c=='-') )
+                continue;
+            else if( !isdigit(c) )
             {
                 b = false;
                 break;
