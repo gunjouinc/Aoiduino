@@ -96,12 +96,19 @@ namespace AoiSpresense
 		 */
 		operator bool( void ){ return connected(); };
 		int setTimeout( uint32_t milliseconds );
+	// members
+	public:
+		void setRawMode( bool enable = false );
 	// variables
 	private:
         /** Holds available. */
 		int m_available;
         /** Holds connection id. */
 		char m_cid;
+        /** Holds connection status. */
+		uint8_t m_connected;
+        /** Holds raw mode. */
+		bool m_rawMode;
 	};
 }
 #endif

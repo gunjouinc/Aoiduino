@@ -30,7 +30,10 @@
 /* GS2200 */
 #include <GS2200AtCmd.h>
 #include <GS2200Hal.h>
-#define CMD_TIMEOUT 10000
+#define AVAILABLE_TIMEOUT 10000
+#define RAW_TIMEOUT 3000
+#define STOP_TIMEOUT 3000
+#define WIFI_TIMEOUT 10000
 extern uint8_t ESCBuffer[];
 extern uint32_t ESCBufferCnt;
 
@@ -71,7 +74,7 @@ namespace AoiSpresense
     	uint32_t start = millis();
 
         // Activate station
-        while( msDelta(start)<=(CMD_TIMEOUT*2) )
+        while( msDelta(start)<=(WIFI_TIMEOUT*2) )
         {
 		    if( ATCMD_RESP_OK!=AtCmd_WD() ) continue;
 		    if( ATCMD_RESP_OK!=AtCmd_WPAPSK(ssid.c_str(),passphrase.c_str()) ) continue;
@@ -104,7 +107,7 @@ namespace AoiSpresense
             AtCmd_RecvResponse();
 
         // Mode
-        while( msDelta(start)<=CMD_TIMEOUT )
+        while( msDelta(start)<=WIFI_TIMEOUT )
         {
 		    if( ATCMD_RESP_OK!=AtCmd_AT() ) continue;
 
@@ -208,6 +211,8 @@ namespace AoiSpresense
 	{
 		m_available = 0;
 		m_cid = ATCMD_INVALID_CID;
+        m_connected = 0;
+        m_rawMode = false;
 	}
     /**
      * @fn WiFiClient::~WiFiClient( void )
@@ -255,6 +260,8 @@ namespace AoiSpresense
             i = 0;
         else if( m_cid==ATCMD_INVALID_CID )
             i = 0;
+
+        m_connected = i;
 
 		return i;
 	}
@@ -305,11 +312,9 @@ namespace AoiSpresense
 	int WiFiClient::available( void )
 	{
         int i = ::millis();
-        int t = 5000;
+        int t = AVAILABLE_TIMEOUT;
 
-        if( m_available )
-            m_available = Get_GPIO37Status();
-        else
+        if( !m_available )
         {
             while( !m_available )
             {
@@ -318,6 +323,25 @@ namespace AoiSpresense
                 if( t<::msDelta(i) )
                     break;
             }
+        }
+        else
+        {
+            m_available = Get_GPIO37Status();
+
+            // for raw data
+            t = RAW_TIMEOUT;
+            if( m_rawMode && !m_available )
+            {
+                while( !m_available )
+                {
+                    m_available = Get_GPIO37Status();
+
+                    if( t<::msDelta(i) )
+                        break;
+                }
+            }
+
+            m_connected = m_available;
         }
 
         return m_available;
@@ -395,20 +419,26 @@ namespace AoiSpresense
      */
 	void WiFiClient::stop( void )
 	{
-        switch( AtCmd_RecvResponse() )
+        if( !m_rawMode )
         {
-            case ATCMD_RESP_BULK_DATA_RX:
-                WiFi_InitESCBuffer();
-                break;
-            case ATCMD_RESP_DISCONNECT:
-                AtCmd_NCLOSE( m_cid );
-                AtCmd_NCLOSEALL();
-                WiFi_InitESCBuffer();
-                break;
+            ATCMD_RESP_E r = AtCmd_RecvResponse();
+
+            switch( r )
+            {
+                case ATCMD_RESP_BULK_DATA_RX:
+                    WiFi_InitESCBuffer();
+                    break;
+                case ATCMD_RESP_DISCONNECT:
+                    AtCmd_NCLOSE( m_cid );
+                    AtCmd_NCLOSEALL();
+                    WiFi_InitESCBuffer();
+                    break;
+            }
         }
 
 		m_available = 0;
 		m_cid = ATCMD_INVALID_CID;
+        m_connected = 0;
 	}
     /**
      * @fn uint8_t WiFiClient::connected( void )
@@ -419,7 +449,7 @@ namespace AoiSpresense
      */
 	uint8_t WiFiClient::connected( void )
 	{
-        return m_available;
+        return m_connected;
 	}
     /**
      * @fn int WiFiClient::setTimeout( uint32_t milliseconds )
@@ -432,6 +462,17 @@ namespace AoiSpresense
 	{
 		// impossible to implement
 		return 0;
+	}
+    /**
+     * @fn void WiFiClient::setRawMode( bool enable = false )
+     *
+     * Set communication mode to raw
+     *
+     * @param[in] enable Set true to enable raw communication mode, otherwize set false.
+     */
+	void WiFiClient::setRawMode( bool enable )
+	{
+		m_rawMode = enable;
 	}
 }
 #endif

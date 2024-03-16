@@ -1943,6 +1943,10 @@ namespace AoiSpresense
         int i = 0;
         int j = 0;
 
+        // for SPI connection
+        if( WifiClient )
+            WifiClient->setRawMode( true );
+
         char *buf = new char[ _AOIUTIL_HTTP_BUFFER_SIZE_+1 ];
         switch( count(args) )
         {
@@ -1993,6 +1997,10 @@ namespace AoiSpresense
                 break;
         }
         delete [] buf;
+
+        // for SPI connection
+        if( WifiClient )
+            WifiClient->setRawMode( false );
 
         return s;
     }
@@ -2045,7 +2053,7 @@ namespace AoiSpresense
                 http->print( header );
               // for SPI connection
                 if( WifiClient )
-                    bufSize = 1500; // SPI_MAX_SIZE in GS2200AtCmd.cpp
+                    bufSize = 1500 - 7; // SPI_MAX_SIZE - HEADERSIZE in GS2200AtCmd.cpp
               // Upload file
                 f = AstStorage->open( t, FILE_READ );
                 buf = new uint8_t[ bufSize ];
