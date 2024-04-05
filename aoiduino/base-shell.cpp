@@ -173,8 +173,43 @@ namespace AoiBase
             {
             // sl is splitted by LF
                 StringList *sl = ct->pointer->rcScript( STR_RCD+String(n) );
+                String r1, r2, r3;
                 for( int i=0; i<count(sl); i++ )
-                    rc( (sl+i)->value );
+                {
+                    r1 = (sl+i)->value;
+                // is start range
+                    if( !r1.indexOf(STR_SHELL_COMMENT_START) )
+                    {
+                        r2 = r1.substring( String(STR_SHELL_COMMENT_START).length() );
+                        r2.replace( STR_SPACE, STR_NULL );
+                        continue;
+                    }
+                    else if( !r2.length() && !r1.indexOf(STR_SHELL_RANGE_START) )
+                    {
+                        r3 = r1.substring( String(STR_SHELL_RANGE_START).length() );
+                        r3.replace( STR_SPACE, STR_NULL );
+                        continue;
+                    }
+                    
+                    if( !r2.length() )
+                    {
+                        if( !r3.length() || r1.indexOf(r3) )
+                            rc( r1 );
+                        else
+                        {
+                            for( int j=i-1; 0<=j; j-- )
+                            {
+                                if( (sl+j)->value.indexOf(STR_SHELL_RANGE_START) )
+                                    continue;
+                                i = j - 1;
+                                break;
+                            }
+                            r3 = STR_NULL;
+                        }
+                    }
+                    else if( !r1.indexOf(r2) )
+                        r2 = STR_NULL;
+                }
                 delete [] sl;
             }
             ct++;
@@ -800,8 +835,43 @@ namespace AoiBase
             {
             // sl is splitted by LF
                 StringList *sl = ct->pointer->rcScript( _a(0) );
+                String r1, r2, r3;
                 for( int i=0; i<count(sl); i++ )
-                    shell.rc( (sl+i)->value, false );
+                {
+                    r1 = (sl+i)->value;
+                // is start range
+                    if( !r1.indexOf(STR_SHELL_COMMENT_START) )
+                    {
+                        r2 = r1.substring( String(STR_SHELL_COMMENT_START).length() );
+                        r2.replace( STR_SPACE, STR_NULL );
+                        continue;
+                    }
+                    else if( !r2.length() && !r1.indexOf(STR_SHELL_RANGE_START) )
+                    {
+                        r3 = r1.substring( String(STR_SHELL_RANGE_START).length() );
+                        r3.replace( STR_SPACE, STR_NULL );
+                        continue;
+                    }
+                    
+                    if( !r2.length() )
+                    {
+                        if( !r3.length() || r1.indexOf(r3) )
+                            shell.rc( r1, false );
+                        else
+                        {
+                            for( int j=i-1; 0<=j; j-- )
+                            {
+                                if( (sl+j)->value.indexOf(STR_SHELL_RANGE_START) )
+                                    continue;
+                                i = j - 1;
+                                break;
+                            }
+                            r3 = STR_NULL;
+                        }
+                    }
+                    else if( !r1.indexOf(r2) )
+                        r2 = STR_NULL;
+                }
                 delete [] sl;
                 ct++;
             }

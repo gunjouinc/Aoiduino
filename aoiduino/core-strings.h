@@ -64,10 +64,12 @@
 #define STR_SHELL_BOOT_5 "exit      : Back to login."
 /** Shell bracket */
 #define STR_SHELL_BRACKET "'"
-/** Shell comment */
-#define STR_SHELL_COMMENT "#"
 /** Shell break */
 #define STR_SHELL_BREAK "{break}"
+/** Shell comment */
+#define STR_SHELL_COMMENT "#"
+/** Shell comment start */
+#define STR_SHELL_COMMENT_START "<<"
 /** Shell continue */
 #define STR_SHELL_CONTINUE "{continue}"
 /** Shell create */
@@ -76,6 +78,8 @@
 #define STR_SHELL_PIPE "|"
 /** Shell pipe all */
 #define STR_SHELL_PIPE_ALL "||"
+/** Shell range start */
+#define STR_SHELL_RANGE_START "<="
 /** Shell separator */
 #define STR_SHELL_SEPARATOR ";"
 /** Space */
