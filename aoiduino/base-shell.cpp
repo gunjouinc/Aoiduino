@@ -1030,13 +1030,18 @@ namespace AoiBase
     {
         String s;
         String t;
+        int c = count( args );
         DynamicJsonBuffer json;
         JsonObject &r = json.parseObject( shell.m_variables );
 
-        switch( count(args) )
+        if( c<2 )
+            s = usage( "set name number|string" );
+        else
         {
-            case 2:
-                t = _a( 0 );
+            t = _a( 0 );
+
+            if( c==2 )
+            {
                 if( isDigit(_a(1)) )
                 {
                     r[ t ] = _atoi( 1 );
@@ -1047,12 +1052,14 @@ namespace AoiBase
                     r[ t ] = _a( 1 );
                     s = prettyPrintTo( "value", r[t].as<String>() );
                 }
-                shell.m_variables = "";
-                r.prettyPrintTo( shell.m_variables );
-                break;
-            default:
-                s = usage( "set name value" );
-                break;
+            }
+            else
+            {
+                r[ t ] = join( args, STR_SPACE, 1 );
+                s = prettyPrintTo( "value", r[t].as<String>() );
+            }
+            shell.m_variables = "";
+            r.prettyPrintTo( shell.m_variables );
         }
 
         return s;
