@@ -59,6 +59,8 @@ namespace AoiSpresense
 // Static variables.
     AoiBase::FunctionTable *Ast::m_functionTable = 0;
     bool Ast::m_audioAttention = false;
+    uint32_t Ast::m_audioPlayer0BufferSize = 32768;
+    uint32_t Ast::m_audioPlayer1BufferSize = 32768;
     /**
      * @fn Ast::Ast( void )
      *
@@ -653,15 +655,17 @@ namespace AoiSpresense
         String s;
         AsSetPlayerOutputDevice device;
         AsSpDrvMode mode;
-        uint32_t buffer0 = 32768;
-        uint32_t buffer1 = 32768;
+        uint32_t buffer0 = m_audioPlayer0BufferSize;
+        uint32_t buffer1 = m_audioPlayer1BufferSize;
 
         switch( count(args) )
         {
             case 4:
                 buffer1 = _atoi( 3 );
+                m_audioPlayer1BufferSize = buffer1;
             case 3:
                 buffer0 = _atoi( 2 );
+                m_audioPlayer0BufferSize = buffer0;
             case 2:
                 if( !playerOutputDeviceFromString(_a(0),&device) ||
                     !playerSpeakerDriverModeFromString(_a(1),&mode) )
@@ -755,7 +759,7 @@ namespace AoiSpresense
                 theAudio->setVolume( _atoi(0) );
                 break;
             default:
-                s = usage( "audioSetVolume -1020~-120" );
+                s = usage( "audioSetVolume -1020~120" );
                 break;
         }
 

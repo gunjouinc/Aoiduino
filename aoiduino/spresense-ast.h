@@ -157,6 +157,10 @@ namespace AoiSpresense
         static AoiBase::FunctionTable *m_functionTable;
         /** Holds audio attention. */
         static bool m_audioAttention;
+        /** Holds audio player 0 buffer size. */
+        static uint32_t m_audioPlayer0BufferSize;
+        /** Holds audio player 1 buffer size. */
+        static uint32_t m_audioPlayer1BufferSize;
     };
 }
 #endif
