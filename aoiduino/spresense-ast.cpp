@@ -142,6 +142,7 @@ namespace AoiSpresense
             { "httpBegin", &Ast::httpBegin },
             { "httpGet", &AoiUtil::Http::httpGet },
             { "httpGetRaw", &Ast::httpGetRaw },
+            { "httpGetStream", &Ast::httpGetStream },
             { "httpPost", &Ast::httpPost },
             /* LTE */
             { "lteBegin", &Ast::lteBegin },
@@ -1978,6 +1979,8 @@ namespace AoiSpresense
                     if( i=http->available() )
                     {
                         i = http->read( (uint8_t*)buf, _AOIUTIL_HTTP_BUFFER_SIZE_ );
+                        if( WifiClient && (i<=0) )
+                            continue;
                         j = 0;
                         if( !size )
                             j = responseRaw( buf, i );
@@ -1998,6 +2001,122 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "httpGetRaw host path file (port timeout)?" );
+                break;
+        }
+        delete [] buf;
+
+        // for SPI connection
+        if( WifiClient )
+            WifiClient->setRawMode( false );
+
+        return s;
+    }
+    /**
+     * @fn String Ast::httpGetStream( StringList *args )
+     *
+     * Send HTTP GET to server and play stream.
+     *
+     * @param[in] args Reference to arguments.
+     * @return Recieved size.
+     */
+    String Ast::httpGetStream( StringList *args )
+    {
+        String s;
+        String t;
+        String host;
+        int port = 80;
+        int timeout = 30 * 1000;
+        // response
+        File f;
+        int start = ::millis();
+        int size = 0;
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        // stream
+        AudioClass::PlayerId id = AudioClass::Player0;
+        err_t r;
+        bool bufferring = true;
+        int bufferringSize = m_audioPlayer0BufferSize - _AOIUTIL_HTTP_BUFFER_SIZE_;
+        int adjust = 10 * 2;
+
+        m_audioAttention = false;
+
+        // for SPI connection
+        if( WifiClient )
+            WifiClient->setRawMode( true );
+
+        char *buf = new char[ _AOIUTIL_HTTP_BUFFER_SIZE_+1 ];
+        switch( count(args) )
+        {
+            case 6:
+                adjust = _atoi( 5 );
+            case 5:
+                timeout = _atoi( 4 ) * 1000;
+            case 4:
+                port = _atoi( 3 );
+            case 3:
+                host = _a( 0 );
+                if( !http->connect(host.c_str(),port) )
+                    return httpGetStream( 0 );
+            // GET
+                http->println( "GET "+_a(1)+" HTTP/1.0" );
+                http->println( "Host: " + host );
+                http->println( "User-Agent: " + String(STR_USER_AGENT) );
+                http->println( "Connection: " + String("close") );
+                http->println();
+            // Response
+                if( !playerIdFromString(_a(2),&id) )
+                    return httpGetStream( 0 );
+                if( id==AudioClass::Player1 )
+                    bufferringSize = m_audioPlayer1BufferSize - _AOIUTIL_HTTP_BUFFER_SIZE_;
+                while( true )
+                {
+                    if( i=http->available() )
+                    {
+                        i = http->read( (uint8_t*)buf, _AOIUTIL_HTTP_BUFFER_SIZE_ );                        
+                        if( WifiClient && (i<=0) )
+                            continue;
+                        j = 0;
+                        if( !size )
+                            j = responseRaw( buf, i );
+                        r = theAudio->writeFrames( id, (uint8_t*)(buf+j), i-j );
+                        size += (i-j);
+
+                        if( bufferring )
+                        {
+                            if( (bufferringSize<=size) && (r==AUDIOLIB_ECODE_OK) )
+                            {
+                                theAudio->startPlayer( id );
+                                bufferring = false;
+                            }
+                        }
+                        else if( !m_audioAttention && (r==AUDIOLIB_ECODE_SIMPLEFIFO_ERROR) )
+                        {
+                            for( k=0; k<adjust; k++ )
+                            {
+                                // adjusted by the time to read the audio stream file
+                                usleep( 40000 );
+                                r = theAudio->writeFrames( id, (uint8_t*)(buf+j), i-j );
+                                if( r!=AUDIOLIB_ECODE_SIMPLEFIFO_ERROR )
+                                    break;
+                            }
+                        }
+                    }
+                    if( !http->available() && !http->connected() )
+                    {
+                        http->stop();
+                        break;
+                    }
+                // timeout
+                    if( timeout<(::millis()-start) )
+                        break;
+                }
+                theAudio->stopPlayer( id );
+                s = prettyPrintTo( "value", size );
+                break;
+            default:
+                s = usage( "httpGetStream host path (ID0|ID1) (port timeout adjust)?" );
                 break;
         }
         delete [] buf;

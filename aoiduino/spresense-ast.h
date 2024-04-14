@@ -110,6 +110,7 @@ namespace AoiSpresense
         /* HTTP */
         static String httpBegin( StringList *args );
         static String httpGetRaw( StringList *args );
+        static String httpGetStream( StringList *args );
         static String httpPost( StringList *args );
         /* LTE */
         static String lteBegin( StringList *args );
