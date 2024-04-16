@@ -1127,13 +1127,13 @@ err_t AudioClass::init_recorder_wav(AudioCommand* command, uint32_t sampling_rat
 }
 
 /*--------------------------------------------------------------------------*/
-err_t AudioClass::init_recorder_mp3(AudioCommand* command, uint32_t sampling_rate, uint8_t bit_length, uint8_t channel_number)
+err_t AudioClass::init_recorder_mp3(AudioCommand* command, uint32_t sampling_rate, uint8_t bit_length, uint8_t channel_number, uint32_t bit_rate)
 {
   command->recorder.init_param.sampling_rate  = sampling_rate;
   command->recorder.init_param.channel_number = channel_number;
   command->recorder.init_param.bit_length     = bit_length;
   command->recorder.init_param.codec_type     = m_codec_type;
-  command->recorder.init_param.bitrate        = AS_BITRATE_96000;
+  command->recorder.init_param.bitrate        = bit_rate;
   AS_SendAudioCommand(command);
 
   AudioResult result;
@@ -1219,7 +1219,8 @@ err_t AudioClass::initRecorder(uint8_t codec_type, const char *codec_path,
 
 /*--------------------------------------------------------------------------*/
 err_t AudioClass::initRecorder(uint8_t codec_type, const char *codec_path,
-                               uint32_t sampling_rate, uint8_t bit_length, uint8_t channel)
+                               uint32_t sampling_rate, uint8_t bit_length, uint8_t channel,
+                               uint32_t bit_rate)
 {
 
   if (!check_encode_dsp(codec_type, codec_path, sampling_rate))
@@ -1246,7 +1247,7 @@ err_t AudioClass::initRecorder(uint8_t codec_type, const char *codec_path,
         break;
 
       case AS_CODECTYPE_MP3:
-        ret = init_recorder_mp3(&command, sampling_rate, bit_length, channel);
+        ret = init_recorder_mp3(&command, sampling_rate, bit_length, channel, bit_rate);
         break;
 
       case AS_CODECTYPE_OPUS:

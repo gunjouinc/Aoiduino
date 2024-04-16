@@ -572,7 +572,8 @@ public:
       const char *codec_path, /**< Set DSP Binary path. Maximum length is 24 bytes.*/
       uint32_t fs,    /**<Set sampling rate. AS_SAMPLINGRATE_XXXXX. */
       uint8_t bitlen, /**< Set bit length. AS_BITLENGTH_16 or AS_BITLENGTH_24 */
-      uint8_t channel /**< Set channnel number. AS_CHANNEL_MONO, AS_CHANNEL_STEREO, AS_CHANNEL_4CH, or etc...  */
+      uint8_t channel, /**< Set channnel number. AS_CHANNEL_MONO, AS_CHANNEL_STEREO, AS_CHANNEL_4CH, or etc...  */
+      uint32_t bit_rate = AS_BITRATE_96000 /**< Set bit rate. AS_BITRATE_XXXXX, only MP3 format*/
   );
 
   /**
@@ -906,7 +907,7 @@ private:
 	
   err_t initMicFrontend(uint8_t ch_num, uint8_t bit_length, uint16_t sample);
   err_t init_recorder_wav(AudioCommand* command, uint32_t sampling_rate, uint8_t bit_length, uint8_t channel_number);
-  err_t init_recorder_mp3(AudioCommand* command, uint32_t sampling_rate, uint8_t bit_length, uint8_t channel_number);
+  err_t init_recorder_mp3(AudioCommand* command, uint32_t sampling_rate, uint8_t bit_length, uint8_t channel_number, uint32_t bit_rate = AS_BITRATE_96000);
   err_t init_recorder_opus(AudioCommand* command, uint32_t sampling_rate, uint8_t bit_length, uint8_t channel_number);
   err_t init_recorder_pcm(AudioCommand* command, uint32_t sampling_rate, uint8_t bit_length, uint8_t channel_number);
 
