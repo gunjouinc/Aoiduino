@@ -450,10 +450,13 @@ namespace AoiSpresense
         char path[ i ];
         uint8_t codec;
         uint8_t channel;
+        uint32_t bitRate = AS_BITRATE_96000;
         err_t r;
 
         switch( count(args) )
         {
+            case 6:
+                bitRate = _atoi( 5 );
             case 5:
                 if( !codecTypeFromString(_a(0),&codec) ||
                     !channelFromString(_a(4),&channel) )
@@ -463,13 +466,13 @@ namespace AoiSpresense
                     memset( path, 0, i );
                     _a( 1 ).toCharArray( path, i );
 
-                    r = theAudio->initRecorder( codec, path, _atoi(2), _atoi(3), channel );
+                    r = theAudio->initRecorder( codec, path, _atoi(2), _atoi(3), channel, bitRate );
                     if( r!=AUDIOLIB_ECODE_OK )
                         s = audioInitRecorder( 0 );
                 }
                 break;
             default:
-                s = usage( "initRecorder (MP3|WAV) path sampling bit (MONO|STEREO)" );
+                s = usage( "initRecorder (MP3|WAV) path sampling bit (MONO|STEREO) bitRate?" );
                 break;
         }
 
