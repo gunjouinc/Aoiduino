@@ -144,6 +144,7 @@ namespace AoiSpresense
             { "httpGetRaw", &Ast::httpGetRaw },
             { "httpGetStream", &Ast::httpGetStream },
             { "httpPost", &Ast::httpPost },
+            { "httpPostStream", &Ast::httpPostStream },
             /* LTE */
             { "lteBegin", &Ast::lteBegin },
             { "lteConfig", &Ast::lteConfig },
@@ -2197,6 +2198,77 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "httpPost host path (file|text) (port timeout)?" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::httpPostStream( StringList *args )
+     *
+     * Send audio stream to server using HTTP POST (chunked).
+     *
+     * @param[in] args Reference to arguments.
+     * @return Recieved content.
+     */
+    String Ast::httpPostStream( StringList *args )
+    {
+        String s;
+        err_t r;
+        uint32_t size = 0;
+        String host;
+        int port = 80;
+        int timeout = 30 * 1000;
+        uint8_t *buf = 0;
+        uint32_t bufSize = _AOIUTIL_HTTP_BUFFER_SIZE_;
+
+        m_audioAttention = false;
+
+        switch( count(args) )
+        {
+            case 4:
+                timeout = _atoi( 3 ) * 1000;
+            case 3:
+                port = _atoi( 2 );
+            case 2:
+            // POST
+                host = _a( 0 );
+                if( !http->connect(host.c_str(),port) )
+                    return httpPost( 0 );
+                http->println( "POST " + _a(1) + " HTTP/1.1" );
+                http->println( "Host: " + host );
+                http->println( "User-Agent: " + String(STR_USER_AGENT) );
+                http->println( "Content-Type: " + String("application/octet-stream") );
+                http->println( "Transfer-Encoding: " + String("chunked") );
+                http->println( "Connection: " + String("close") );
+                http->println();
+              // for SPI connection
+                if( WifiClient )
+                    bufSize = 1500 - 7; // SPI_MAX_SIZE - HEADERSIZE in GS2200AtCmd.cpp
+              // Stream audio
+                buf = new uint8_t[ bufSize ];
+                theAudio->startRecorder();
+                while( !m_audioAttention && !Arduino::isInterrupted() )
+                {
+                    r = theAudio->readFrames( buf, bufSize, &size );
+                    if( (r!=AUDIOLIB_ECODE_OK) && (r!=AUDIOLIB_ECODE_INSUFFICIENT_BUFFER_AREA) )
+                        break;
+                    else if( !size )
+                        continue;
+                    http->println( String(size,HEX) );
+                    http->write( buf, size );
+                    http->println();
+                }
+                theAudio->stopRecorder();
+                delete [] buf;
+                http->println( String("0") );
+                http->println();
+            // Response
+                s = response( timeout );
+                s = prettyPrintTo( "value", s );
+                break;
+            default:
+                s = usage( "httpPostStream host path (port timeout)?" );
                 break;
         }
 
