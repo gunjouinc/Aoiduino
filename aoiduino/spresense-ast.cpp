@@ -11,6 +11,7 @@
 #include "spresense-ast.h"
 /* Audio */
 AudioClass *theAudio = AudioClass::getInstance();
+#define PLAYER_BUFFER_SIZE 32768
 /* Flash */
 #include <eMMC.h>
 #include <Flash.h>
@@ -59,8 +60,8 @@ namespace AoiSpresense
 // Static variables.
     AoiBase::FunctionTable *Ast::m_functionTable = 0;
     bool Ast::m_audioAttention = false;
-    uint32_t Ast::m_audioPlayer0BufferSize = 32768;
-    uint32_t Ast::m_audioPlayer1BufferSize = 32768;
+    uint32_t Ast::m_audioPlayer0BufferSize = PLAYER_BUFFER_SIZE;
+    uint32_t Ast::m_audioPlayer1BufferSize = PLAYER_BUFFER_SIZE;
     /**
      * @fn Ast::Ast( void )
      *
@@ -703,6 +704,11 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 0:
+                // refresh
+                m_audioAttention = false;
+                m_audioPlayer0BufferSize = PLAYER_BUFFER_SIZE;
+                m_audioPlayer1BufferSize = PLAYER_BUFFER_SIZE;
+
                 theAudio->setReadyMode();
                 break;
             default:
