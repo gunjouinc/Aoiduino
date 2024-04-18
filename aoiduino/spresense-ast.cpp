@@ -2109,7 +2109,10 @@ namespace AoiSpresense
                                 usleep( 40000 );
                                 r = theAudio->writeFrames( id, (uint8_t*)(buf+j), i-j );
                                 if( r!=AUDIOLIB_ECODE_SIMPLEFIFO_ERROR )
+                                {
+                                    m_audioAttention = false;
                                     break;
+                                }
                             }
                         }
                     }
