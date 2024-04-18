@@ -1195,8 +1195,18 @@ namespace AoiBase
     {
         bool b = false;
         int c = count( m_loop );
+        String s;
 
-        if( args=="do" || args=="done" || args=="if" || args=="fi" )
+        StringList *sl = split( args, STR_SPACE );
+        for( int i=0; i<count(sl); i++ )
+        {
+            s = (sl+i)->value;
+            if( s.length() )
+                break;
+        }
+        delete [] sl;
+
+        if( s=="do" || s=="done" || s=="if" || s=="fi" )
         {
         // Reserved word
         }
