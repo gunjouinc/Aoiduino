@@ -475,3 +475,7 @@ echo hello 0
 - 2024/03/07
   - All boards
     - [add] continue
+
+- 2024/04/18
+  - Spresense Ast, Type 'help Ast' to show usage.
+    - AUDIO     [add] httpGetStream, httpPostStream
