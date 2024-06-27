@@ -37,6 +37,9 @@
 extern uint8_t ESCBuffer[];
 extern uint32_t ESCBufferCnt;
 
+/* SPI */
+#include <SPI.h>
+
 /**
 * @namespace AoiSpresense
 * @brief Aoi Spresense classes.
@@ -146,6 +149,8 @@ namespace AoiSpresense
 	void WiFi::end( void )
     {
         AtCmd_RESET();
+        // for next begin
+        SPI5.endTransaction();
 	}
     /**
      * @fn NetworkStatus WiFi::networkStatus( void )
