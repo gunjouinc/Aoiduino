@@ -1703,9 +1703,13 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 0:
+                if( WifiClient )
+                    Wifi.deepSleep();
                 LowPower.coldSleep();
                 break;
             case 1:
+                if( WifiClient )
+                    Wifi.deepSleep();
                 LowPower.coldSleep( _atoui(0) );
                 break;
             default:
@@ -1754,9 +1758,13 @@ namespace AoiSpresense
         switch( count(args) )
         {
             case 0:
+                if( WifiClient )
+                    Wifi.deepSleep();
                 LowPower.deepSleep();
                 break;
             case 1:
+                if( WifiClient )
+                    Wifi.deepSleep();
                 LowPower.deepSleep( _atoui(0) );
                 break;
             default:

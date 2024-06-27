@@ -56,6 +56,7 @@ namespace AoiSpresense
 		void end( void );
 	// members
 	public:
+	    void deepSleep( void );
 		NetworkStatus networkStatus( void );
 	// members
 	protected:

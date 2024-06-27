@@ -153,6 +153,19 @@ namespace AoiSpresense
         SPI5.endTransaction();
 	}
     /**
+     * @fn void WiFi::deepSleep( void )
+     *
+     * Enable deep sleep using PSDPSLEEP.
+     */
+	void WiFi::deepSleep( void )
+    {
+        char cmd[ 30 ];
+
+        sprintf( cmd, "AT+PSDPSLEEP\r\n" );
+
+        WiFi_Write( cmd, strlen(cmd) );
+	}
+    /**
      * @fn NetworkStatus WiFi::networkStatus( void )
      *
      * Return network status.
