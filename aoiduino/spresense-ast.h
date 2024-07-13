@@ -117,6 +117,7 @@ namespace AoiSpresense
         static String lteBegin( StringList *args );
         static String lteConfig( StringList *args );
         static String lteEnd( StringList *args );
+        static String lteQualitySync( StringList *args );
         static String lteRtc( StringList *args );
         /* MQTT */
         static String mqttBegin( StringList *args );

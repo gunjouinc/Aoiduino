@@ -28,6 +28,7 @@ SpGnss Gnss;
 #include <RTC.h>
 #include <Watchdog.h>
 /* LTE */
+#include <lte/lte_api.h>
 #include <LTE.h>
 LTE Lte;
 LTEClient LteClient;
@@ -150,6 +151,7 @@ namespace AoiSpresense
             { "lteBegin", &Ast::lteBegin },
             { "lteConfig", &Ast::lteConfig },
             { "lteEnd", &Ast::lteEnd },
+            { "lteQualitySync", &Ast::lteQualitySync },
             { "lteRtc", &Ast::lteRtc },
             /* MQTT */
             { "mqttBegin", &Ast::mqttBegin },
@@ -2392,6 +2394,44 @@ namespace AoiSpresense
                 break;
             default:
                 s = usage( "lteEnd" );
+                break;
+        }
+
+        return s;
+    }
+    /**
+     * @fn String Ast::lteQualitySync( StringList *args )
+     *
+     * Return LTE network quality like SINR, RSRP, RSRQ, RSSI. 
+     *
+     * @param[in] args Reference to arguments.
+     * @return Network information.
+     */
+    String Ast::lteQualitySync( StringList *args )
+    {
+        String s;
+        int i;
+        lte_quality_t quality;
+        DynamicJsonBuffer json;
+        JsonObject &r = json.createObject();
+
+        switch( count(args) )
+        {
+            case 0:
+                i = lte_get_quality_sync( &quality );
+                if( (i<0) || (LTE_VALID!=quality.valid) )
+                    s = lteQualitySync( 0 );
+                else
+                {
+                    r[ "sinr" ] = static_cast<int16_t>( quality.sinr );
+                    r[ "rsrp" ] = static_cast<int16_t>( quality.rsrp );
+                    r[ "rsrq" ] = static_cast<int16_t>( quality.rsrq );
+                    r[ "rssi" ] = static_cast<int16_t>( quality.rssi );
+                    r.prettyPrintTo( s );
+                }
+                break;
+            default:
+                s = usage( "lteQualitySync" );
                 break;
         }
 
